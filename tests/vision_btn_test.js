@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+(async () => {
+  const b = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
+  const p = await b.newPage({ viewport: { width: 1100, height: 760 } });
+  p.setDefaultTimeout(180000);
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.goto('file:///home/user/blocraft.html', { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await p.waitForFunction(() => typeof Game !== 'undefined' && Game.state === 'menu', null, { timeout: 180000 });
+  await p.click('#btnPlay'); await p.click('#ngStart');
+  await p.waitForFunction(() => Game.state === 'playing', null, { timeout: 180000 });
+  await p.waitForTimeout(1200);
+  await p.evaluate(() => openPause());
+  await p.waitForTimeout(600);
+  await p.screenshot({ path: '/tmp/t/shots/pause_vision.png' });
+  await p.click('#btnVision');
+  await p.waitForTimeout(500);
+  const a = await p.evaluate(() => ({ on: Vision.on, hidden: document.getElementById('visBanner').classList.contains('hidden') }));
+  await p.click('#btnVision');
+  await p.waitForTimeout(300);
+  const c = await p.evaluate(() => ({ on: Vision.on }));
+  console.log(JSON.stringify({ a, c, errs }));
+  await b.close();
+})();

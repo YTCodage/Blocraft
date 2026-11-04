@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
+  p.setDefaultTimeout(180000);
+  const errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.goto('file:///home/user/blocraft.html', { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await p.waitForFunction(() => typeof Game !== 'undefined' && Game.state === 'menu', null, { timeout: 180000 });
+  await p.click('#btnPlay');
+  await p.waitForTimeout(400);
+  await p.screenshot({ path: '/tmp/t/shots/ng1.png' });
+  await p.click('#ngWorld');
+  await p.waitForTimeout(300);
+  const s1 = await p.evaluate(() => ({ w: document.getElementById('ngWorld').textContent, m: document.getElementById('ngMode').textContent, sw: Game.startWorld, mode: Game.mode }));
+  await p.screenshot({ path: '/tmp/t/shots/ng2.png' });
+  await p.click('#ngMode');
+  await p.waitForTimeout(300);
+  const s2 = await p.evaluate(() => ({ w: document.getElementById('ngWorld').textContent, m: document.getElementById('ngMode').textContent, mode: Game.mode }));
+  await p.screenshot({ path: '/tmp/t/shots/ng3.png' });
+  console.log(JSON.stringify({ s1, s2, errs }));
+  await b.close();
+})();
