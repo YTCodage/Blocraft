@@ -2420,6 +2420,8 @@ const EXTRA_BLOCKS = [
   ['DOOR_CLOSED', 'Porte en bois', 'door_closed', 'door', '#a5793f', '#6b4a24'],
   ['DOOR_OPEN', 'Porte ouverte', 'door_open', 'panel', '#a5793f', '#6b4a24'],
   ['BED', 'Lit', 'bed_top', 'bed', '#c0392b', '#e8e2d0'],
+  ['RAIL', 'Rail', 'rail', 'rail', '#b7bec5', '#765332'],
+  ['POWERED_RAIL', 'Rail propulseur', 'powered_rail', 'rail', '#f5ce48', '#d53726'],
 ];
 /* visage du golem de neige (deux yeux de charbon + nez de carotte) */
 TEXTURES.push('snow_face');
@@ -2449,6 +2451,7 @@ EXTRA_BLOCKS.forEach((e, i) => {
     needsTool: ore || kind === 'nether_ore',
     tier: ore ? 2 : 0,
   };
+  if (kind === 'rail') { BLOCKS[id].solid = false; BLOCKS[id].opaque = false; BLOCKS[id].low = 0.06; BLOCKS[id].rail = true; }
   if (panel) BLOCKS[id].panel = true;      // porte ouverte : traversable
   if (kind === 'door' || panel) BLOCKS[id].thin = true;   // battant mince encastré
   if (bed) { BLOCKS[id].low = 0.58; BLOCKS[id].bed = true; }
@@ -3732,6 +3735,13 @@ function generateTextureAtlas() {
 
   for (const k in drawers) drawersRef[k] = drawers[k];
 
+  for (const name of ['rail', 'powered_rail']) drawers[name] = () => {
+    fill('#493723');
+    for (let y = 1; y < 16; y += 4) { g.fillStyle = '#a5793f'; g.fillRect(0, y, 16, 2); }
+    g.fillStyle = name === 'rail' ? '#cbd1d8' : '#ffd34e';
+    g.fillRect(3, 0, 2, 16); g.fillRect(11, 0, 2, 16);
+    if (name === 'powered_rail') { g.fillStyle = '#ee3322'; g.fillRect(7, 0, 2, 16); }
+  };
   TEXTURES.forEach((name, idx) => {
     g.save();
     g.translate(idx * S, 0);
@@ -5403,7 +5413,9 @@ class ChunkManager {
               const vs = [];
               for (let i = 0; i < 4; i++) {
                 const c = F.corners[i];
-                vs.push([bx + c[0] * bw, y + c[1] * yh, bz + c[2] * bhash, F.uv[i][0], F.uv[i][1], layer, baseL, 1.0]);
+                const turnRail = def.rail && ((BLOCKS[get(x - 1, y, z)] || {}).rail || (BLOCKS[get(x + 1, y, z)] || {}).rail);
+                const uv = F.uv[turnRail ? (i + 1) % 4 : i];
+                vs.push([bx + c[0] * bw, y + c[1] * yh, bz + c[2] * bhash, uv[0], uv[1], layer, baseL, 1.0]);
               }
               solid.quad(vs[0], vs[1], vs[2], vs[3]);
             }
@@ -6408,6 +6420,7 @@ function placeBlock() {
       return;
     }
   }
+  if (heldItemId() === I.MINECART) { Railways.use(t); return; }
   let type = heldItemId();
   if (!type || !isBlockItem(type)) {
     /* objet non plaçable en main : on cherche un bloc dans le sac (survie) */
@@ -6418,6 +6431,7 @@ function placeBlock() {
     } else return;
   }
   let x = t.x + t.nx, y = t.y + t.ny, z = t.z + t.nz;
+  if (BLOCKS[type].rail && !isSolid(Game.manager.getBlock(x, y - 1, z))) { HUD.toastText('Pose les rails sur un sol solide.', 2); return; }
   let cur = Game.manager.getBlock(x, y, z);
   /* on peut aussi remplacer le bloc d'eau visé (pilier sous l'eau) */
   if (cur === B.WATER || (BLOCKS[cur] && BLOCKS[cur].water)) { x = t.x; y = t.y; z = t.z; cur = Game.manager.getBlock(x, y, z); }
@@ -6678,6 +6692,7 @@ function saveGame(opts) {
       stats: Survival.serialize(),
       armor: Armor.serialize(),
       xp: Xp.serialize(),
+      drops: Drops.list, carts: Railways.carts,
       slot: Game.slot,
       twoPlayers: !!(Game.twoPlayers && !isTouch),
       players: Players.count > 1 ? Players.list.map(p => ({
@@ -7109,6 +7124,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     if (savedData.inv) Game.inv.deserialize(savedData.inv);
     Survival.deserialize(savedData.stats);
     Armor.deserialize(savedData.armor);
+    Drops.list = savedData.drops || []; Railways.carts = savedData.carts || []; Railways.riding = null;
     Xp.deserialize(savedData.xp);
   }
   if (!Game.inv) Game.inv = new Inventory();
@@ -7724,7 +7740,11 @@ const Vision = {
     const px = Player.pos[0], pz = Player.pos[2];
     const out = [];
     try {
-      const list = Structures.descsNear('overworld', px, pz, 3200).filter(d => d.type === 'stronghold');
+      const def = STRUCT_DEFS.stronghold, R = def.region, list = [];
+      for (let rx = Math.floor((px - 8000) / R); rx <= Math.floor((px + 8000) / R); rx++)
+        for (let rz = Math.floor((pz - 8000) / R); rz <= Math.floor((pz + 8000) / R); rz++) {
+          const d = Structures.cellDesc('stronghold', rx, rz); if (d) list.push(d);
+        }
       for (const d of list) {
         const py = (typeof d.y === 'number' && d.y > 4) ? d.y : 26;
         const open = Game.manager.hasChunk((d.x) >> 4, (d.z + 32) >> 4)
@@ -7759,13 +7779,18 @@ const Vision = {
     if (!this.on || !VP || !Game.manager) { if (box.childElementCount) box.innerHTML = ''; return; }
     this.scanT -= 0.016;
     if (this.scanT <= 0) { this.scanT = 2.5; this.scan(); this.updateBanner(); }
+    let zoom = $('visionPortalZoom');
+    if (!zoom) { zoom = document.createElement('div'); zoom.id = 'visionPortalZoom'; zoom.style.cssText = 'position:fixed;right:18px;top:90px;width:210px;padding:14px;background:#081725ee;border:2px solid #76edc8;border-radius:12px;text-align:center;color:white;pointer-events:none'; box.appendChild(zoom); }
+    const nearest = this.sites[0];
+    zoom.innerHTML = nearest ? '<b>Portail de l’End · gros plan</b><div style="display:grid;grid-template-columns:repeat(5,25px);gap:3px;justify-content:center;margin:12px">' + Array.from({length:25}, (_,i) => { const x=i%5,z=Math.floor(i/5),edge=(x===0||x===4||z===0||z===4),corner=(x===0||x===4)&&(z===0||z===4); return '<i style="height:25px;background:'+(corner?'transparent':edge?'#658d69':nearest.open?'#493375':'#15232c')+';border:'+(edge&&!corner?'3px solid #bbd29a':'none')+'"></i>'; }).join('') + '</div><strong>'+Math.round(nearest.dist)+' blocs</strong><br>X '+Math.floor(nearest.x)+' · Z '+Math.floor(nearest.z)+'<br><small>Schéma de repérage · pas une vue en direct</small>' : 'Aucun portail repéré';
+    zoom.remove();
     const items = [];
     for (const s of this.sites) {
       const d = Math.round(Math.hypot(s.x - Player.pos[0], s.z - Player.pos[2]));
       items.push({
         pos: [s.x, s.y, s.z],
         cls: s.open ? 'portalOpen' : 'portal',
-        txt: (s.open ? '🌌 Portail ouvert · ' : '🌀 Portail non fini · ') + d + ' m',
+        txt: (s.open ? '🌌 Portail ouvert · ' : '🌀 Portail de l’End en ruine · ') + d + ' m',
       });
     }
     while (box.childElementCount < items.length) {
@@ -7799,13 +7824,15 @@ const Vision = {
         el.style.top = Math.max(10, Math.min(ch - 30, ch / 2 + ay * (ch * 0.38))) + 'px';
         continue;
       }
-      if (sx < -80 || sy < -40 || sx > cw + 80 || sy > ch + 40) { el.style.display = 'none'; continue; }
+      sx = Math.max(110, Math.min(cw - 220, sx)); sy = Math.max(90, Math.min(ch - 100, sy));
       el.style.display = '';
       el.className = 'espBox ' + it.cls;
       el.textContent = it.txt;
+      el.style.fontSize = '18px'; el.style.padding = '12px 16px'; el.style.borderWidth = '3px';
       el.style.left = sx.toFixed(1) + 'px';
       el.style.top = sy.toFixed(1) + 'px';
     }
+    box.appendChild(zoom);
   },
 };
 
@@ -8154,6 +8181,7 @@ const QA = {
       el.style.display = '';
       el.className = 'espBox ' + it.cls;
       el.textContent = it.txt;
+      el.style.fontSize = '18px'; el.style.padding = '12px 16px'; el.style.borderWidth = '3px';
       el.style.left = sx.toFixed(1) + 'px';
       el.style.top = sy.toFixed(1) + 'px';
     }
@@ -8290,6 +8318,7 @@ function tick(dt) {
   if (typeof OneBlock !== 'undefined') OneBlock.update(dt);
   Mobs.update(dt);
   if (typeof Drops !== 'undefined') Drops.update(dt);
+  Railways.update(dt);
   if (typeof VillageLife !== 'undefined') VillageLife.update(dt);
   Music.update(dt);
   HUD.drawStats();
@@ -8472,6 +8501,7 @@ function canLook() { return Game.state === 'playing'; }
 /* Utilisation / pose : clic droit souris ou bouton « Poser » au doigt */
 function useAction() {
   const tgt = Game.target;
+  if (Railways.use(tgt)) return;
   if (tgt && (tgt.block === B.DOOR_CLOSED || tgt.block === B.DOOR_OPEN)) { Doors.toggle(tgt); return; }
   if (tgt && tgt.block === B.BED) { Beds.sleep(tgt); return; }
   if (tgt && tgt.block === B.CHEST) { Chests.openAt(tgt.x, tgt.y, tgt.z); return; }
@@ -9295,10 +9325,11 @@ Object.assign(I, {
   IRON_PICK: 152, IRON_SWORD: 153, BOOK: 154,
   BUCKET: 155, BUCKET_WATER: 156, BUCKET_LAVA: 157,
   IRON_AXE: 158, DIAMOND_AXE: 159, IRON_SHOVEL: 160, DIAMOND_SHOVEL: 161,
-  MEAT_COOKED: 162,
+  MEAT_COOKED: 162, MINECART: 300,
 });
 
 const ITEMS = {
+  300: { name: 'Wagonnet en fer', icon: 'minecart_iron', stack: 1 },
   100: { name: 'Bâton', icon: 'stick', stack: 64 },
   101: { name: 'Pioche en bois', icon: 'pick_wood', stack: 1, tool: 'pick', speed: 2.6, damage: 2, tier: 1 },
   102: { name: 'Pioche en pierre', icon: 'pick_stone', stack: 1, tool: 'pick', speed: 4.6, damage: 3, tier: 2 },
@@ -9542,6 +9573,9 @@ const Crafting = {
     const L = [];
     const add = (cat, table, out, outN, ins) => L.push({ cat, table, out: [out, outN], in: ins });
 
+    add('divers', true, B.RAIL, 16, [[I.IRON_INGOT, 6], [I.STICK, 1]]);
+    add('divers', true, B.POWERED_RAIL, 6, [[I.GOLD_INGOT, 6], [I.STICK, 1], [I.REDSTONE, 1]]);
+    add('divers', true, I.MINECART, 1, [[I.IRON_INGOT, 5]]);
     /* ---------- outils ---------- */
     add('outils', false, I.STICK, 4, [[B.PLANKS, 2]]);
     add('outils', false, I.WPICK, 1, [[B.PLANKS, 3], [I.STICK, 2]]);
@@ -10255,6 +10289,7 @@ function drawItemIcon(id, size, skipOutline) {
   };
   const woodC = '#a5793f', woodD = '#7a5528', stoneC = '#9b9b9b', stoneD = '#6f6f6f', stickC = '#8a6234';
   const ic = def.icon;
+  if (ic === 'minecart_iron') { R(2, 5, 12, 7, '#9da9b5'); R(3, 5, 10, 2, '#edf1f5'); R(4, 7, 8, 3, '#4e5965'); R(3, 12, 3, 2, '#252b34'); R(10, 12, 3, 2, '#252b34'); return c; }
   const poly = (pts, col) => {
     g.fillStyle = col; g.beginPath();
     pts.forEach((pt, i) => { if (i) g.lineTo(pt[0] * u, pt[1] * u); else g.moveTo(pt[0] * u, pt[1] * u); });
@@ -10595,6 +10630,13 @@ const Survival = {
     if (this.dead) return;
     Survival._deadPlayer = Players.active;
     this.dead = true;
+    const drop = sl => { if (!sl) return; Drops.add(sl.id, sl.n, Player.pos[0], Player.pos[1] + 0.6, Player.pos[2]); const d = Drops.list[Drops.list.length - 1]; d.d = sl.d || 0; d.dim = Game.manager.dim; d.death = true; };
+    Game.inv.slots.forEach(drop); Game.inv.slots.fill(null);
+    for (const k of ARMOR_SLOTS) if (Armor.slots[k]) drop({ id: Armor.slots[k], n: 1, d: Armor.dmg[k] });
+    Armor.reset();
+    drop(cursorStack); cursorStack = null;
+    CraftGrid.slots.forEach(drop); CraftGrid.reset();
+    HUD.refreshAll();
     this.cause = cause || 'Cause inconnue';
     Game.state = 'dead';
     Game.breakHeld = false; Game.placeHeld = false;
@@ -11416,6 +11458,42 @@ function buildCreativePalette() {
    OBJETS AU SOL — un bloc cassé de trop loin tombe par terre, tourne sur
    lui-même en 3D, puis se ramasse quand on passe à côté.
    ========================================================================= */
+/* Rails droits : orientation déduite des voisins, clic droit pour monter/descendre. */
+const Railways = {
+  carts: [], riding: null,
+  rail(x, y, z) { const b = Game.manager.getBlock(x, y, z); return BLOCKS[b] && BLOCKS[b].rail ? b : 0; },
+  use(t) {
+    if (this.riding) { this.riding = null; HUD.toastText('Tu descends du wagonnet.', 2); return true; }
+    const near = this.carts.find(c => c.dim === Game.manager.dim && Math.hypot(c.pos[0]-Player.pos[0], c.pos[1]-Player.pos[1], c.pos[2]-Player.pos[2]) < 3);
+    if (heldItemId() !== I.MINECART) {
+      if (!near) return false;
+      this.riding = near; HUD.toastText('Wagonnet : avance automatiquement · clic droit pour descendre.', 3); return true;
+    }
+    if (!t || !this.rail(t.x, t.y, t.z)) { HUD.toastText('Pose le wagonnet sur un rail.', 2); return true; }
+    this.carts.push({pos:[t.x+.5,t.y+.15,t.z+.5], dim:Game.manager.dim, speed:2, dir:1});
+    if (Game.mode !== 'creative') Game.inv.remove(I.MINECART, 1);
+    HUD.refreshAll(); return true;
+  },
+  update(dt) {
+    for (const c of this.carts) {
+      if (c.dim !== Game.manager.dim) continue;
+      const x=Math.floor(c.pos[0]), y=Math.floor(c.pos[1]), z=Math.floor(c.pos[2]);
+      const rail=this.rail(x,y,z);
+      if (!rail) { if (this.riding===c) this.riding=null; continue; }
+      const axis=(this.rail(x-1,y,z)||this.rail(x+1,y,z)) ? 0 : 2;
+      c.axis=axis;
+      c.speed=rail===B.POWERED_RAIL ? Math.min(12,c.speed+8*dt) : Math.max(this.riding===c?2:0,c.speed-0.3*dt);
+      const next=c.pos[axis]+c.dir*c.speed*dt;
+      const nx=axis===0?Math.floor(next):x, nz=axis===2?Math.floor(next):z;
+      if (this.rail(nx,y,nz)) c.pos[axis]=next;
+      else { c.dir*=-1; c.speed=2; }
+      c.pos[axis===0?2:0]=(axis===0?z:x)+.5;
+      if (this.riding===c) { Player.pos=[c.pos[0],c.pos[1]+.35,c.pos[2]]; Player.vel=[0,0,0]; }
+    }
+  },
+  visuals() { return this.carts.flatMap(c => [[0,0,0,3,.35,3],[-.4,.1,0,.35,1.5,3],[.4,.1,0,.35,1.5,3],[0,.1,-.4,3,1.5,.35],[0,.1,.4,3,1.5,.35]].map(([x,y,z,w,h,d])=>({id:B.IRON_BLOCK,pos:[c.pos[0]+x,c.pos[1]+y,c.pos[2]+z],yaw:0,t:0,bob:0,scale:[w,h,d],dim:c.dim}))); }
+};
+
 const Drops = {
   list: [],
   MAX: 140,
@@ -11423,7 +11501,7 @@ const Drops = {
   add(id, n, x, y, z, vx, vy, vz) {
     if (!id || n <= 0) return;
     this.list.push({
-      id, n,
+      id, n, dim: Game.manager && Game.manager.dim,
       pos: [x, y, z],
       vel: [vx === undefined ? (Math.random() - 0.5) * 1.6 : vx,
         vy === undefined ? 2.4 : vy,
@@ -11446,6 +11524,7 @@ const Drops = {
     const canPick = Game.state === 'playing' && !Survival.dead;
     for (let i = this.list.length - 1; i >= 0; i--) {
       const d = this.list[i];
+      if (d.dim && d.dim !== mgr.dim) continue;
       d.t += dt;
       if (d.t > 300 || d.pos[1] < -24) { this.list.splice(i, 1); continue; }
 
@@ -11479,12 +11558,14 @@ const Drops = {
       d.yaw += dt * d.spin;
 
       /* --- ramassage --- */
-      if (!canPick || d.t < 0.3) continue;
+      if (!canPick || d.t < (d.death ? 2 : 0.3)) continue;
       const px = Player.pos[0], py = Player.pos[1] + 0.8, pz = Player.pos[2];
       const dx = d.pos[0] - px, dy = d.pos[1] - py, dz = d.pos[2] - pz;
       const dist = Math.hypot(dx, dy, dz);
       if (dist < 1.9) {
+        const before = new Set(Game.inv.slots.filter(Boolean));
         const left = Game.inv.add(d.id, d.n);
+        if (d.d) for (const sl of Game.inv.slots) if (sl && sl.id === d.id && !before.has(sl)) { sl.d = d.d; break; }
         const got = d.n - left;
         if (got > 0) {
           HUD.toast(d.id, `+${got} ${itemName(d.id)}`);
@@ -11503,19 +11584,20 @@ const Drops = {
   },
 
   render(VP) {
-    if (!this.list.length) return;
+    if (!this.list.length && !Railways.carts.length) return;
     if (!this.builder) this.builder = new GeoBuilder(8);
     const b = this.builder;
     b.reset();
     const s = 0.30, h = s * 0.5;
-    for (const d of this.list) {
+    for (const d of this.list.concat(Railways.visuals())) {
+      if (d.dim && d.dim !== Game.manager.dim) continue;
       const def = BLOCKS[d.id];
       let tile = TEX.glow;
       if (def && def.tex) tile = Array.isArray(def.tex) ? (def.tex[1] !== undefined ? def.tex[1] : def.tex[0]) : def.tex;
       const cos = Math.cos(d.yaw), sin = Math.sin(d.yaw);
       const cx = d.pos[0], cz = d.pos[2];
       const cy = d.pos[1] - h + Math.sin(d.t * 2.2 + d.bob) * 0.035;
-      const P = (lx, ly, lz) => [cx + lx * cos - lz * sin, cy + ly, cz - lx * sin - lz * cos];
+      const P = (lx, ly, lz) => { if (d.scale) { lx *= d.scale[0]; lz *= d.scale[2]; ly *= d.scale[1]; } return [cx + lx * cos - lz * sin, cy + ly, cz - lx * sin - lz * cos]; };
       const c = [
         P(-h, 0, -h), P(h, 0, -h), P(h, 0, h), P(-h, 0, h),
         P(-h, s, -h), P(h, s, -h), P(h, s, h), P(-h, s, h),
@@ -12635,7 +12717,7 @@ const STRUCT_DEFS = {
   },
   ruined_portal: {
     name: 'Portail en ruine', icon: '🌀', dim: 'overworld', group: 'surface',
-    region: 112, chance: 0.30, radius: 14, chests: [1, 1], houses: [0, 0],
+    region: 192, chance: 0.10, radius: 14, chests: [1, 1], houses: [0, 0],
     biomes: 'partout', y: 'surface',
     desc: 'Cadre d\'obsidienne brisé, blocs de netherrack et coffre de voyageur.',
   },
@@ -12667,7 +12749,7 @@ const STRUCT_DEFS = {
   },
   stronghold: {
     name: 'Forteresse', icon: '🌌', dim: 'overworld', group: 'underground',
-    region: 288, chance: 0.75, radius: 40, chests: [2, 4], houses: [0, 0],
+    region: 512, chance: 0.45, radius: 40, chests: [2, 4], houses: [0, 0],
     biomes: 'sous-sol profond', y: '18 à 34',
     desc: 'Couloirs de pierre taillée, bibliothèque et **salle du portail de l\'End** (12 cadres).',
   },
@@ -15874,6 +15956,7 @@ async function newWorld(seedStr, thenPlay, extra) {
   Structures.reset();
   Mobs.reset();
   if (typeof Drops !== 'undefined') Drops.clear();
+  Railways.carts = []; Railways.riding = null;
   TNT.reset();
   const startDim = (extra && extra.dim)
     || (Game.startWorld === 'oneblock' ? 'oneblock' : (Game.startWorld === 'flat' ? 'flat' : 'overworld'));
@@ -15945,6 +16028,7 @@ async function continueGame(entry) {
   Structures.reset();
   Mobs.reset();
   if (typeof Drops !== 'undefined') Drops.clear();
+  Railways.carts = []; Railways.riding = null;
   const savedDim = (data.dim === 'oneblock') ? 'oneblock'
     : (data.dim === 'flat' ? 'flat' : 'overworld');
   await loadWorld(data.seed, data, (p) => setProgress(p, p < 0.66 ? 'Terrain sauvegardé · reconstruction' : 'Maillage · lumière et textures'), { dim: savedDim });

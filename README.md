@@ -700,3 +700,28 @@ astuce qui tourne ; comptez une quinzaine de secondes au premier lancement (le m
 se génère à la volée).
 
 Bon jeu.
+
+
+## Mort, rails et repérage des portails
+
+- À la mort, le sac, la barre rapide, l’armure équipée et les objets de la grille
+  de fabrication tombent à la position du joueur. Ils tournent sur eux-mêmes,
+  sont récupérables en revenant à proximité et conservent leur usure.
+  Comme les autres objets au sol, ils disparaissent après cinq minutes actives
+  dans leur dimension (ou s’ils tombent dans le vide).
+- **Rails** : 6 lingots de fer + 1 bâton → 16 rails.
+- **Rails propulseurs** : 6 lingots d’or + 1 bâton + 1 redstone → 6 rails.
+  Ils accélèrent automatiquement les wagonnets, sans alimentation supplémentaire.
+- **Wagonnet en fer** : 5 lingots de fer. Poser sur un rail avec le clic droit ;
+  main sans wagonnet, clic droit à proximité pour monter, puis clic droit pour
+  descendre. Cette première version permet les lignes droites horizontales,
+  avec demi-tour au bout de la voie ; pas encore de pentes ni de virages.
+- Ces trois recettes utilisent l’établi. Les objets sont aussi disponibles dans
+  l’inventaire créatif. Les wagonnets et objets au sol sont sauvegardés.
+- **Vision X** : recherche des forteresses jusqu’à 8 000 blocs par axe, grands
+  repères et schéma agrandi du portail le plus proche avec distance et coordonnées.
+  Le schéma n’est pas une caméra distante et ne révèle pas les yeux déjà insérés.
+- Les portails en ruine et les forteresses sont moins fréquents dans la génération.
+  Les cadres de l’End incomplets sont étiquetés « Portail de l’End en ruine ».
+
+Test de logique ciblé : `node tests/death_rails_test.js`.
