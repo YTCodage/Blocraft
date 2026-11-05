@@ -725,3 +725,68 @@ Bon jeu.
   Les cadres de l’End incomplets sont étiquetés « Portail de l’End en ruine ».
 
 Test de logique ciblé : `node tests/death_rails_test.js`.
+
+## Cinématiques de début et de victoire
+
+Avant chaque nouvelle partie, une **cinématique animée de 20 secondes** présente
+les commandes, la récolte, la fabrication, la perte des objets à la mort et
+l’objectif du dragon. La reprise d’une sauvegarde ne relance pas l’introduction.
+
+Après la défaite du dragon de l’End, une seconde cinématique de 20 secondes
+célèbre la victoire et rappelle les récompenses, puis rend la main au joueur.
+Le jeu est suspendu pendant la cinématique en solo. En multijoueur, l’autre
+navigateur n’est pas mis en pause.
+
+Ces animations Canvas et leurs textes sont intégrés au fichier HTML : pas de
+fichier vidéo externe, de téléchargement ni de voix enregistrée. Le bouton
+**Passer**, `Échap`, `Espace` ou `Entrée` permettent de reprendre immédiatement.
+Le compteur s’arrête lorsque l’onglet est masqué ; les animations respectent
+la préférence de réduction des mouvements du navigateur.
+
+Test ciblé : `node tests/cinematics_test.js`.
+
+## Site web et GitHub Pages
+
+Le dépôt contient désormais un site statique complet :
+
+- `index.html` : accueil responsive en français, univers visuel voxel et boutons Jouer.
+- `assets/` : styles, favicon et illustration isométrique Canvas générée localement.
+- `jeu/index.html` : page du jeu, retour à l’accueil et plein écran. Elle charge
+  `../blocraft.html` dans une iframe de même origine, sans dupliquer le code du jeu.
+- `.nojekyll` : publication statique directe sur GitHub Pages, sans compilation.
+
+Les liens sont relatifs : le site fonctionne aussi bien à la racine d’un domaine
+que sous le chemin de projet `/Blocraft/`. Sur GitHub Pages, les adresses sont :
+
+- Accueil : <https://ytcodage.github.io/Blocraft/>
+- Jeu : <https://ytcodage.github.io/Blocraft/jeu/>
+
+Dans **Settings → Pages**, utiliser **Deploy from a branch**, chemin **/(root)**.
+La branche configurée est automatiquement republiée à chaque push. Si le site est
+publié depuis une branche de travail pour validation, sélectionner `main` après
+la fusion de la pull request pour reprendre les publications depuis la branche
+principale.
+
+Pour tester en local :
+
+```sh
+npm ci
+npm run serve
+# Ouvrir http://localhost:8000/
+```
+
+Vérifications :
+
+```sh
+npm test
+npx playwright install chromium
+npm run test:site
+```
+
+Le test du site vérifie l’accueil et la page `/jeu/` aux largeurs 320, 390, 768
+et 1440 pixels, les liens, les ressources et l’absence de débordement horizontal.
+Il remplace le contenu de l’iframe pour isoler le test de mise en page de la
+génération du monde ; ce n’est pas un test complet du moteur du jeu.
+Les autorisations plein écran restent soumises aux limitations du navigateur,
+notamment sur iOS. Les sauvegardes dépendent du navigateur et de l’origine :
+une partie ouverte en `file://` n’est pas automatiquement transférée au site HTTPS.

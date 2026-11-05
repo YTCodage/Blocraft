@@ -6809,7 +6809,9 @@ function openNewGameDialog() {
   setTimeout(() => { try { nm.focus(); nm.select(); } catch (e) { } }, 80);
 }
 
-function startNewGameFromDialog() {
+async function startNewGameFromDialog() {
+  if (Cinematics.active) return;
+  await Cinematics.play('intro');
   const name = (($('ngName') && $('ngName').value) || '').trim() || Saves.suggestName();
   Saves.begin(name, Game.startWorld || 'overworld', Game.mode);
   hideOverlays();
@@ -15252,6 +15254,99 @@ const Redstone = {
 /* =========================================================================
    DRAGON DE L'END — boss ultime
    ========================================================================= */
+/* Cinématiques procédurales : autonomes, sans média ni réseau externe. */
+const Cinematics = {
+  active: false,
+  duration: 20,
+  scenes: {
+    intro: [
+      ['Bienvenue dans BLOCRAFT', 'Un monde de blocs, une aventure à inventer.', 'world'],
+      ['Explore et construis', 'ZQSD ou WASD : bouger · Souris : regarder · Espace : sauter', 'world'],
+      ['Récolte et fabrique', 'Clic gauche : miner · Clic droit : poser · E : inventaire et fabrication', 'craft'],
+      ['Prépare ton aventure', 'Équipe ton armure. À la mort, reviens récupérer tes objets !', 'craft'],
+      ['Objectif : le dragon de l’End', 'Trouve le portail avec X, place les yeux et affronte le dragon.', 'dragon'],
+    ],
+    ending: [
+      ['Le dernier rugissement', 'Le dragon de l’End est vaincu.', 'dragon'],
+      ['La lumière revient', 'Tu as traversé les mondes et relevé le défi.', 'portal'],
+      ['Une victoire bien méritée', 'Récompenses : 5 lingots de netherite, 8 diamants et 2 perles.', 'portal'],
+      ['Ton monde t’attend', 'Construis, explore et invente la suite de ton aventure.', 'world'],
+      ['Merci d’avoir joué !', 'BLOCRAFT · La fin du combat, pas la fin de l’aventure.', 'world'],
+    ],
+  },
+  play(kind) {
+    if (this.active) return Promise.resolve();
+    this.active = true;
+    const previous = Game.state;
+    Game.state = 'cinematic'; Game.breakHeld = false; Game.placeHeld = false;
+    Game.ignoreUnlock = true;
+    try { document.exitPointerLock(); } catch (e) {}
+    const root = document.createElement('section');
+    root.id = 'cinematic'; root.setAttribute('role', 'dialog');
+    root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', kind === 'intro' ? 'Présentation de BLOCRAFT' : 'Victoire contre le dragon');
+    root.style.cssText = 'position:fixed;inset:0;z-index:10000;background:#070b18;color:white;display:flex;align-items:center;justify-content:center;cursor:default;overflow:hidden';
+    root.innerHTML = '<canvas aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%"></canvas><div style="position:relative;text-align:center;padding:24px;max-width:850px;text-shadow:0 3px 12px #000"><div style="font:700 13px system-ui;letter-spacing:.3em;color:#94efbe">BLOCRAFT · '+(kind === 'intro' ? 'LE DÉBUT DE L’AVENTURE' : 'VICTOIRE')+'</div><h1 style="font-size:clamp(25px,5vw,58px);margin:24px 0"></h1><p style="font-size:clamp(16px,2.3vw,24px);line-height:1.7"></p></div><div style="position:absolute;left:24px;right:24px;bottom:24px"><div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:12px"><span data-time style="font:14px system-ui"></span><button class="btn" type="button">Passer ›</button></div><div style="height:4px;background:#ffffff30;border-radius:4px"><div data-progress style="height:100%;background:#92efbb;width:0%"></div></div></div>';
+    document.body.appendChild(root);
+    const canvas = root.querySelector('canvas'), g = canvas.getContext('2d');
+    const title = root.querySelector('h1'), subtitle = root.querySelector('p');
+    const skip = root.querySelector('button'), time = root.querySelector('[data-time]'), progress = root.querySelector('[data-progress]');
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scenes = this.scenes[kind];
+    return new Promise(resolve => {
+      let raf = 0, elapsed = 0, last = performance.now(), finished = false, scene = -1;
+      const finish = () => {
+        if (finished) return;
+        finished = true; cancelAnimationFrame(raf);
+        document.removeEventListener('keydown', keys, true);
+        root.remove(); this.active = false;
+        Game.state = previous; Game.ignoreUnlock = false;
+        if (kind === 'ending' && previous === 'playing') startPlaying();
+        resolve();
+      };
+      const keys = e => { e.preventDefault(); e.stopImmediatePropagation(); if (e.code === 'Escape' || e.code === 'Space' || e.code === 'Enter') finish(); };
+      document.addEventListener('keydown', keys, true);
+      skip.addEventListener('click', finish); skip.focus();
+      const tick = now => {
+        if (finished) return;
+        // Ne pas écourter la vidéo lorsque l’onglet est masqué.
+        if (!document.hidden) elapsed += Math.max(0, now - last) / 1000;
+        last = now;
+        if (elapsed >= this.duration) { finish(); return; }
+        const index = Math.min(scenes.length - 1, Math.floor(elapsed / 4));
+        if (index !== scene) { scene = index; title.textContent = scenes[index][0]; subtitle.textContent = scenes[index][1]; }
+        time.textContent = Math.floor(elapsed) + ' / 20 s'; progress.style.width = (elapsed / this.duration * 100) + '%';
+        if (g) this.draw(g, canvas, scenes[index][2], reduce ? 0 : elapsed, kind);
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    });
+  },
+  draw(g, canvas, scene, t, kind) {
+    const w = canvas.width = Math.min(1440, window.innerWidth), h = canvas.height = Math.min(900, window.innerHeight);
+    const sky = g.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, scene === 'dragon' || scene === 'portal' ? '#160e35' : '#123651'); sky.addColorStop(1, '#07121e');
+    g.fillStyle = sky; g.fillRect(0,0,w,h);
+    for (let i=0;i<65;i++) { const x=(i*137.5)%w, y=(i*79.3)%h; g.fillStyle='rgba(181,222,255,'+(0.25+Math.sin(t+i)*.2)+')'; g.fillRect(x,y,2,2); }
+    const size = Math.max(35, w/22), drift = (t*12)%size;
+    for (let i=-1;i<24;i++) { const x=i*size-drift, y=h*.78+Math.sin(i*.7)*30; g.fillStyle='#28523c';g.fillRect(x,y,size,size);g.fillStyle='#172e28';g.fillRect(x,y+size,size,h);g.fillStyle='#65a365';g.fillRect(x,y,size,8); }
+    if (scene === 'dragon') {
+      const x=w*.5+Math.sin(t*.6)*w*.15,y=h*.25+Math.sin(t*1.2)*15, wing=Math.sin(t*3)*25;
+      g.fillStyle='#30233f';g.fillRect(x-45,y-15,90,35);g.fillRect(x+40,y-30,45,30);
+      g.beginPath();g.moveTo(x,y);g.lineTo(x-160,y-60-wing);g.lineTo(x-110,y+35);g.lineTo(x,y+10);g.fill();
+      g.beginPath();g.moveTo(x,y);g.lineTo(x+130,y-70-wing);g.lineTo(x+90,y+30);g.lineTo(x,y+10);g.fill();
+      g.fillStyle='#df8bff';g.fillRect(x+65,y-23,10,5);
+      if(kind==='ending') for(let i=0;i<30;i++){g.fillStyle='#caa5ff';g.fillRect(x+Math.sin(i*2.4+t)*i*8,y+Math.cos(i+t)*i*4,4,4);}
+    } else if(scene === 'portal') {
+      const x=w/2,y=h*.25;g.fillStyle='#697f66';g.fillRect(x-95,y-55,190,110);g.fillStyle='#6a3ab3';g.fillRect(x-75,y-35,150,70);
+      for(let i=0;i<14;i++){g.fillStyle='#c5a1ff';g.fillRect(x+Math.sin(i+t)*65,y+Math.cos(i*2+t)*26,4,4);}
+    } else if(scene === 'craft') {
+      const x=w/2-65,y=h*.2;g.fillStyle='#855b36';g.fillRect(x,y,130,100);g.strokeStyle='#e9bb77';g.lineWidth=3;
+      for(let i=0;i<=3;i++){g.beginPath();g.moveTo(x+i*43,y);g.lineTo(x+i*43,y+100);g.stroke();g.beginPath();g.moveTo(x,y+i*33);g.lineTo(x+130,y+i*33);g.stroke();}
+    }
+    g.fillStyle='rgba(3,7,16,.35)';g.fillRect(0,h*.36,w,h*.32);
+  },
+};
+
 const Dragon = {
   active: null,
   defeated: false,
@@ -15359,6 +15454,7 @@ const Dragon = {
   },
 
   onDeath() {
+    if (this.defeated) return;
     this.active = null;
     this.defeated = true;
     const bar = $('bossBar');
@@ -15371,6 +15467,7 @@ const Dragon = {
     setTimeout(() => HUD.toastText('+5 lingots de netherite, +8 diamants, +2 perles de l\'End', 5), 900);
     Game.inv.add(I.ENDER_PEARL, 2);
     HUD.refreshAll();
+    setTimeout(() => { if (Game.state === 'playing') Cinematics.play('ending'); }, 0);
   },
 };
 
