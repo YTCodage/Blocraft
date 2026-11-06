@@ -131,10 +131,15 @@ Deux nouveaux blocs de mobilier, avec leurs recettes :
 | Bloc | Recette | Effet |
 |---|---|---|
 | 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **un toucher bref**) ; ouverte, on passe au travers |
-| 🛏️ **Lit** | 3 laines blanches + 3 planches | la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
+| 🛏️ **Lit** | 3 laines blanches + 3 planches, sur un établi ouvert | la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
 
 > De jour, le lit refuse : *« On ne dort que la nuit »*. Et si un monstre rôde
 > à moins de 12 blocs, impossible de fermer l'œil — il faut d'abord nettoyer.
+
+Les moutons apparaissent le jour sur l’herbe et donnent **1 à 2 blocs de laine
+blanche** lorsqu’ils sont tués. La recette « 4 fils → laine blanche » a été retirée.
+En multijoueur, le sommeil passe par l’hôte pour avancer la nuit pour les deux
+joueurs ; seul celui qui dort change son point de réapparition.
 
 Casser une moitié de porte casse l'autre, et la porte retombe entière dans
 l'inventaire. On pose les deux au sol, dos au mur, comme dans Minecraft.
@@ -335,35 +340,35 @@ sont des dimensions **à découvrir en jeu**, par un portail (voir §5) :
 > Le mono-bloc est un monde à part : pour y revenir, choisis-le à nouveau dans le
 > menu. En créatif, tomber dans le vide te ramène sur le bloc (pas de mort).
 
-## 4. Jouer à distance (deux écrans, deux maisons)
+## 4. Jouer à deux avec un code à 6 chiffres
 
-Le multijoueur n'utilise **aucun serveur** : les deux navigateurs se parlent
-directement (WebRTC). Il suffit d'échanger deux codes par message.
+Ouvrez tous les deux <https://ytcodage.github.io/Blocraft/jeu/>.
 
-**Sur l'ordinateur qui héberge :**
+**L’hôte :** menu → **Jouer à deux** → **Créer une partie**. Il copie les **6 chiffres**
+et les envoie à son ami. Il garde la page ouverte.
 
-1. Menu → **🌐 Jouer à distance** → **📡 Héberger**.
-2. Un **code d'invitation** apparaît : clique sur **Copier** et envoie-le à ton ami
-   (WhatsApp, Discord, mail…).
-3. Quand il t'envoie sa **réponse**, colle-la dans la deuxième case et clique
-   **Se connecter**.
+**L’ami :** menu → **Jouer à deux** → **Se connecter**. Il entre les 6 chiffres,
+puis clique sur **Rejoindre la partie**. Il n’y a aucun code de réponse à renvoyer.
+La carte de l’hôte est chargée automatiquement sur l’autre appareil.
 
-**Sur l'ordinateur qui rejoint :**
+Il s’agit d’une session privée temporaire pour **deux joueurs maximum**, pas d’un
+serveur de jeu permanent. Les déplacements, blocs, monstres, discussions et l’heure
+utilisent la liaison WebRTC entre les navigateurs ; l’hôte gère le monde. S’il ferme
+son onglet, la session s’arrête et le code devient inutilisable. L’autre joueur
+peut continuer en solo. Il faut recréer une partie pour obtenir un nouveau code.
 
-1. Menu → **🌐 Jouer à distance** → **🔗 Rejoindre**.
-2. Colle le **code d'invitation**, clique **Générer ma réponse**, puis **Copier** et
-   renvoie ce code à l'hôte.
-3. Dès que l'hôte l'a collé, la partie démarre toute seule.
+**Infrastructure :** GitHub Pages ne peut pas héberger la mise en relation.
+Le jeu utilise **PeerJS Cloud** pour enregistrer les codes et échanger les informations
+nécessaires à l’établissement de WebRTC. La bibliothèque PeerJS 1.5.5 est fournie
+localement dans `assets/vendor/` avec sa licence MIT. Il faut donc conserver ce
+dossier si l’on héberge le jeu ailleurs. Le monde lui-même n’est pas stocké sur
+PeerJS Cloud, et aucune garantie de disponibilité de ce service tiers n’est fournie.
 
-Pendant la partie : tu vois l'autre joueur (son personnage et son étiquette de nom),
-les blocs qu'il casse et pose, les monstres qu'il affronte. Le monde, l'heure et les
-créatures sont gérés par l'hôte ; la carte est régénérée à l'identique chez l'invité
-(elle est déterministe à partir de la graine).
-
-**Si la connexion échoue** (certains réseaux d'entreprise/4G sont trop verrouillés) :
-installe un VPN personnel type **Tailscale** sur les deux machines et réessaie — les
-deux ordinateurs se verront alors comme sur un réseau local. Le mode « 2 joueurs sur
-le même écran » reste disponible juste en dessous pour jouer côte à côte.
+Ne publiez pas le code : ce n’est pas un mot de passe fort. Il donne accès à la
+session au premier ami qui se connecte. Une troisième connexion est refusée.
+Certains réseaux/NAT bloquent WebRTC : le jeu affiche alors une erreur, sans
+prétendre que la connexion a réussi. Réessayez depuis un autre réseau.
+Aucun relais TURN propre au projet n’est déployé.
 
 ## 5. La survie, comme dans Minecraft
 
@@ -511,15 +516,16 @@ manquants apparaissent en **rouge**.
 ## 6 quater. Le butin suit la difficulté
 
 Chaque structure a un **niveau de difficulté de 1 à 5** : plus c'est dangereux,
-plus le coffre est garni, et plus les objets rares apparaissent.
+plus le coffre contient de ressources utiles. Les objets précieux restent rares,
+avec des plafonds même dans les structures difficiles.
 
 | Niveau | Structures | Ce qu'on trouve en plus |
 |---|---|---|
 | 1 | village, igloo | pain, blé, charbon, quelques émeraudes |
 | 2 | avant-poste, épave, bibliothèque, portail en ruine, grotte | lingots de fer, livres, obsidienne |
 | 3 | mine, donjon, cabane de sorcière, temple, forge, trésor enterré | or, diamants, pioche et plastron en fer |
-| 4 | monument, manoir, forteresse du Nether, stronghold | diamants en série, épée en diamant, blocs d'or, perles |
-| 5 | bastion, cité de l'End | **éclats et lingots de netherite**, plastron en diamant, or |
+| 4 | monument, manoir, forteresse du Nether, stronghold | rares diamants, épée en diamant occasionnelle, perles |
+| 5 | bastion, cité de l'End | **netherite très occasionnelle**, plastron en diamant rare, un peu d’or |
 
 ## 7. Mode administrateur
 
@@ -824,3 +830,24 @@ Tests supplémentaires : `npm run test:game` vérifie les vrais gestes tactiles
 Chromium, les restrictions de fabrication, le chat et la compilation/rendu WebGL
 sur une petite scène déterministe. Ce test ne remplace pas un essai sur un
 appareil Android/iOS réel, ni une validation complète du multijoueur entre deux appareils.
+
+
+## Fabrication et rareté des trésors
+
+Les recettes de **blocs** se fabriquent désormais en ouvrant un établi posé,
+comme les armes et armures. Deux exceptions permettent de démarrer : les **planches**
+et l’**établi lui-même** restent fabricables dans le sac. Les autres objets simples
+suivent leurs recettes existantes. Les blocs sans recette restent accessibles selon
+les règles existantes (minage, exploration ou catalogue créatif).
+
+Les coffres contiennent nettement moins de diamants, d’or, d’émeraudes, de fer et de
+netherite. Les tirages précieux sont moins fréquents, les piles sont plus petites
+et un plafond par coffre évite les grosses accumulations. Les bonus de forteresses
+ne garantissent plus systématiquement des diamants et des lingots. Les ressources
+dans le terrain et les récompenses du dragon ne sont pas modifiées par ce réglage.
+
+Tests : `npm test`, `npm run test:game`, `npm run test:site`, `npm run test:rooms`.
+Le dernier test utilise le vrai client PeerJS et un PeerServer de test local (la
+dépendance de développement `peer`) avec deux navigateurs et un troisième refusé.
+Il valide l’échange WebRTC, mais pas la disponibilité du cloud public ni tous les
+cas de NAT sur Internet. Aucun serveur Node ne doit être déployé sur GitHub Pages.

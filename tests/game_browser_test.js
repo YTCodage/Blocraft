@@ -40,7 +40,7 @@ const { chromium } = require('playwright');
       Crafting.tablePos=[1,4,0];testCells.set('1,4,0',B.CRAFTING);Crafting.forceTable=false;Crafting.nearTable=true;
       const inventoryLocked=!Crafting.unlocked(r);Crafting.forceTable=true;const tableUnlocked=Crafting.unlocked(r);
       testCells.delete('1,4,0');const destroyedLocked=!Crafting.unlocked(r);Crafting.forceTable=false;
-      return {inventoryLocked,tableUnlocked,destroyedLocked,allRestricted:Crafting.recipes.filter(r=>ITEMS[r.out[0]]&&(ITEMS[r.out[0]].armor||ITEMS[r.out[0]].tool==='sword')).every(r=>r.stationOnly)};
+      return {inventoryLocked,tableUnlocked,destroyedLocked,bedRestricted:Crafting.recipes.find(r=>r.out[0]===B.BED).stationOnly,bootstrap:!Crafting.recipes.find(r=>r.out[0]===B.CRAFTING).stationOnly,sheepDrops:MOB_DEFS.sheep.drops.some(d=>d[0]===B.WOOL_WHITE&&d[1]>=1),allRestricted:Crafting.recipes.filter(r=>ITEMS[r.out[0]]&&(ITEMS[r.out[0]].armor||ITEMS[r.out[0]].tool==='sword')).every(r=>r.stationOnly)};
     });
     assert(Object.values(crafting).every(Boolean));
     await page.evaluate(()=>{GameChat.send('<img src=x onerror=alert(1)>');GameChat.death('Tué par un zombie');GameChat.tick();});
@@ -54,6 +54,7 @@ const { chromium } = require('playwright');
         put(x,59,z,B.DIRT);put(x,60,z,x>=8&&x<=11?(x===8?B.WATER:B.WATER1+x-9):B.GRASS);
       }
       [B.CRAFTING,B.MARBLE,B.POLISHED_GRANITE,B.OAK_PARQUET,B.SLATE_TILES,B.LUMINOUS_BRICK].forEach((b,i)=>put(2+i,61,8,b));
+      Mobs.add('sheep',6,61,6);
       const chunk=new Chunk(0,0,data,heights);Game.manager.chunks.set('0,0',chunk);Game.manager.buildMesh(chunk);
       Player.pos=[8,62,14];Player.yaw=0;Player.pitch=-.25;
       renderScene(0);

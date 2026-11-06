@@ -1430,7 +1430,7 @@
           <div class="menu-sep"></div>
           <button id="btnPlay" class="btn primary big">▶&nbsp; Jouer</button>
           <button id="btnContinue" class="btn hidden">▶ Reprendre la partie</button>
-          <button id="btnOnline" class="btn online">Jouer à distance · deux écrans</button>
+          <button id="btnOnline" class="btn online">Jouer à deux · code privé</button>
         </aside>
       </div>
 
@@ -1652,36 +1652,25 @@
 
   <div id="mp" class="overlay hidden">
     <div class="panel mp-panel">
-      <h2 class="title" style="margin-bottom:4px">🌐&nbsp; Jouer à distance</h2>
-      <p class="subtitle" style="margin-bottom:14px">
-        Deux ordinateurs, deux écrans. Chacun ouvre <b>blocraft.html</b> : l'un héberge,
-        l'autre rejoint. On échange deux codes par message (aucun serveur, aucune installation).
-      </p>
-
+      <h2 class="title" style="margin-bottom:4px">🌐 Jouer à deux</h2>
+      <p class="subtitle" style="margin-bottom:14px">Crée une partie privée, envoie son <b>code à 6 chiffres</b> à ton ami, et jouez ensemble sur PC ou mobile.</p>
       <div class="mp-row">
-        <button id="btnMpHost" class="btn primary">📡&nbsp; Héberger</button>
-        <button id="btnMpJoin" class="btn">🔗&nbsp; Rejoindre</button>
+        <button id="btnMpHost" class="btn primary">Créer une partie</button>
+        <button id="btnMpJoin" class="btn">Se connecter</button>
       </div>
-
       <div id="mpHostBox" class="mp-box hidden">
-        <label>1 · Envoie ce code d'invitation à ton ami (message, Discord, mail…)</label>
-        <textarea id="mpCodeOut" readonly spellcheck="false"></textarea>
-        <button id="btnMpCopy" class="btn small" style="align-self:flex-start">📋 Copier</button>
-        <label>2 · Colle ici la réponse qu'il t'a renvoyée</label>
-        <textarea id="mpCodeIn" spellcheck="false" placeholder="Colle la réponse de ton ami…"></textarea>
-        <button id="btnMpAccept" class="btn primary" style="align-self:flex-end">Se connecter</button>
+        <label for="mpCodeOut">Le code de ta partie</label>
+        <input id="mpCodeOut" readonly inputmode="numeric" aria-label="Code privé à six chiffres" placeholder="······" style="width:100%;font:800 clamp(30px,9vw,50px) monospace;letter-spacing:.25em;text-align:center;padding:20px 10px;background:#0c1a20;color:#b7f39b;border:1px solid #527547;border-radius:10px">
+        <button id="btnMpCopy" class="btn small">Copier les 6 chiffres</button>
+        <p class="muted" style="font-size:12px;line-height:1.6">Garde cette page ouverte. La partie démarre quand ton ami te rejoint. Ne partage ce code qu’avec lui : il donne accès à ton monde.</p>
       </div>
-
-      <div id="mpJoinBox" class="mp-box hidden">
-        <label>1 · Colle le code d'invitation reçu</label>
-        <textarea id="mpJoinIn" spellcheck="false" placeholder="Colle le code de l'hôte…"></textarea>
-        <button id="btnMpAnswer" class="btn primary" style="align-self:flex-end">Générer ma réponse</button>
-        <label>2 · Envoie cette réponse à l'hôte, puis attends qu'il se connecte</label>
-        <textarea id="mpCodeOut2" readonly spellcheck="false"></textarea>
-        <button id="btnMpCopy2" class="btn small" style="align-self:flex-start">📋 Copier</button>
-      </div>
-
-      <div id="mpStatus">Choisis « Héberger » ou « Rejoindre ».</div>
+      <form id="mpJoinBox" class="mp-box hidden">
+        <label for="mpJoinIn">Le code de ton ami</label>
+        <input id="mpJoinIn" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required aria-label="Code de la partie à six chiffres" placeholder="123456" style="width:100%;font:800 clamp(28px,8vw,42px) monospace;letter-spacing:.2em;text-align:center;padding:18px 10px;background:#0c1a20;color:#eaf2ff;border:1px solid #527547;border-radius:10px">
+        <button id="btnMpAnswer" type="submit" class="btn primary">Rejoindre la partie</button>
+      </form>
+      <p class="muted" style="font-size:11px;line-height:1.5">Internet requis. La mise en relation passe par PeerJS Cloud ; la partie se joue directement entre vos navigateurs. L’hôte doit rester connecté. Certains réseaux peuvent bloquer la connexion.</p>
+      <div id="mpStatus" role="status" aria-live="polite">Crée une partie ou connecte-toi avec le code de ton ami.</div>
       <button id="btnMpClose" class="btn ghost" style="width:100%">Fermer</button>
     </div>
   </div>
@@ -2442,6 +2431,7 @@ TEXTURES.push('snow_face');
 TEX.snow_face = TEXTURES.length - 1;
 /* lit : le dessus vient de la texture du bloc, il faut ajouter le flanc */
 TEXTURES.push('bed_side'); TEX.bed_side = TEXTURES.length - 1;
+TEXTURES.push('sheep_face'); TEX.sheep_face = TEXTURES.length - 1;
 
 EXTRA_BLOCKS.forEach((e, i) => {
   const [key, name, texName, kind, c1, c2] = e;
@@ -3788,6 +3778,7 @@ function generateTextureAtlas() {
     drawers.planks();g.fillStyle='#68452c';g.fillRect(0,0,16,3);g.fillRect(0,13,16,3);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
     g.fillStyle='#d1c6a3';g.fillRect(4,5,6,2);g.fillRect(4,6,2,3);g.fillStyle='#62482e';g.fillRect(7,7,2,5);g.fillStyle='#aa8752';g.fillRect(11,5,1,6);
   };
+  drawers.sheep_face = () => { noisy('#bfb09d',5);g.fillStyle='#ece9df';g.fillRect(0,0,16,4);g.fillStyle='#242328';g.fillRect(3,6,3,3);g.fillRect(10,6,3,3);g.fillStyle='#ddafa3';g.fillRect(6,11,4,3); };
   for (const k in drawers) drawersRef[k] = drawers[k];
 
   for (const name of ['rail', 'powered_rail']) drawers[name] = () => {
@@ -6612,38 +6603,35 @@ function isNightTime() {
 }
 
 const Beds = {
-  sleep(t) {
-    if (!isNightTime()) {
-      HUD.toastText('☀️ On ne dort que la nuit : reviens au crépuscule.', 2.8);
-      return;
-    }
-    /* un monstre trop près empêche de fermer l'œil */
-    let near = null, nd = 12;
-    for (const m of (Mobs.list || [])) {
-      if (!m.def || !m.def.hostile || m.dead) continue;
-      const d = Math.hypot(m.pos[0] - Player.pos[0], m.pos[2] - Player.pos[2]);
-      if (d < nd && Math.abs(m.pos[1] - Player.pos[1]) < 10) { nd = d; near = m; }
-    }
-    if (near) {
-      HUD.toastText('👹 Des monstres rôdent tout près : impossible de dormir.', 3);
-      Sfx.play('hit', 0.7);
-      return;
-    }
-    const fade = $('fade');
-    if (fade) fade.classList.add('on');
-    Sfx.play('eat', 0.6);
-    const bedPos = [t.x + 0.5, t.y + 1.02, t.z + 0.5];
+  sleeping: false,
+  sleep(t, remote = false) {
+    const guest = typeof Net !== 'undefined' && Net.live && Net.role === 'guest';
+    if (guest && !remote) { Net.send(['sleep', t.x, t.y, t.z]); HUD.toastText('Tu te couches…', 2); return; }
+    const sleeper = remote ? Net.remotePos() : Player.pos;
+    if (!sleeper || this.sleeping || !Game.manager || Game.manager.getBlock(t.x, t.y, t.z) !== B.BED || Math.hypot(sleeper[0]-t.x-.5,sleeper[1]-t.y,sleeper[2]-t.z-.5)>6) return;
+    if (!isNightTime()) { this.notice('☀️ On ne dort que la nuit.', remote); return; }
+    const danger = Mobs.list.some(m => m.def && m.def.hostile && !m.dead && Math.hypot(m.pos[0]-sleeper[0],m.pos[2]-sleeper[2])<12 && Math.abs(m.pos[1]-sleeper[1])<10);
+    if (danger) { this.notice('Des monstres rôdent près du lit : impossible de dormir.', remote); return; }
+    this.sleeping = true;
+    const manager = Game.manager;
+    if (!remote && $('fade')) $('fade').classList.add('on');
+    const pos = [t.x+.5,t.y+1.02,t.z+.5];
     setTimeout(() => {
-      Game.time = 0.27;                 // lever du soleil
-      Game.spawn = bedPos.slice();      // le lit devient le point de réapparition
+      this.sleeping = false;
+      if (Game.manager !== manager || Game.manager.getBlock(t.x,t.y,t.z)!==B.BED) { if ($('fade')) $('fade').classList.remove('on'); return; }
+      Game.time = .27;
       if (typeof Sun !== 'undefined' && Sun.reset) Sun.reset();
-      Player.vel = [0, 0, 0];
-      if (fade) {
-        setTimeout(() => fade.classList.remove('on'), 500);
-      }
-      HUD.toastText('🌅 Bonne nuit ! Le soleil se lève sur un nouveau jour.', 3.4);
-      HUD.refreshAll();
-    }, 480);
+      if (!remote) this.wake(pos);
+      if (typeof Net !== 'undefined' && Net.live && Net.role === 'host') Net.send(['sleep-ok', remote ? pos : null]);
+      GameChat.add('Le soleil se lève : la nuit est passée.', 'sys');
+    },480);
+  },
+  notice(text, remote) { if (remote) Net.send(['c',text]); else HUD.toastText(text,3); },
+  wake(pos) {
+    Game.time=.27;
+    if (Array.isArray(pos) && pos.length===3 && pos.every(Number.isFinite)) Game.spawn=pos.slice();
+    Player.vel=[0,0,0]; HUD.toastText('Bonne nuit ! Le soleil se lève.',3); HUD.refreshAll();
+    setTimeout(()=>{if($('fade'))$('fade').classList.remove('on');},500);
   },
 };
 
@@ -9844,7 +9832,7 @@ const Crafting = {
     add('divers', true, B.CHEST, 4, [[B.PLANKS, 8], [I.IRON_INGOT, 1]]);
 
     /* ---------- laines, bétons et ardoises minéralisées ---------- */
-    add('blocs', false, B.WOOL_WHITE, 1, [[I.STRING, 4]]);
+    /* La laine blanche se récupère sur les moutons, pas à partir de fils. */
     const TEINTES = [
       ['blanche', B.WOOL_WHITE, B.CONCRETE_WHITE, B.SNOW],
       ['noire', B.WOOL_BLACK, B.CONCRETE_BLACK, I.COAL],
@@ -9901,6 +9889,7 @@ const Crafting = {
     add('divers', false, B.PUMPKIN_CARVED, 1, [[B.PUMPKIN, 1], [I.FLINT, 1]]);
     add('divers', false, B.PUMPKIN_LANTERN, 1, [[B.PUMPKIN_CARVED, 1], [B.TORCH, 1]]);
 
+    for (const r of L) if (isBlockItem(r.out[0]) && ![B.PLANKS, B.CRAFTING].includes(r.out[0])) { r.table = true; r.stationOnly = true; }
     for (const r of L) { const item = ITEMS[r.out[0]]; if (item && (item.armor || item.tool === 'sword')) { r.table = true; r.stationOnly = true; } }
     return L;
   })(),
@@ -10164,7 +10153,7 @@ const CraftGrid = {
     const res = this.result;
     if (!res) return 0;
     if (res.locked) {
-      HUD.toastText('Cette recette demande un établi posé. Ouvre-le pour fabriquer armes et armures.', 3.2);
+      HUD.toastText('Cette recette demande un établi posé. Ouvre-le pour fabriquer blocs, armes et armures.', 3.2);
       return 0;
     }
     const max = count === 'all' ? 64 : 1;
@@ -10252,7 +10241,7 @@ const CraftGrid = {
   placeRecipe(r) {
     if (!r) return false;
     if (!Crafting.unlocked(r)) {
-      HUD.toastText('Cette recette demande un établi posé. Ouvre-le pour fabriquer armes et armures.', 3.4);
+      HUD.toastText('Cette recette demande un établi posé. Ouvre-le pour fabriquer blocs, armes et armures.', 3.4);
       return false;
     }
     const n = this.n;
@@ -10375,7 +10364,7 @@ function buildCraftBoard() {
   }
   const st = $('craftTableState');
   if (st) {
-    st.textContent = near ? (Crafting.atTable() ? 'Établi ouvert · 9 cases (3 × 3)' : 'Établi à portée · ouvre-le pour les armes et armures') : 'Sans établi · 4 cases (2 × 2)';
+    st.textContent = near ? (Crafting.atTable() ? 'Établi ouvert · 9 cases (3 × 3)' : 'Établi à portée · ouvre-le pour les blocs, armes et armures') : 'Sans établi · 4 cases (2 × 2)';
     st.classList.toggle('on', near);
   }
   const btnAll = $('craftAllBtn');
@@ -11323,6 +11312,27 @@ function buildInventoryUI() {
 /* ---------------------------- Coffres ---------------------------------- */
 const Chests = {
   open: null,
+  /* Les trésors gardent des objets utiles, mais beaucoup moins de métaux précieux. */
+  balance(items, rnd, diff) {
+    const budgets = { diamond: 2, gold: diff >= 4 ? 6 : 3, emerald: 2, netherite: 1, iron: 6 };
+    return items.map(stack => {
+      if (!stack || !stack.id || !(ITEMS[stack.id] || BLOCKS[stack.id])) return null;
+      const id = stack.id;
+      let group, chance, value = 1, cap = Infinity;
+      if ([I.DIAMONDGEM,B.DIAMOND_BLOCK].includes(id)) { group='diamond';chance=.25;cap=1;value=id===B.DIAMOND_BLOCK?9:1; }
+      else if ([I.GOLDRAW,I.GOLD_INGOT,B.GOLD_BLOCK].includes(id)) { group='gold';chance=.35;cap=2;value=id===B.GOLD_BLOCK?9:1; }
+      else if ([I.EMERALDGEM,B.EMERALD_BLOCK].includes(id)) { group='emerald';chance=.35;cap=1;value=id===B.EMERALD_BLOCK?9:1; }
+      else if ([I.NETHERITE_SCRAP,I.NETHERITE_INGOT,B.NETHERITE_BLOCK].includes(id)) { group='netherite';chance=.18;cap=1;value=id===B.NETHERITE_BLOCK?9:1; }
+      else if ([I.IRONRAW,I.IRON_INGOT,B.IRON_BLOCK].includes(id)) { group='iron';chance=.65;cap=3;value=id===B.IRON_BLOCK?9:1; }
+      else if ((ITEMS[id] && /diamond|netherite|gold/.test(ITEMS[id].icon || ''))) { chance=.25;cap=1; }
+      if (chance !== undefined && rnd() >= chance) return null;
+      const n = Math.min(stack.n,cap,group?Math.floor(budgets[group]/value):Infinity);
+      if (n<=0) return null;
+      if(group)budgets[group]-=n*value;
+      return {id,n};
+    });
+  },
+
   lootFor(x, y, z, tier) {
     const rnd = mulberry32(hashString(`chest|${Game.seed}|${x}|${y}|${z}`));
     const t = tier || (typeof Structures !== 'undefined' ? Structures.chestTierOf(x, y, z) : null) || 'village';
@@ -11354,10 +11364,10 @@ const Chests = {
         items[freeSlot()] = { id, n: min + Math.floor(rnd() * (max - min + 1)) };
       }
     }
-    return items;
+    return this.balance(items, rnd, diff);
   },
 
-  /* butin garanti et riche pour les coffres de boss / forteresses */
+  /* bonus occasionnel pour les coffres de boss / forteresses */
   richLoot(x, y, z, level) {
     const items = this.lootFor(x, y, z, level >= 5 ? 'bastion' : 'stronghold');
     const rnd = mulberry32(hashString(`rich|${Game.seed}|${x}|${y}|${z}`));
@@ -11370,7 +11380,7 @@ const Chests = {
       const slot = items.findIndex(it => !it);
       if (slot >= 0) items[slot] = { id, n: q };
     }
-    return items;
+    return this.balance(items, rnd, level >= 5 ? 5 : 4);
   },
   openAt(x, y, z) {
     this.open = { x, y, z, tier: (typeof Structures !== 'undefined' ? Structures.chestTierOf(x, y, z) : null) || 'village', items: this.lootFor(x, y, z) };
@@ -11487,7 +11497,7 @@ function buildCraftList() {
   const st = $('craftTableState');
   if (st) {
     const near = Crafting.nearTable || Crafting.forceTable;
-    st.textContent = near ? (Crafting.atTable() ? 'Établi ouvert · 9 cases (3 × 3)' : 'Établi à portée · ouvre-le pour les armes et armures') : 'Sans établi · 4 cases (2 × 2)';
+    st.textContent = near ? (Crafting.atTable() ? 'Établi ouvert · 9 cases (3 × 3)' : 'Établi à portée · ouvre-le pour les blocs, armes et armures') : 'Sans établi · 4 cases (2 × 2)';
     st.classList.toggle('on', !!near);
   }
   list.innerHTML = '';
@@ -11532,7 +11542,7 @@ function buildCraftList() {
     btn.disabled = !can || !unlocked;
     btn.title = unlocked
       ? 'Place les ingrédients dans la grille'
-      : r.stationOnly ? 'Ouvre un établi posé pour fabriquer cette arme ou cette armure.' : 'Fabrique un établi (4 planches en carré), puis pose-le à côté.';
+      : r.stationOnly ? 'Ouvre un établi posé pour fabriquer ce bloc ou cet équipement.' : 'Fabrique un établi (4 planches en carré), puis pose-le à côté.';
     btn.addEventListener('click', () => {
       if (CraftGrid.placeRecipe(r)) { buildCraftBoard(); buildHotbar(); }
     });
@@ -11841,6 +11851,11 @@ const MOB_DEFS = {
     name: 'Creeper', hp: 20, dmg: 0, speed: 2.7, hostile: true, w: 0.6, h: 1.6,
     skin: TEX.creeper, face: TEX.creeper_face, model: 'creeper',
     drops: [[I.GUNPOWDER, 1, 2]], explode: true, xp: 5,
+  },
+  sheep: {
+    name: 'Mouton', hp: 8, dmg: 0, speed: 1.5, hostile: false, w: 0.8, h: 1.3,
+    skin: TEX.wool, face: TEX.sheep_face, model: 'sheep',
+    drops: [[B.WOOL_WHITE, 1, 2], [I.MEAT, 1, 1]], xp: 1,
   },
   cow: {
     name: 'Vache', hp: 10, dmg: 0, speed: 1.6, hostile: false, w: 0.8, h: 1.3,
@@ -12240,8 +12255,9 @@ const Mobs = {
     for (const [id, min, max] of (def.drops || [])) {
       if (min < 1) { if (Math.random() > min) continue; }
       const n = Math.max(1, Math.floor(min < 1 ? 1 : min + Math.random() * ((max || min) - min + 1)));
-      Game.inv.add(id, n);
-      HUD.toast(id, `+${n} ${itemName(id)}`);
+      const left = Game.inv.add(id, n);
+      if (left > 0) Drops.add(id, left, Player.pos[0], Player.pos[1] + .5, Player.pos[2]);
+      HUD.toast(id, `+${n - left} ${itemName(id)}`);
     }
     if (Math.random() < 0.25 && def.hostile) Game.inv.add(I.BONE, 1);
     Xp.add(def.xp || 2);
@@ -12301,7 +12317,7 @@ const Mobs = {
     }
 
     const hostiles = this.list.filter(m => m.def.hostile).length;
-    const passives = this.list.length - hostiles;
+    const passives = this.list.filter(m => ['sheep','cow','pig','chicken'].includes(m.type)).length;
     const night = Game.time < 0.25 || Game.time > 0.75;
     if (hostiles < 8 && (night || Math.random() < 0.35)) this.trySpawnHostile();
     if (passives < 7 && !night) this.trySpawnPassive();
@@ -12360,7 +12376,7 @@ const Mobs = {
         }
         return;
       }
-      this.add(roll < 0.46 ? 'cow' : roll < 0.78 ? 'pig' : 'chicken', x + 0.5, h + 1, z + 0.5);
+      this.add(this.list.filter(m => m.type === 'sheep').length < 2 ? 'sheep' : roll < 0.48 ? 'sheep' : roll < 0.68 ? 'cow' : roll < 0.87 ? 'pig' : 'chicken', x + 0.5, h + 1, z + 0.5);
       return;
     }
   },
@@ -12601,6 +12617,15 @@ const Mobs = {
       if (m.fuse > 0) {
         A(0, 1.04, 0.02, 0.55, 0.57, 0.55, TEX.glow);
       }
+    } else if (def.model === 'sheep') {
+      A(0, .4, .18, .82, .62, 1.04, TEX.wool);
+      A(0, .65, .76, .43, .42, .43, TEX.wool, TEX.sheep_face);
+      for(const x of [-.24,.24]) for(const z of [0,.52]) {
+        const step = x < 0 ? sw : sw2;
+        A(x, 0, z + step*.12, .16, .43, .16, TEX.log_side);
+        A(x, 0, z + step*.12, .18, .1, .18, TEX.basalt);
+      }
+      A(-.28,.82,.78,.15,.12,.22,TEX.wool); A(.28,.82,.78,.15,.12,.22,TEX.wool);
     } else if (def.model === 'quadruped') {
       /* ---------------------------------------------------------------
          vache / cochon : corps horizontal, 4 pattes, tête à l'avant
@@ -16374,7 +16399,7 @@ async function continueGame(entry) {
 /* =========================================================================
    MULTIJOUEUR À DISTANCE
    Deux navigateurs, deux écrans, aucune installation :
-   on échange une « invitation » et une « réponse » copiées-collées (WebRTC).
+   un code à 6 chiffres via PeerJS Cloud établit la liaison WebRTC.
    L'hôte fait autorité (monde, monstres, heure) ; l'invité envoie ses
    déplacements et ses coups, et reçoit tout le reste.
    ========================================================================= */
@@ -16386,89 +16411,130 @@ const ICE_SERVERS = {
   ],
 };
 
-function b64uEncode(obj) {
-  const bytes = new TextEncoder().encode(JSON.stringify(obj));
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-function b64uDecode(str) {
-  const b = str.replace(/-/g, '+').replace(/_/g, '/');
-  const bin = atob(b + '==='.slice((b.length + 3) % 4));
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return JSON.parse(new TextDecoder().decode(bytes));
-}
-
-/* SDP réduit à l'essentiel : un code court, facile à copier dans un message */
-function packSdp(sdp, kind) {
-  const o = { t: kind, c: [] };
-  for (const raw of sdp.split(/\r?\n/)) {
-    const L = raw.trim();
-    if (L.startsWith('a=ice-ufrag:')) o.u = L.slice(12);
-    else if (L.startsWith('a=ice-pwd:')) o.p = L.slice(10);
-    else if (L.startsWith('a=fingerprint:')) o.f = L.slice(14);
-    else if (L.startsWith('a=setup:')) o.s = L.slice(8);
-    else if (L.startsWith('a=candidate:')) {
-      const c = L.slice(12).split(' ');
-      if (c.length < 8 || !/udp|tcp/.test(c[2])) continue;
-      let str = c[0] + ',' + c[1] + ',' + c[2] + ',' + c[3] + ',' + c[4] + ',' + c[5] + ',' + c[7];
-      const ri = c.indexOf('raddr');
-      if (ri > 0 && c[ri + 1] && c[ri + 3]) str += ',' + c[ri + 1] + ',' + c[ri + 3];
-      o.c.push(str);
-    }
-  }
-  return o;
-}
-
-function sdpFrom(o) {
-  const lines = [
-    'v=0',
-    'o=- 4611731400430051336 2 IN IP4 127.0.0.1',
-    's=-',
-    't=0 0',
-    'a=group:BUNDLE 0',
-    'a=msid-semantic: WMS',
-    'm=application 9 UDP/DTLS/SCTP webrtc-datachannel',
-    'c=IN IP4 0.0.0.0',
-    'a=ice-ufrag:' + o.u,
-    'a=ice-pwd:' + o.p,
-    'a=ice-options:trickle',
-    'a=fingerprint:' + o.f,
-    'a=setup:' + (o.s || (o.t === 'a' ? 'active' : 'actpass')),
-    'a=mid:0',
-    'a=sctp-port:5000',
-    'a=max-message-size:262144',
-  ];
-  for (const c of o.c || []) {
-    const p = c.split(',');
-    let line = 'a=candidate:' + p[0] + ' ' + p[1] + ' ' + p[2] + ' ' + p[3] + ' ' + p[4] + ' ' + p[5] + ' typ ' + p[6];
-    if (p.length >= 9) line += ' raddr ' + p[7] + ' rport ' + p[8];
-    lines.push(line);
-  }
-  return lines.join('\r\n') + '\r\n';
-}
-
-function waitIce(pc, ms) {
-  return new Promise((resolve) => {
-    if (pc.iceGatheringState === 'complete') return resolve();
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      pc.removeEventListener('icegatheringstatechange', check);
-      resolve();
+const ShortRooms = {
+  peer: null, connection: null, epoch: 0, code: '', busy: false,
+  loader: null, timer: null, retries: 0,
+  randomCode() {
+    const value = new Uint32Array(1); crypto.getRandomValues(value);
+    return String(100000 + value[0] % 900000);
+  },
+  valid(code) { return /^\d{6}$/.test(String(code || '').trim()); },
+  load() {
+    if (typeof window.Peer === 'function') return Promise.resolve();
+    if (this.loader) return this.loader;
+    this.loader = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => { script.remove(); this.loader = null; reject(new Error('Chargement du service trop long. Réessaie.')); }, 12000);
+      script.src = new URL('assets/vendor/peerjs.min.js', document.baseURI).href;
+      script.onload = () => { clearTimeout(timeout); if (typeof window.Peer === 'function') resolve(); else { this.loader = null; reject(new Error('Bibliothèque de connexion indisponible.')); } };
+      script.onerror = () => { clearTimeout(timeout); script.remove(); this.loader = null; reject(new Error('Impossible de charger le service de connexion. Vérifie ta connexion Internet.')); };
+      document.head.appendChild(script);
+    });
+    return this.loader;
+  },
+  close() {
+    this.epoch++; this.busy = false; this.code = ''; clearTimeout(this.timer);
+    const connection = this.connection, peer = this.peer;
+    this.connection = null; this.peer = null;
+    try { if (connection) connection.close(); } catch (e) {}
+    try { if (peer) peer.destroy(); } catch (e) {}
+  },
+  fail(message, epoch) {
+    if (epoch !== this.epoch) return;
+    const wasLive = Net.live;
+    Net.reset();
+    if (wasLive) HUD.toastText('Connexion interrompue : tu continues en solo.', 4);
+    $('mpCodeOut').value = '';
+    Net.status(message, true);
+  },
+  async host() {
+    if (this.busy) return;
+    Net.reset(); Net.role = 'host'; this.busy = true; this.retries = 0;
+    const epoch = this.epoch; $('mpCodeOut').value = '';
+    Net.status('Création de ta partie privée…');
+    try { await this.load(); if (epoch === this.epoch) this.createHost(epoch); }
+    catch (e) { this.fail(e.message, epoch); }
+  },
+  createHost(epoch) {
+    const code = this.randomCode();
+    const peer = new window.Peer('blocraft-' + code, { config: ICE_SERVERS, debug: 0 });
+    this.peer = peer;
+    this.timer = setTimeout(() => this.fail('Le service de connexion ne répond pas. Vérifie Internet et réessaie.', epoch), 18000);
+    peer.on('open', () => {
+      if (epoch !== this.epoch || peer !== this.peer) return;
+      clearTimeout(this.timer); this.code = code; this.busy = false;
+      $('mpCodeOut').value = code;
+      Net.status('Code prêt : envoie ces 6 chiffres à ton ami. Garde cette page ouverte.');
+    });
+    peer.on('connection', connection => {
+      if (epoch !== this.epoch || peer !== this.peer || this.connection || Net.live) { connection.close(); return; }
+      this.attach(connection, epoch);
+    });
+    peer.on('error', error => {
+      if (epoch !== this.epoch || peer !== this.peer) return;
+      if (Net.live && ['network', 'server-error', 'socket-error'].includes(error.type)) return;
+      if (error.type === 'unavailable-id' && this.retries++ < 5) {
+        clearTimeout(this.timer); this.peer = null; peer.destroy(); this.createHost(epoch); return;
+      }
+      this.fail('Impossible de créer la partie. Le service de mise en relation est peut-être indisponible. Réessaie.', epoch);
+    });
+    peer.on('disconnected', () => {
+      if (epoch === this.epoch && peer === this.peer && !Net.live) this.fail('Le code a expiré après une déconnexion. Crée une nouvelle partie.', epoch);
+    });
+  },
+  async join(raw) {
+    const code = String(raw || '').trim();
+    if (!this.valid(code)) { Net.status('Entre exactement les 6 chiffres du code de ton ami.', true); return; }
+    if (this.busy) return;
+    Net.reset(); Net.role = 'guest'; this.busy = true;
+    const epoch = this.epoch;
+    Net.status('Recherche de la partie ' + code + '…');
+    try {
+      await this.load(); if (epoch !== this.epoch) return;
+      const peer = new window.Peer(undefined, { config: ICE_SERVERS, debug: 0 }); this.peer = peer;
+      this.timer = setTimeout(() => this.fail('Partie introuvable ou connexion bloquée. Vérifie le code et demande à ton ami de garder sa page ouverte.', epoch), 20000);
+      peer.on('open', () => {
+        if (epoch !== this.epoch) return;
+        this.attach(peer.connect('blocraft-' + code, { reliable: true, serialization: 'binary', metadata: { game: 'blocraft', version: 1 } }), epoch);
+      });
+      peer.on('error', error => {
+        const message = error.type === 'peer-unavailable'
+          ? 'Ce code ne correspond à aucune partie ouverte. Vérifie les 6 chiffres.'
+          : 'La connexion a échoué. Réessaie sur un autre réseau si nécessaire.';
+        this.fail(message, epoch);
+      });
+      peer.on('disconnected', () => { if (epoch === this.epoch && !Net.live) this.fail('Service de connexion déconnecté. Réessaie.', epoch); });
+    } catch (e) { this.fail(e.message, epoch); }
+  },
+  attach(connection, epoch) {
+    this.connection = connection;
+    const active = () => epoch === this.epoch && this.connection === connection;
+    // Adapter to the existing JSON game protocol; no world state goes to PeerJS Cloud.
+    Net.dc = {
+      get readyState() { return connection.open ? 'open' : 'connecting'; },
+      send(text) { connection.send(text); }, close() { connection.close(); },
     };
-    const check = () => { if (pc.iceGatheringState === 'complete') finish(); };
-    pc.addEventListener('icegatheringstatechange', check);
-    const timer = setTimeout(finish, ms || 5000);
-  });
-}
+    connection.on('open', () => {
+      if (!active()) { connection.close(); return; }
+      clearTimeout(this.timer); this.busy = false; Net.live = true;
+      Net.status('Connecté ! Chargement de votre monde partagé…');
+      Sfx.play('levelup', 1); HUD.toastText('Ton ami a rejoint la partie !', 3);
+      if (Net.role === 'host') Net.hostStart().catch(() => this.fail('Le monde n’a pas pu être chargé. Réessaie.', epoch));
+    });
+    connection.on('data', data => { if (active() && typeof data === 'string') Net.onMessage(data); });
+    connection.on('close', () => {
+      if (!active()) return;
+      if (Net.live) Net.disconnected();
+      else this.fail('La partie est complète, fermée ou inaccessible. Demande un nouveau code à ton ami.', epoch);
+    });
+    connection.on('error', () => this.fail('Connexion interrompue. Crée ou rejoins une nouvelle partie.', epoch));
+    if (Net.role === 'host') this.timer = setTimeout(() => this.fail('Ton ami n’a pas pu se connecter. Crée un nouveau code et réessaie.', epoch), 20000);
+  },
+};
 
 var Net = {
   role: null,            // 'host' | 'guest' | null
-  pc: null, dc: null,
+  dc: null,
   live: false,           // le canal est ouvert : la partie est partagée
   applying: false,       // on applique un message (ne pas le renvoyer)
   outBlocks: [], outT: 0, mobT: 0, stateT: 0, timeT: 0,
@@ -16485,97 +16551,23 @@ var Net = {
 
   /* ----------------------------- connexion ----------------------------- */
   reset() {
+    this.live = false; ShortRooms.close();
     try { if (this.dc) this.dc.close(); } catch (e) { }
-    try { if (this.pc) this.pc.close(); } catch (e) { }
-    this.dc = null; this.pc = null; this.live = false; this.applying = false;
+    this.dc = null; this.live = false; this.applying = false;
     this.outBlocks = []; this.remote = null; this._avatar = null;
     this.remoteAdmins = [];
     if (this.tagsEl) this.tagsEl.innerHTML = '';
   },
 
-  async host() {
-    this.reset();
-    this.role = 'host';
-    Net.status('Création de l\'invitation…');
-    const pc = new RTCPeerConnection(ICE_SERVERS);
-    this.pc = pc;
-    const dc = pc.createDataChannel('blocraft', { ordered: true });
-    this.wire(dc);
-    pc.oniceconnectionstatechange = () => this.iceState();
-    await pc.setLocalDescription(await pc.createOffer());
-    await waitIce(pc, 4500);
-    const code = 'BLC1.' + b64uEncode(packSdp(pc.localDescription.sdp, 'o'));
-    $('mpCodeOut').value = code;
-    $('mpHostBox').classList.remove('hidden');
-    $('mpJoinBox').classList.add('hidden');
-    Net.status('1 · Envoie le code. 2 · Colle la réponse puis « Se connecter ».');
-  },
-
-  async acceptAnswer(text) {
-    if (!this.pc) { Net.status('Crée d\'abord une invitation.', true); return; }
-    try {
-      const o = b64uDecode(this.clean(text));
-      await this.pc.setRemoteDescription({ type: 'answer', sdp: sdpFrom(o) });
-      Net.status('Réponse acceptée — connexion en cours…');
-    } catch (e) {
-      Net.status('Ce code n\'est pas valide (' + e.message + ').', true);
-    }
-  },
-
-  async join(text) {
-    this.reset();
-    this.role = 'guest';
-    Net.status('Lecture de l\'invitation…');
-    try {
-      const o = b64uDecode(this.clean(text));
-      const pc = new RTCPeerConnection(ICE_SERVERS);
-      this.pc = pc;
-      pc.ondatachannel = (ev) => this.wire(ev.channel);
-      pc.oniceconnectionstatechange = () => this.iceState();
-      await pc.setRemoteDescription({ type: 'offer', sdp: sdpFrom(o) });
-      await pc.setLocalDescription(await pc.createAnswer());
-      await waitIce(pc, 4500);
-      $('mpCodeOut2').value = 'BLC1.' + b64uEncode(packSdp(pc.localDescription.sdp, 'a'));
-      $('mpJoinBox').classList.remove('hidden');
-      $('mpHostBox').classList.add('hidden');
-      Net.status('Envoie cette réponse à l\'hôte. La partie démarre dès qu\'il l\'a collée.');
-    } catch (e) {
-      Net.status('Invitation illisible (' + e.message + ').', true);
-    }
-  },
-
-  clean(t) {
-    return (t || '').replace(/\s+/g, '').replace(/^BLC1\./, '');
-  },
-
-  wire(dc) {
-    this.dc = dc;
-    dc.onopen = () => {
-      this.live = true;
-      Sfx.play('levelup', 1);
-      HUD.toastText('🌐 Connecté !', 2.4);
-      Net.status('Connecté ✔');
-      if (this.role === 'host') Net.hostStart();
-      else Net.status('Connecté ✔ — chargement du monde de l\'hôte…');
-    };
-    dc.onmessage = (ev) => this.onMessage(ev.data);
-    dc.onclose = () => this.disconnected();
-    dc.onerror = () => this.disconnected();
-  },
-
-  iceState() {
-    if (!this.pc) return;
-    const st = this.pc.iceConnectionState;
-    if (st === 'failed') {
-      Net.status('Connexion impossible : réseau trop strict (réessaie, ou passe par un VPN type Tailscale).', true);
-    }
-  },
+  async host() { return ShortRooms.host(); },
+  async join(code) { return ShortRooms.join(code); },
 
   disconnected() {
     if (!this.live) return;
     this.live = false;
     this.role = null;
     this.remote = null;
+    ShortRooms.close(); if ($('mpCodeOut')) $('mpCodeOut').value = '';
     if (this.tagsEl) this.tagsEl.innerHTML = '';
     HUD.toastText('🔌 L\'autre joueur s\'est déconnecté — tu continues en solo.', 4);
     Net.status('Déconnecté.', true);
@@ -16588,11 +16580,15 @@ var Net = {
 
   /* ----------------------------- démarrage ----------------------------- */
   async hostStart() {
+    const epoch = ShortRooms.epoch;
+    const active = () => epoch === ShortRooms.epoch && Net.live && Net.role === 'host';
     Net.status('Connecté ! Préparation du monde…');
-    while (busyLoading) await new Promise(r => setTimeout(r, 150));
+    while (busyLoading && active()) await new Promise(r => setTimeout(r, 150));
+    if (!active()) return;
     if (!Game.manager || !Game.manager.chunks.size) {
       await newWorld($('seedInput').value || null, false);
     }
+    if (!active()) return;
     Net.sendHello();
     startPlaying();
     HUD.toastText('🌐 Partie partagée — ton ami arrive…', 4);
@@ -16610,10 +16606,14 @@ var Net = {
     const seed = m[1], mode = m[2], time = m[3], dim = m[4], edits = m[5] || [];
     const px = m[6], py = m[7], pz = m[8];
     Net.status('Monde reçu — génération du terrain…');
-    if (busyLoading) return;
+    const epoch = ShortRooms.epoch;
+    const active = () => epoch === ShortRooms.epoch && Net.live && Net.role === 'guest';
+    while (busyLoading && active()) await new Promise(r => setTimeout(r, 150));
+    if (!active()) return;
     Game.mode = mode === 'creative' ? 'creative' : 'survival';
     Game.twoPlayers = false;
     await newWorld(String(seed), false, { edits, time, pos: [px, py, pz] });
+    if (!active()) return;
     startPlaying();
     if (dim && dim !== Dimensions.current) {
       Dimensions.go(dim, { x: px, y: py, z: pz, remember: false });
@@ -16660,6 +16660,10 @@ var Net = {
           if (m[1] === 'iron_golem' || m[1] === 'snow_golem') Mobs.add(m[1], m[2], m[3], m[4]);
           break;
         }
+        case 'sleep':
+          if (this.role === 'host' && m.slice(1,4).length===3 && m.slice(1,4).every(Number.isInteger) && Math.abs(m[1])<30000000 && m[2]>=0 && m[2]<WH && Math.abs(m[3])<30000000) Beds.sleep({x:m[1],y:m[2],z:m[3]},true);
+          break;
+        case 'sleep-ok': if(this.role==='guest')Beds.wake(m[1]);break;
         case 'H': if (Game.mode === 'survival' && !Survival.dead) Survival.hurt(m[1], m[2]); break;
         case 'x': Xp.add(m[1]); break;
         case 'g': this.applyDim(m); break;
@@ -17247,7 +17251,7 @@ const Admin = {
     q = this.norm(q);
     const alias = {
       zombie: 'zombie', squelette: 'skeleton', skeleton: 'skeleton', araignee: 'spider', spider: 'spider',
-      creeper: 'creeper', vache: 'cow', cow: 'cow', cochon: 'pig', pig: 'pig', poule: 'chicken',
+      creeper: 'creeper', vache: 'cow', cow: 'cow', cochon: 'pig', pig: 'pig', mouton: 'sheep', sheep: 'sheep', poule: 'chicken',
       chicken: 'chicken', villageois: 'villager', villager: 'villager', golem: 'iron_golem',
       enderman: 'enderman', dragon: 'dragon',
     };
@@ -17783,7 +17787,7 @@ function boot() {
   const showMp = () => {
     initAudioOnce();
     showOverlay('mp');
-    Net.status('Choisis « Héberger » ou « Rejoindre ».');
+    Net.status('Crée une partie ou connecte-toi avec le code de ton ami.');
   };
   $('btnOnline').addEventListener('click', showMp);
   $('btnMpClose').addEventListener('click', () => {
@@ -17799,10 +17803,11 @@ function boot() {
     initAudioOnce();
     $('mpHostBox').classList.add('hidden');
     $('mpJoinBox').classList.remove('hidden');
-    Net.status('Colle le code d\'invitation reçu de ton ami.');
+    Net.status('Entre le code à 6 chiffres de ton ami.');
+    $('mpJoinIn').focus();
   });
-  $('btnMpAnswer').addEventListener('click', () => Net.join($('mpJoinIn').value));
-  $('btnMpAccept').addEventListener('click', () => Net.acceptAnswer($('mpCodeIn').value));
+  $('mpJoinBox').addEventListener('submit', e => { e.preventDefault(); Net.join($('mpJoinIn').value); });
+  $('mpJoinIn').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6); });
   const copyFrom = (id) => {
     const ta = $(id);
     if (!ta || !ta.value) return;
@@ -17812,7 +17817,7 @@ function boot() {
     HUD.toastText('📋 Code copié', 1.6);
   };
   $('btnMpCopy').addEventListener('click', () => copyFrom('mpCodeOut'));
-  $('btnMpCopy2').addEventListener('click', () => copyFrom('mpCodeOut2'));
+
   $('btnResume').addEventListener('click', resumeGame);
   /* commerce : fermeture + clic à côté */
   if ($('trClose')) $('trClose').addEventListener('click', () => VillagerTrade.close());
