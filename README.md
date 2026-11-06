@@ -450,7 +450,9 @@ Tape **`aide`** pour afficher le rappel des commandes dans le tchat.
 ## 6 bis. Inventaire, établi et four
 
 **`E`** ouvre l'inventaire façon Minecraft : 27 cases + barre rapide + 4 emplacements
-d'armure, et quatre onglets.
+d’armure à gauche, un aperçu du personnage équipé et une grille personnelle 2 × 2.
+Les interfaces reprennent les panneaux gris, cases biseautées et textes pixelisés des captures de référence.
+La police Pixelify Sans est fournie localement sous licence OFL dans `assets/fonts/`.
 
 | Onglet | Ce qu'on y fait |
 |---|---|
@@ -460,12 +462,20 @@ d'armure, et quatre onglets.
 | **Blocs** | palette complète en créatif |
 
 * Un **clic droit main vide** sur un **établi** ouvre l'artisanat, sur un **four**
-  ouvre le four. Le four consomme **1 charbon** (ou 1 planche, 1 bûche, 2 bâtons,
-  ou 1 bloc de charbon) par cuisson.
+  ouvre le four. Place un ingrédient dans la case du haut, du combustible en bas,
+  puis récupère le résultat à droite. Une cuisson dure 3 secondes : un charbon
+  permet 8 cuissons, un bloc de charbon 80 ; une planche, une bûche ou deux bâtons
+  permettent une cuisson. La flamme et la flèche indiquent l’avancement.
+* Chaque four possède son contenu, conservé à la fermeture et dans les sauvegardes.
+  Casser un four chargé fait tomber son contenu. Les zones non chargées ne sont
+  pas prises pour des fours détruits ; leur cuisson est suspendue.
+* Le petit **livre vert** ouvre et ferme le catalogue : recherche, ingrédients,
+  schéma de fabrication et bouton **Remplir** ; dans le four, **Charger** prépare
+  l’ingrédient et le combustible depuis le sac.
 
 ### Fabriquer des planches en un clic
 
-Dans l'onglet **Établi**, le bouton **🪵 Faire des planches** transforme **tout le bois du sac**
+Dans le livre de recettes, le bouton **Planches** transforme **tout le bois du sac**
 en planches (1 bûche → 4 planches), sans rien placer à la main. La recette manuelle
 **9 bûches (une par case) → planches** existe aussi.
 
@@ -488,12 +498,12 @@ case du résultat à droite. **C'est toi qui fabriques**, case par case :
 
 | Situation | Grille | Ce qu'on peut faire |
 |---|---|---|
-| Aucun établi posé (« table de craft par défaut ») | **2 × 2 — 4 cases** | le strict nécessaire : planches, bâtons, **établi**, torches, four… |
-| **Établi fabriqué (4 planches) et posé** à moins de 4 blocs | **3 × 3 — 9 cases** | recettes avancées ; pour les armes et armures, il faut ouvrir directement l’établi |
+| Inventaire personnel | **2 × 2 — 4 cases** | recettes de base : planches, bâtons, **établi** ; aucun outil, aucune arme ou armure |
+| **Établi posé et ouvert directement** | **3 × 3 — 9 cases** | recettes avancées : blocs, outils, armes et armures |
 
 L'établi **se fabrique à la main** (4 planches en carré dans les 4 cases), puis on le
 **pose** au sol. Le badge en haut à droite indique en permanence l'état :
-**Sans établi · 4 cases (2 × 2)** ou **Établi à portée · 9 cases (3 × 3)**.
+**Sans établi · 4 cases (2 × 2)** ou **Établi ouvert · 9 cases (3 × 3)**. Être simplement à côté ne suffit plus à agrandir la grille personnelle.
 
 Le **guide** liste les recettes par catégorie (Outils / Combat / Blocs / Nourriture /
 Divers) avec un **aperçu de la forme** en 3 × 3 et un bouton **Remplir** qui place les
@@ -851,3 +861,15 @@ Le dernier test utilise le vrai client PeerJS et un PeerServer de test local (la
 dépendance de développement `peer`) avec deux navigateurs et un troisième refusé.
 Il valide l’échange WebRTC, mais pas la disponibilité du cloud public ni tous les
 cas de NAT sur Internet. Aucun serveur Node ne doit être déployé sur GitHub Pages.
+
+
+### Vérification des nouveaux écrans
+
+`npm run test:inventory` vérifie dans Chromium : les 27 + 9 cases, la grille
+personnelle 2 × 2, l’équipement avec conservation de l’usure, le livre et sa
+recherche, le remplissage et la fabrication, l’établi 3 × 3, le four avec sa
+combustion et son résultat, sa sérialisation, la restitution du contenu d’un four
+cassé et les écrans de largeur 320/390 pixels. Le catalogue créatif propose des
+catégories, une recherche dans tous les objets et une barre d’accès à l’inventaire.
+Le soleil et la lune utilisent maintenant des contours carrés nets et un motif
+à pixels fixes, sans disque arrondi ni cratères lissés.

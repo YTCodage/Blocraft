@@ -1312,6 +1312,67 @@
   #cmdBar button{flex:none;border:1px solid #52824b;border-radius:5px;background:#25422b;color:#e3ffdb;padding:10px;min-width:40px;min-height:40px;font-size:16px}
   #cmdInput{min-width:0;font-size:16px}
   @media(max-width:700px){#chatToggle{font-size:10px;top:28%;padding:7px 10px}#chatLog{top:calc(28% + 45px);width:58vw;max-width:58vw;max-height:23vh}#chatLog div{font-size:10px}body.chat-open #chatLog{width:90vw;max-width:90vw;max-height:34vh;top:16%}body.chat-open #chatToggle{top:calc(16% - 40px)}#cmdBar{padding:8px}#touch #tJump{bottom:calc(env(safe-area-inset-bottom) + 70px)!important}}
+/* Reference-style inventory screens. All assets are local. */
+@font-face{font-family:PixelCraft;src:url('assets/fonts/PixelifySans.ttf') format('truetype');font-weight:400 700;font-display:swap}
+#inventory .mcPanel{--cell:clamp(29px,8.7vw,64px);width:min(680px,97vw);border:4px solid #171717;border-radius:0;background:#c6c6c6;box-shadow:inset 4px 4px #fff,inset -4px -4px #555,0 16px 64px #0009;color:#3f3f3f;padding:8px;font-family:PixelCraft,monospace;max-height:96dvh}
+#inventory .mcPanel.bookOpen{width:min(1010px,98vw)}
+#inventory .mcHead{padding:0 0 5px;background:none;border:0;gap:4px;flex-shrink:0}
+#inventory .mcTabs{gap:3px;flex-wrap:nowrap;flex:1}
+#inventory .mcTab{font:16px PixelCraft,monospace;border-radius:0;padding:5px 8px;background:#aaa;border:2px solid;border-color:#fff #555 #555 #fff;box-shadow:none}
+#inventory .mcTab.active{background:#ddd;color:#222}
+#inventory .mcTitle{display:none}#inventory .mcX{border-radius:0;flex-shrink:0}
+.pixelLayout{display:flex;min-height:0;overflow:hidden}#inventory .mcBody{padding:8px 12px 12px;overflow:auto;min-width:0;flex:1}
+#inventory h2{font:400 clamp(21px,4.4vw,32px)/1.1 PixelCraft,monospace;margin:0 0 8px;letter-spacing:0;color:#3f3f3f}
+#inventory .mcPage{gap:0}#inventory .slotGrid{grid-template-columns:repeat(9,minmax(0,1fr));gap:0}
+#inventory .islot,#inventory .cbSlot,#inventory .armorSlot,#inventory .invItem{border-radius:0;border:3px solid;border-color:#373737 #fff #fff #373737;background:#8b8b8b;box-shadow:none;aspect-ratio:1;min-width:0;position:relative}
+#inventory .islot:hover,#inventory .cbSlot:hover,#inventory .invItem:hover{background:#aaa}
+#inventory canvas{image-rendering:pixelated;filter:none}#inventory .islot.sel{border-color:#373737 #fff #fff #373737;box-shadow:none;background:#8b8b8b}
+#inventory .islot .cnt,#inventory .cbSlot .cnt{font:22px PixelCraft,monospace;text-shadow:2px 2px #333;bottom:0;right:2px}
+#invHotbar{margin-top:14px}#sharedBag{margin-top:10px}#inventory .mcPanel[data-view="inv"] #bagTitle{display:none}
+.personalTop{display:grid;grid-template-columns:1fr 2.8fr 5fr;gap:4px;align-items:start;min-height:0;margin-bottom:4px}
+#inventory .mcChar{display:grid;gap:0;padding:0;background:none;border:0;border-radius:0;width:100%}
+#inventory .armorSlot{width:100%;height:auto;border-style:solid!important;border-color:#373737 #fff #fff #373737!important;cursor:pointer}#inventory .armorSlot:has(canvas)::before{display:none}#inventory .armorSlot::after{display:none}
+#skinPreview{width:100%;height:100%;max-height:260px;align-self:stretch;background:#050505;border:2px solid;border-color:#fff #555 #555 #fff;object-fit:contain}
+.personalCraft{padding-left:20px;padding-top:0}.personalCraft h2{font-size:clamp(17px,3.7vw,27px)!important;margin-bottom:8px!important;white-space:nowrap}
+#inventory .cbMain{display:flex;gap:8px;align-items:center;padding:0;background:none;border:0;box-shadow:none}
+#inventory .cbGrid{gap:0;grid-template-columns:repeat(var(--n),minmax(0,1fr));width:calc(var(--cell)*var(--n));flex-shrink:0}
+#inventory .cbSlot{width:auto;height:auto;display:flex;align-items:center;justify-content:center}
+#inventory .cbSlot canvas{width:82%;height:82%}#inventory .cbOut{width:var(--cell);flex-shrink:0}
+#inventory .cbArrow{font:48px PixelCraft,monospace;color:#8b8b8b;width:40px;flex-shrink:0}
+.personalCraft .cbMain{gap:4px!important}.personalCraft .cbGrid{width:calc(var(--cell)*1.5)!important}.personalCraft .cbOut{width:calc(var(--cell)*.75)!important}.personalCraft .cbArrow{font-size:32px!important;width:24px!important}
+.recipeBookBtn{display:flex;align-items:center;justify-content:center;width:var(--cell);height:var(--cell);background:#c6c6c6;border:3px solid;border-color:#fff #555 #555 #fff;border-radius:0;cursor:pointer;margin-top:12px;flex-shrink:0}.recipeBookBtn:hover{background:#e2e2e2}.recipeBookBtn canvas{width:85%;height:85%;image-rendering:pixelated}
+.workbenchTop{display:flex;align-items:center;gap:18px;margin:0 0 20px}.workbenchTop .recipeBookBtn{margin:0}#tabCraft>h2{margin-left:calc(var(--cell) + 18px)}
+#craftControls{display:none;gap:4px;flex-wrap:wrap;margin-top:10px}#inventory .bookOpen #craftControls{display:flex}#craftHint{width:100%}.pixelHint{font:13px/1.35 PixelCraft,monospace;color:#555;margin:0}
+#inventory .mcBtn{font:14px PixelCraft,monospace;border-radius:0;padding:6px;border:2px solid;border-color:#fff #555 #555 #fff;background:#b3b3b3}
+#recipeBook{width:290px;flex-shrink:0;padding:8px 10px;border-right:3px solid #777;overflow:auto}#recipeBook>header{display:flex;justify-content:space-between;font-size:25px;margin-bottom:10px}
+#recipeBook input,#creativeSearch{font:16px PixelCraft,monospace;width:100%;min-width:0;background:#8b8b8b;border:2px solid;border-color:#444 #fff #fff #444;padding:7px;color:#fff;border-radius:0}#recipeBook input::placeholder,#creativeSearch::placeholder{color:#eee}
+#inventory .mcCats{gap:3px;margin:8px 0}#inventory .mcCat{font:13px PixelCraft,monospace;border-radius:0;padding:5px;background:#aaa;color:#333}#inventory .mcCat.active{background:#ddd;border-color:#fff}
+#inventory .mcChip{font:13px PixelCraft,monospace;background:none;border:0;padding:5px 0;color:#555}
+#inventory .craftList{max-height:none;overflow:visible;display:flex;flex-direction:column;gap:5px}
+#inventory .craftRow{padding:6px;gap:6px;border:2px solid #888;border-radius:0;background:#b5b5b5;flex-wrap:wrap}#inventory .craftRow>canvas{width:36px;height:36px}#inventory .craftRow .cinfo{min-width:120px}#inventory .craftRow b{font:16px PixelCraft,monospace}#inventory .cing i{font:12px PixelCraft,monospace;border-radius:0}#inventory .craftShape{display:none}
+.pixelFurnace{display:flex;gap:24px;align-items:center;justify-content:center;padding:0 0 8px}.furnaceColumn{width:var(--cell);flex-shrink:0}#furnaceFlame{height:var(--cell);font:48px/1 PixelCraft,monospace;text-align:center;color:#8b8b8b;display:flex;align-items:center;justify-content:center}#furnaceFlame.burning{color:#ffcf42;text-shadow:0 3px #bf5b1b}#furnaceOutput{width:calc(var(--cell)*1.45);height:calc(var(--cell)*1.45);flex-shrink:0;display:flex;align-items:center;justify-content:center}.furnaceTitle{text-align:center}.pixelFurnace .recipeBookBtn{margin:0}.smeltArrow{width:80px;height:46px;position:relative;background:#8b8b8b;clip-path:polygon(0 35%,65% 35%,65% 0,100% 50%,65% 100%,65% 65%,0 65%)}#smeltProgress{display:block;height:100%;width:0%;background:#eee}
+#creativeCats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 0 12px}.creativeCat{background:#8b8b8b;border:4px solid;border-color:#fff #555 #555 #fff;height:66px;cursor:pointer;display:flex;justify-content:center;align-items:center}.creativeCat.active{background:#ccc;transform:translateY(4px)}.creativeCat canvas{height:48px;width:48px}.creativeHeading{display:flex;align-items:center;gap:12px;margin-bottom:8px}.creativeHeading h2{flex:1;margin:0!important}#creativeSearch{width:150px}
+#inventory .invGrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:0;max-height:340px;overflow-y:auto;scrollbar-color:#c6c6c6 #888;scrollbar-width:auto;padding:0;background:none;border:0}#inventory .invItem{padding:2px;display:flex;align-items:center;justify-content:center}#inventory .invItem canvas{width:85%;height:85%}#inventory .invItem span{display:none}#inventory .mcPanel[data-view="blocks"] #invMain,#inventory .mcPanel[data-view="blocks"] #bagTitle{display:none}
+@media(max-width:650px){#inventory .mcPanel{padding:5px;--cell:clamp(26px,8.5vw,52px)}#inventory .mcBody{padding:6px}#inventory .mcTab{font-size:12px;padding:5px}.personalCraft{padding-left:6px}.personalCraft .cbArrow{width:18px!important;font-size:25px!important}.personalCraft .cbMain{gap:2px!important}.personalCraft .recipeBookBtn{margin-top:6px}#inventory .mcPanel.bookOpen .pixelLayout{flex-direction:column}#recipeBook{width:auto;max-height:36dvh;border-right:0;border-bottom:3px solid #777;order:2;flex-shrink:1}.pixelFurnace{gap:16px}.smeltArrow{width:55px;height:35px}.creativeCat{height:45px}.creativeCat canvas{width:32px;height:32px}#creativeCats{gap:4px}.creativeHeading h2{font-size:18px!important}#creativeSearch{width:110px;font-size:12px}#inventory .islot,#inventory .cbSlot,#inventory .armorSlot,#inventory .invItem{border-width:2px}#inventory .islot .cnt,#inventory .cbSlot .cnt{font-size:15px}.workbenchTop{gap:12px}#inventory .cbArrow{width:30px;font-size:35px}#tabCraft>h2{margin-left:calc(var(--cell) + 12px)}}
+
+
+#inventory .cbGrid{grid-auto-rows:auto}
+#inventory .personalCraft .cbGrid{width:calc(var(--cell)*2)!important}
+#inventory .personalCraft .cbOut{width:var(--cell)!important}
+#inventory .personalCraft .cbMain{justify-content:flex-start}
+#skinPreview{max-height:none}
+#furnaceFlame canvas{width:90%;height:90%;image-rendering:pixelated}
+#inventory .invGrid{max-height:min(380px,44dvh)}
+#inventory .mcHead .mcTab[data-tab="craft"],#inventory .mcHead .mcTab[data-tab="furnace"]{display:none}
+#inventory .mcPanel:not(.creativeMode) .mcTabs{visibility:hidden}
+
+#inventory .craftShape{display:grid;grid-template-columns:repeat(3,18px);grid-template-rows:repeat(3,18px);padding:2px;gap:1px;border-radius:0}
+#inventory .craftShape i{display:flex;align-items:center;justify-content:center;border-radius:0}
+#inventory .craftShape canvas{width:16px;height:16px}
+
+#creativeBottom{display:none;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+#inventory .mcPanel[data-view="blocks"] #creativeBottom{display:grid}
+@media(max-width:650px){#creativeBottom{gap:4px}}
 </style>
 </head>
 <body>
@@ -1744,90 +1805,37 @@
   </div>
 
   <div id="inventory" class="overlay hidden">
-    <div class="panel mcPanel">
+    <div class="panel mcPanel" data-view="inv">
       <header class="mcHead">
-        <div class="mcTabs">
-          <button class="mcTab active" data-tab="inv">Sac</button>
-          <button class="mcTab" data-tab="craft">Établi</button>
-          <button class="mcTab" data-tab="furnace">Four</button>
-          <button class="mcTab" data-tab="blocks">Blocs</button>
-          <button class="mcTab hidden" data-tab="chest" id="tabChestBtn">Coffre</button>
-        </div>
-        <div class="mcTitle" id="invTitle">Inventaire</div>
-        <button id="btnInvClose" class="mcX" title="Fermer">✕</button>
+        <nav class="mcTabs" aria-label="Interfaces">
+          <button class="mcTab active" data-tab="inv">Inventaire</button><button class="mcTab" data-tab="craft">Établi</button><button class="mcTab" data-tab="furnace">Four</button><button class="mcTab" data-tab="blocks">Créatif</button><button class="mcTab hidden" data-tab="chest" id="tabChestBtn">Coffre</button>
+        </nav><span id="invTitle" class="mcTitle">Inventaire</span><button id="btnInvClose" class="mcX" aria-label="Fermer">×</button>
       </header>
-      <div class="mcBody">
-        <p class="subtitle" id="invSub" style="display:none">Clic : prendre / déposer · clic droit : prendre la moitié</p>
-        <div id="tabInv" class="mcPage">
-          <div class="mcInvWrap">
-            <div id="armorCol" class="mcChar">
-              <div class="armorSlot" data-slot="head"></div>
-              <div class="armorSlot" data-slot="chest"></div>
-              <div class="armorSlot" data-slot="legs"></div>
-              <div class="armorSlot" data-slot="feet"></div>
+      <div class="pixelLayout">
+        <aside id="recipeBook" class="hidden" aria-label="Livre de recettes">
+          <header><span>Recettes</span><button id="bookClose" class="mcX" aria-label="Fermer le livre">×</button></header>
+          <input id="recipeSearch" type="search" placeholder="Rechercher une recette…" aria-label="Rechercher une recette">
+          <div class="mcCats" id="craftCats"><button class="mcCat active" data-cat="outils">Outils</button><button class="mcCat" data-cat="combat">Combat</button><button class="mcCat" data-cat="blocs">Blocs</button><button class="mcCat" data-cat="nourriture">Repas</button><button class="mcCat" data-cat="divers">Divers</button></div>
+          <div id="craftTableState" class="mcChip"></div><div id="craftList" class="craftList"></div><div id="furnaceList" class="craftList hidden"></div>
+        </aside>
+        <div class="mcBody">
+          <p id="invSub" class="hidden"></p>
+          <section id="tabInv" class="mcPage">
+            <div class="personalTop">
+              <div id="armorCol" class="mcChar"><div class="armorSlot" data-slot="head" role="button" tabindex="0" aria-label="Casque"></div><div class="armorSlot" data-slot="chest" role="button" tabindex="0" aria-label="Plastron"></div><div class="armorSlot" data-slot="legs" role="button" tabindex="0" aria-label="Jambières"></div><div class="armorSlot" data-slot="feet" role="button" tabindex="0" aria-label="Bottes"></div></div>
+              <canvas id="skinPreview" width="56" height="80" aria-label="Aperçu de ton personnage et de son équipement"></canvas>
+              <div class="personalCraft"><h2>Fabrication</h2><div id="personalCraftHost"></div><button class="recipeBookBtn" aria-label="Ouvrir le livre de recettes" title="Livre de recettes"></button></div>
             </div>
-            <div class="mcGrids">
-              <div class="mcGridLbl">Sac à dos</div>
-              <div id="invMain" class="slotGrid"></div>
-              <div class="mcGridLbl" style="margin-top:2px">Barre rapide</div>
-              <div id="invHotbar" class="slotGrid"></div>
-            </div>
-          </div>
-        </div>
-        <div id="tabCraft" class="mcPage hidden">
-          <div class="cbBoard">
-            <div class="cbMain">
-              <div id="craftGrid" class="cbGrid" style="--n:3"></div>
-              <div class="cbArrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M4 12h13M12 6l6 6-6 6"/></svg>
-              </div>
-              <div id="craftOut" class="cbSlot cbOut" title="Résultat"></div>
-            </div>
-            <div class="cbBar">
-              <span id="craftHint" class="cbHint">Place les ingrédients dans la grille</span>
-              <div class="cbActs">
-                <button id="craftPlanksBtn" class="mcBtn">Faire des planches</button>
-                <button id="craftAllBtn" class="mcBtn">Tout fabriquer</button>
-                <button id="craftClearBtn" class="mcBtn" title="Remettre les ingrédients dans le sac">Vider la grille</button>
-              </div>
-            </div>
-            <div class="cbBags">
-              <div class="mcGridLbl">Ton sac — clique pour prendre, puis clique dans la grille</div>
-              <div id="craftBag" class="slotGrid cbBag"></div>
-              <div id="craftHotbar" class="slotGrid cbBag"></div>
-            </div>
-          </div>
-          <div class="mcCats" id="craftCats">
-            <button class="mcCat active" data-cat="outils">Outils</button>
-            <button class="mcCat" data-cat="combat">Combat</button>
-            <button class="mcCat" data-cat="blocs">Blocs</button>
-            <button class="mcCat" data-cat="nourriture">Nourriture</button>
-            <button class="mcCat" data-cat="divers">Divers</button>
-          </div>
-          <div class="mcCraftHead">
-            <span class="mcGridLbl">Recettes — « Remplir » pose les ingrédients dans la grille</span>
-            <span id="craftTableState" class="mcChip">Sans établi · 4 cases (2 × 2)</span>
-          </div>
-          <div id="craftList" class="craftList"></div>
-        </div>
-        <div id="tabFurnace" class="mcPage hidden">
-          <div class="mcFurnaceTop">
-            <div class="mcFurnaceArt"><i></i></div>
-            <div class="mcFuel">
-              Combustible : <b id="furnaceFuel">0 charbon</b>
-              <small id="furnaceHint">Chaque cuisson consomme 1 charbon (ou 1 planche, 1 bûche, 2 bâtons).</small>
-            </div>
-          </div>
-          <div id="furnaceList" class="craftList"></div>
-        </div>
-        <div id="tabBlocks" class="mcPage hidden">
-          <div id="invGrid" class="invGrid"></div>
-        </div>
-        <div id="tabChest" class="mcPage hidden">
-          <p class="subtitle" style="margin:0 0 10px">Clic sur un objet du coffre pour le ranger dans ton sac · clic droit sur ton sac pour l'y déposer.</p>
-          <div id="chestGrid" class="slotGrid"></div>
+          </section>
+          <section id="tabCraft" class="mcPage hidden"><h2>Fabrication</h2><div class="workbenchTop"><button class="recipeBookBtn" aria-label="Ouvrir le livre de recettes" title="Livre de recettes"></button><div id="tableCraftHost"></div></div></section>
+          <section id="tabFurnace" class="mcPage hidden"><h2 class="furnaceTitle">Fourneau</h2><div class="pixelFurnace"><button class="recipeBookBtn" aria-label="Ouvrir les recettes de cuisson" title="Recettes de cuisson"></button><div class="furnaceColumn"><div id="furnaceInput" class="islot" role="button" aria-label="Ingrédient"></div><div id="furnaceFlame" aria-label="Combustion"><canvas id="flameArt" width="16" height="16"></canvas></div><div id="furnaceFuelSlot" class="islot" role="button" aria-label="Combustible"></div></div><div class="smeltArrow" aria-label="Progression de la cuisson"><span id="smeltProgress"></span></div><div id="furnaceOutput" class="islot" role="button" aria-label="Résultat de cuisson"></div></div><p id="furnaceHint" class="pixelHint"></p><span id="furnaceFuel" class="hidden"></span></section>
+          <section id="tabBlocks" class="mcPage hidden"><nav id="creativeCats" aria-label="Catégories créatives"></nav><div class="creativeHeading"><h2 id="creativeTitle">Blocs de construction</h2><input id="creativeSearch" type="search" placeholder="Rechercher…" aria-label="Rechercher un objet créatif"></div><div id="invGrid" class="invGrid"></div></section>
+          <section id="tabChest" class="mcPage hidden"><h2>Coffre</h2><div id="chestGrid" class="slotGrid"></div></section>
+          <div id="sharedBag"><h2 id="bagTitle">Inventaire</h2><div id="invMain" class="slotGrid"></div><div id="invHotbar" class="slotGrid"></div><nav id="creativeBottom" aria-label="Objets et inventaire créatif"></nav></div>
+          <div id="craftControls"><span id="craftHint" class="pixelHint"></span><button id="craftPlanksBtn" class="mcBtn">Planches</button><button id="craftAllBtn" class="mcBtn">Tout fabriquer</button><button id="craftClearBtn" class="mcBtn">Vider la grille</button></div>
         </div>
       </div>
+      <div id="craftMachine" class="hidden"><div class="cbMain" id="sharedCraft"><div id="craftGrid" class="cbGrid" style="--n:2"></div><div class="cbArrow" aria-hidden="true">➜</div><div id="craftOut" class="cbSlot cbOut" role="button" aria-label="Résultat de fabrication"></div></div></div>
     </div>
   </div>
   <div id="cursorStack"></div>
@@ -4563,15 +4571,16 @@ void main(){
   vec3 celestialUp = normalize(cross(celestialRight, uSunDir));
   vec2 celestialUV = vec2(dot(dir, celestialRight), dot(dir, celestialUp));
   float squareEdge = max(abs(celestialUV.x), abs(celestialUV.y));
-  float sunDisc = (1.0 - smoothstep(0.029, 0.031, squareEdge)) * step(0.0, sunDot);
-  float sunHalo = pow(clamp(sunDot, 0.0, 1.0), 220.0) * 0.7;
-  vec3 sunCol = mix(vec3(1.0, 0.55, 0.28), vec3(1.0, 0.95, 0.78), clamp(uSunDir.y * 4.0, 0.0, 1.0));
-  col += sunCol * (sunDisc * 3.0 + sunHalo * 0.55);
+  float sunDisc = (1.0 - step(0.030, squareEdge)) * step(0.0, sunDot);
+  vec2 sunPixel = floor((celestialUV / 0.060 + 0.5) * 16.0);
+  float sunPattern = 0.80 + 0.20 * step(0.28, hash21(sunPixel));
+  vec3 sunCol = mix(vec3(1.0, 0.64, 0.28), vec3(1.0, 0.96, 0.73), clamp(uSunDir.y * 4.0, 0.0, 1.0));
+  col = mix(col, sunCol * sunPattern, sunDisc);
   float moonDot = dot(dir, -uSunDir);
-  float moonDisc = (1.0 - smoothstep(0.024, 0.026, squareEdge)) * step(0.0, moonDot);
-  float moonCraters = 0.85 + 0.15 * vnoise(dir.xz * 260.0);
-  col += vec3(0.85, 0.9, 1.0) * moonDisc * moonCraters * nightAmount * 1.6;
-  col += vec3(0.35, 0.42, 0.6) * pow(clamp(moonDot, 0.0, 1.0), 160.0) * nightAmount * 0.35;
+  float moonDisc = (1.0 - step(0.025, squareEdge)) * step(0.0, moonDot);
+  vec2 moonPixel = floor((celestialUV / 0.050 + 0.5) * 16.0);
+  float moonCraters = 0.62 + 0.28 * step(0.30, hash21(floor(moonPixel / 2.0))) + 0.10 * step(0.5, hash21(moonPixel));
+  col = mix(col, vec3(0.86, 0.89, 0.95) * moonCraters, moonDisc * nightAmount);
 
   /* ---------- MONO-BLOC : le vide tout autour ---------- */
   if (uDim > 2.5) {
@@ -6492,7 +6501,7 @@ function placeBlock() {
     if ((tb === B.CRAFTING || tb === B.FURNACE) && !isBlockItem(heldItemId())) {
       Crafting.forceTable = (tb === B.CRAFTING);
       Crafting.tablePos = tb === B.CRAFTING ? [t.x, t.y, t.z] : null;
-      openInventory(tb === B.CRAFTING ? 'craft' : 'furnace');
+      if(tb===B.CRAFTING)openInventory('craft');else Furnace.openAt(t.x,t.y,t.z);
       Sfx.play('click', 0.7);
       return;
     }
@@ -6765,6 +6774,7 @@ function saveGame(opts) {
       inv: Game.inv.serialize(),
       stats: Survival.serialize(),
       armor: Armor.serialize(),
+      furnaces: Furnace.serialize(),
       xp: Xp.serialize(),
       drops: Drops.list, carts: Railways.carts,
       slot: Game.slot,
@@ -7200,6 +7210,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     if (savedData.inv) Game.inv.deserialize(savedData.inv);
     Survival.deserialize(savedData.stats);
     Armor.deserialize(savedData.armor);
+    Furnace.deserialize(savedData.furnaces);
     Drops.list = savedData.drops || []; Railways.carts = savedData.carts || []; Railways.riding = null;
     Xp.deserialize(savedData.xp);
   }
@@ -8423,6 +8434,7 @@ function frame(now) {
   GameChat.tick();
   const dt = Math.min((now - lastFrame) / 1000, 0.1);
   lastFrame = now;
+  Furnace.tick(dt);
 
   // fps
   frames++; fpsTime += dt;
@@ -8583,7 +8595,7 @@ function useAction() {
   if (tgt && (tgt.block === B.CRAFTING || tgt.block === B.FURNACE)) {
     Crafting.forceTable = tgt.block === B.CRAFTING;
     Crafting.tablePos = Crafting.forceTable ? [tgt.x, tgt.y, tgt.z] : null;
-    openInventory(Crafting.forceTable ? 'craft' : 'furnace'); return;
+    if(Crafting.forceTable)openInventory('craft');else Furnace.openAt(tgt.x,tgt.y,tgt.z); return;
   }
   if (tgt && (tgt.block === B.DOOR_CLOSED || tgt.block === B.DOOR_OPEN)) { Doors.toggle(tgt); return; }
   if (tgt && tgt.block === B.BED) { Beds.sleep(tgt); return; }
@@ -9047,11 +9059,87 @@ function openPause() {
   } catch (e) { }
 }
 
+/* Pixel screens share the same inventory and crafting engine: no decorative slots. */
+const PixelUI = {
+  tab:'inv', book:false, query:'', creativeCat:'build', creativeQuery:'',
+  init() {
+    document.querySelectorAll('.recipeBookBtn').forEach(btn=>{
+      const c=document.createElement('canvas');c.width=c.height=20;const g=c.getContext('2d');
+      g.fillStyle='#262b1c';g.fillRect(2,4,15,12);g.fillStyle='#eee2bc';g.fillRect(4,11,13,5);g.fillStyle='#235b21';g.beginPath();g.moveTo(2,5);g.lineTo(13,1);g.lineTo(19,9);g.lineTo(7,14);g.closePath();g.fill();g.strokeStyle='#122e12';g.stroke();g.fillStyle='#76a746';g.fillRect(6,5,7,4);btn.appendChild(c);
+      btn.addEventListener('click',()=>this.toggleBook());
+    });
+    $('bookClose').onclick=()=>this.toggleBook(false);
+    document.querySelectorAll('#craftCats .mcCat').forEach(b=>b.onclick=()=>{Crafting.cat=b.dataset.cat;this.query='';$('recipeSearch').value='';buildCraftList();});
+    $('recipeSearch').oninput=e=>{this.query=e.target.value.toLocaleLowerCase('fr');buildCraftList();buildFurnaceList();};
+    $('creativeSearch').oninput=e=>{this.creativeQuery=e.target.value.toLocaleLowerCase('fr');buildCreativePalette();};
+    const cats=[['build','Blocs de construction',B.BRICK],['nature','Blocs naturels',B.GRASS],['decor','Décoration',B.CRAFTING],['tech','Mécanismes',I.REDSTONE],['materials','Matériaux',B.BOOKSHELF],['all','Tous les objets',I.DIAMOND_SWORD]];
+    for(const [key,name,id] of cats){const b=document.createElement('button');b.className='creativeCat';b.dataset.cat=key;b.title=name;b.setAttribute('aria-label',name);b.appendChild(drawItemIcon(id,48));b.onclick=()=>{this.creativeCat=key;buildCreativePalette();};$('creativeCats').appendChild(b);}
+    for(const [key,name,id] of [['tools','Outils et utilitaires',I.DIAMOND_PICK],['combat','Combat',I.DIAMOND_SWORD],['food','Nourriture',I.APPLE],['materials','Matériaux',I.IRON_INGOT],['all','Tous les objets',I.MEAT],['inventory','Inventaire',B.CHEST]]){
+      const b=document.createElement('button');b.className='creativeCat';b.dataset.cat=key;b.title=name;b.setAttribute('aria-label',name);b.appendChild(drawItemIcon(id,48));b.onclick=()=>{if(key==='inventory'){this.book=false;setInvTab('inv');}else{this.creativeCat=key;buildCreativePalette();}};$('creativeBottom').appendChild(b);
+    }
+    document.querySelectorAll('.armorSlot').forEach(el=>{
+
+      bindSlotClick(el,()=>{Armor.clickSlot(el.dataset.slot);buildInventoryUI();});
+      el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();Armor.clickSlot(el.dataset.slot);buildInventoryUI();}};
+    });
+    for(const [index,id] of ['furnaceInput','furnaceFuelSlot','furnaceOutput'].entries())bindSlotClick($(id),()=>Furnace.click(index,false),()=>Furnace.click(index,true));
+  },
+  drawFlame(burning) {
+    const c=$('flameArt');if(!c)return;const g=c.getContext('2d');g.clearRect(0,0,16,16);
+    const rows=['0000000000000000','0000100001000000','0001000010000000','0001000010010000','0000100001010000','0000100000100000','0001000010100000','0001000010010000','0010000100001000','0010000100001000','0011000100011000','0001100100110000','0000111111100000','0000011111000000','0000000000000000','0000000000000000'];
+    g.fillStyle=burning?'#ed8a24':'#8b8b8b';rows.forEach((r,y)=>[...r].forEach((v,x)=>{if(v==='1')g.fillRect(x,y,1,1);}));if(burning){g.fillStyle='#ffe96a';g.fillRect(6,10,3,3);}
+  },
+  stow(stack) {
+    const before=new Set(Game.inv.slots.filter(Boolean)),left=Game.inv.add(stack.id,stack.n);
+    if(stack.d)for(const sl of Game.inv.slots)if(sl&&sl.id===stack.id&&!before.has(sl)){sl.d=stack.d;break;}
+    if(left){Drops.add(stack.id,left,Player.pos[0],Player.pos[1]+.5,Player.pos[2]);if(stack.d)Drops.list[Drops.list.length-1].d=stack.d;}
+  },
+  toggleBook(force) {this.book=typeof force==='boolean'?force:!this.book;this.refresh();},
+  refresh() {
+    const panel=document.querySelector('#inventory .mcPanel');if(!panel)return;
+    panel.dataset.view=this.tab;panel.classList.toggle('bookOpen',this.book);panel.classList.toggle('creativeMode',Game.mode==='creative');
+    $('recipeBook').classList.toggle('hidden',!this.book);
+    $('craftList').classList.toggle('hidden',this.tab==='furnace');$('craftCats').classList.toggle('hidden',this.tab==='furnace');$('furnaceList').classList.toggle('hidden',this.tab!=='furnace');
+    document.querySelectorAll('.recipeBookBtn').forEach(b=>b.setAttribute('aria-expanded',String(this.book)));
+    const host=$(this.tab==='craft'?'tableCraftHost':'personalCraftHost');
+    if($('sharedCraft').parentElement!==host)host.appendChild($('sharedCraft'));
+    this.drawSkin();Furnace.render();
+  },
+  drawSkin() {
+    const c=$('skinPreview');if(!c)return;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,c.width,c.height);g.fillStyle='#050505';g.fillRect(0,0,56,80);
+    const tile=(tex,x,y,w,h)=>{const a=window.GAME_ATLAS;if(a)g.drawImage(a,tex*16,0,16,16,x,y,w,h);};
+    // The same face, shirt and trousers as the in-world player avatar.
+    tile(TEX.player_pants,18,49,10,25);tile(TEX.player_pants,29,49,10,25);tile(TEX.player,17,26,23,25);
+    g.fillStyle='#a87956';g.fillRect(9,29,8,27);g.fillRect(40,29,8,27);tile(TEX.player,9,26,8,10);tile(TEX.player,40,26,8,10);
+    g.fillStyle='#35333b';g.fillRect(18,70,10,5);g.fillRect(29,70,10,5);tile(TEX.player_face,18,7,21,21);
+    const color=id=>/diamant/i.test(itemName(id))?'#55d9df':/or\b/i.test(itemName(id))?'#e9c343':/netherite/i.test(itemName(id))?'#4a3c45':'#bac1c6';
+    if(Armor.slots.head){g.fillStyle=color(Armor.slots.head);g.fillRect(17,6,23,7);g.fillRect(17,13,4,12);g.fillRect(36,13,4,12);}
+    if(Armor.slots.chest){g.fillStyle=color(Armor.slots.chest);g.fillRect(17,28,23,21);g.fillRect(8,27,9,9);g.fillRect(40,27,9,9);g.fillStyle='#ffffff40';g.fillRect(19,30,3,16);}
+    if(Armor.slots.legs){g.fillStyle=color(Armor.slots.legs);g.fillRect(18,50,10,18);g.fillRect(29,50,10,18);}
+    if(Armor.slots.feet){g.fillStyle=color(Armor.slots.feet);g.fillRect(18,67,10,8);g.fillRect(29,67,10,8);}
+  },
+  category(id) {
+    const item=ITEMS[id],d=BLOCKS[id];
+    if(item)return item.food?'food':item.armor||item.tool==='sword'?'combat':item.tool||/bucket|flint|fishing|shear|compass|minecart/i.test(item.icon||'')?'tools':'materials';
+    if(d && (d.rail||d.furnace||/redstone|levier|piston|tnt|porte|lampe|rail/i.test(d.name)))return'tech';
+    if(d && /herbe|terre|sable|gravier|minerai|eau|lave|neige|glace|feuille|bûche|fleur|arbre|cactus|champignon/i.test(d.name))return'nature';
+    if(d && /laine|verre|béton|lit|biblioth|table|coffre|lanterne|torche/i.test(d.name))return'decor';
+    return'build';
+  },
+};
+
 const INV_TABS = { inv: 'tabInv', craft: 'tabCraft', furnace: 'tabFurnace', blocks: 'tabBlocks', chest: 'tabChest' };
 const INV_TITLES = { inv: 'Inventaire', craft: 'Établi', furnace: 'Four', blocks: 'Tous les blocs', chest: 'Coffre' };
 
 function setInvTab(wanted) {
   if (!INV_TABS[wanted]) wanted = 'inv';
+  if (wanted === 'blocks' && Game.mode !== 'creative') wanted='inv';
+  if (wanted === 'craft' && !Crafting.atTable()) { wanted='inv'; HUD.toastText('Ouvre un établi posé pour la grille 3 × 3.',2); }
+  if (PixelUI.tab !== wanted && typeof CraftGrid !== 'undefined') CraftGrid.dump();
+  if(wanted!=='craft'){Crafting.forceTable=false;Crafting.tablePos=null;}
+  if(wanted==='inv')Crafting.cat='blocs';
+  PixelUI.tab=wanted; PixelUI.query=''; $('recipeSearch').value=''; PixelUI.refresh();
+  document.querySelector('[data-tab=blocks]').classList.toggle('hidden',Game.mode!=='creative');
   for (const k of Object.keys(INV_TABS)) {
     const el = $(INV_TABS[k]);
     if (el) el.classList.toggle('hidden', k !== wanted);
@@ -9059,9 +9147,10 @@ function setInvTab(wanted) {
   document.querySelectorAll('.mcTab').forEach(t => t.classList.toggle('active', t.dataset.tab === wanted));
   const tt = $('invTitle');
   if (tt) tt.textContent = INV_TITLES[wanted] || 'Inventaire';
-  if (wanted === 'craft') buildCraftList();
+  buildCraftList();
   if (wanted === 'furnace') buildFurnaceList();
   if (wanted === 'blocks') buildCreativePalette();
+  buildCraftBoard();
 }
 
 function openInventory(tab) {
@@ -9072,6 +9161,7 @@ function openInventory(tab) {
   Game.state = 'inventory';
   Game.breakHeld = Game.placeHeld = false;
   cursorStack = null;
+  PixelUI.book=false;
   buildInventoryUI();
   setInvTab(tab || 'inv');
   showOverlay('inventory');
@@ -9081,12 +9171,13 @@ function openInventory(tab) {
 
 function closeInventory(resume) {
   if (typeof CraftGrid !== 'undefined') CraftGrid.dump();
-  if (cursorStack) { Game.inv.add(cursorStack.id, cursorStack.n); cursorStack = null; }
+  if (cursorStack) { PixelUI.stow(cursorStack);cursorStack=null; }
   Crafting.forceTable = false; Crafting.tablePos = null;
   Chests.close();
   const cs = $('cursorStack'); if (cs) cs.style.display = 'none';
   Game.state = 'playing';
   hideOverlays();
+  HUD.refreshAll();
   if (!isTouch) tryPointerLock(true);
   updateMouseHint();
 }
@@ -9890,7 +9981,7 @@ const Crafting = {
     add('divers', false, B.PUMPKIN_LANTERN, 1, [[B.PUMPKIN_CARVED, 1], [B.TORCH, 1]]);
 
     for (const r of L) if (isBlockItem(r.out[0]) && ![B.PLANKS, B.CRAFTING].includes(r.out[0])) { r.table = true; r.stationOnly = true; }
-    for (const r of L) { const item = ITEMS[r.out[0]]; if (item && (item.armor || item.tool === 'sword')) { r.table = true; r.stationOnly = true; } }
+    for (const r of L) { const item = ITEMS[r.out[0]]; if (item && (item.armor || item.tool)) { r.table = true; r.stationOnly = true; } }
     return L;
   })(),
 
@@ -10033,7 +10124,7 @@ const CraftGrid = {
       try { Crafting.scanTable(); } catch (e) { }
       this._nearAt = now;
     }
-    return !!(Crafting.nearTable || Crafting.forceTable);
+    return PixelUI.tab === 'craft' && Crafting.atTable();
   },
 
   multisetOf(ins) {
@@ -10171,7 +10262,7 @@ const CraftGrid = {
         else emptied = false;
       }
       const left = Game.inv.add(outId, outN);
-      if (left > 0 && !cursorStack) cursorStack = { id: outId, n: outN - left };
+      if (left > 0) Drops.add(outId,left,Player.pos[0],Player.pos[1]+.5,Player.pos[2]);
       made++;
       if (emptied) break;
     }
@@ -10231,8 +10322,8 @@ const CraftGrid = {
       const s = this.slots[i];
       if (!s) continue;
       const left = Game.inv.add(s.id, s.n);
-      if (left > 0) HUD.toast(s.id, `Sac plein : ${left} ${itemName(s.id)} restent sur l'établi`);
-      this.slots[i] = left > 0 ? { id: s.id, n: left } : null;
+      if (left > 0) Drops.add(s.id,left,Player.pos[0],Player.pos[1]+.5,Player.pos[2]);
+      this.slots[i] = null;
     }
     this.result = null;
   },
@@ -10266,7 +10357,7 @@ const CraftGrid = {
     }
     /* l'objet en main (curseur) retourne d'abord au sac : il compte aussi */
     if (cursorStack) {
-      Game.inv.add(cursorStack.id, cursorStack.n);
+      PixelUI.stow(cursorStack);
       cursorStack = null;
       renderCursor();
     }
@@ -10672,6 +10763,64 @@ const Furnace = {
   },
 };
 
+/* A furnace keeps input/fuel/output at its actual world coordinates. */
+Object.assign(Furnace, {
+  stations:new Map(),position:null,
+  openAt(x,y,z){this.position=[Game.manager.dim||'overworld',x,y,z];this.state();openInventory('furnace');},
+  state(){if(!this.position||!this.valid())return null;const key=this.position.join('|');if(!this.stations.has(key))this.stations.set(key,{slots:[null,null,null],burn:0,progress:0,recipe:0});return this.stations.get(key);},
+  valid(){const p=this.position;return !!(p&&Game.manager&&p[0]===(Game.manager.dim||'overworld')&&Game.manager.getBlock(p[1],p[2],p[3])===B.FURNACE&&Math.hypot(Player.pos[0]-p[1]-.5,Player.pos[1]-p[2],Player.pos[2]-p[3]-.5)<7);},
+  click(i,half){
+    if(!this.valid())return;const s=this.state(),cell=s.slots[i],cur=cursorStack;
+    if(!cur){if(!cell)return;const n=half?Math.ceil(cell.n/2):cell.n;cursorStack={...cell,n};cell.n-=n;if(cell.n<=0)s.slots[i]=null;}
+    else if(i===2){if(cell&&cell.id===cur.id){const n=Math.min(cell.n,itemStackSize(cur.id)-cur.n);cur.n+=n;cell.n-=n;if(!cell.n)s.slots[i]=null;}}
+    else {
+      if(i===0&&!this.recipes.some(r=>r.in[0]===cur.id))return;
+      if(i===1&&!this.FUELS.some(f=>f[0]===cur.id))return;
+      if(cell&&cell.id!==cur.id){s.slots[i]=cur;cursorStack=cell;}
+      else{const n=Math.min(half?1:cur.n,itemStackSize(cur.id)-(cell?cell.n:0));if(!n)return;if(cell)cell.n+=n;else s.slots[i]={id:cur.id,n};cur.n-=n;if(!cur.n)cursorStack=null;}
+    }
+    if(i===0)s.progress=0;
+    this.render();renderCursor();Sfx.play('click',.6);
+  },
+  can(r){return this.valid()&&Game.inv.count(r.in[0])>=r.in[1]&&(this.state().slots[1]||this.fuelCount()>0||this.state().burn>0);},
+  smelt(r){return this.loadRecipe(r);},
+  loadRecipe(r){
+    if(!this.can(r))return false;const s=this.state();
+    if(s.slots[0]&&s.slots[0].id!==r.in[0]){HUD.toastText('Retire d’abord l’ingrédient du four.',2);return false;}
+    if(s.slots[0]&&s.slots[0].n+r.in[1]>itemStackSize(r.in[0]))return false;
+    if(!s.slots[1]&&s.burn<=0){const f=this.FUELS.find(([id,n])=>Game.inv.count(id)>=n);if(!f)return false;Game.inv.remove(f[0],f[1]);s.slots[1]={id:f[0],n:f[1]};}
+    Game.inv.remove(r.in[0],r.in[1]);if(s.slots[0])s.slots[0].n+=r.in[1];else s.slots[0]={id:r.in[0],n:r.in[1]};s.recipe=this.recipes.indexOf(r);s.progress=0;buildInventoryUI();buildHotbar();return true;
+  },
+  tick(dt){
+    if(!Game.manager||!['playing','inventory'].includes(Game.state))return;
+    let changed=false;
+    for(const [key,s] of this.stations){
+      const [dim,x,y,z]=key.split('|');if(dim!==(Game.manager.dim||'overworld'))continue;
+      if(Game.manager.getBlock(+x,+y,+z)!==B.FURNACE){
+        // Unloaded chunks are not destroyed furnaces: keep their contents.
+        if(Game.manager.chunks&&!Game.manager.chunks.has((floorDiv(+x,CHUNK)+','+floorDiv(+z,CHUNK))))continue;
+        for(const stack of s.slots)if(stack)Drops.add(stack.id,stack.n,+x+.5,+y+.5,+z+.5);this.stations.delete(key);continue;
+      }
+      const input=s.slots[0],output=s.slots[2];let r=this.recipes[s.recipe];if(!r||!input||r.in[0]!==input.id)r=input&&this.recipes.find(r=>r.in[0]===input.id);
+      const ready=r&&input.n>=r.in[1]&&(!output||(output.id===r.out[0]&&output.n+r.out[1]<=itemStackSize(output.id)));
+      s.burn=Math.max(0,s.burn-dt);
+      if(ready&&s.burn<=0&&s.slots[1]){const f=this.FUELS.find(([id])=>id===s.slots[1].id);if(f&&s.slots[1].n>=f[1]){s.slots[1].n-=f[1];if(!s.slots[1].n)s.slots[1]=null;s.burn=f[0]===B.COAL_BLOCK?240:f[0]===I.COAL?24:3;changed=true;}}
+      if(ready&&s.burn>0){s.progress+=dt;if(s.progress+1e-6>=3){input.n-=r.in[1];if(!input.n)s.slots[0]=null;if(output)output.n+=r.out[1];else s.slots[2]={id:r.out[0],n:r.out[1]};s.progress=0;changed=true;}}
+      else s.progress=0;
+    }
+    if(Game.state==='inventory'&&PixelUI.tab==='furnace'){this.render();if(changed)buildFurnaceList();}
+  },
+  render(){
+    const s=this.state();for(const [i,id] of ['furnaceInput','furnaceFuelSlot','furnaceOutput'].entries()){
+      const el=$(id);if(!el)continue;const stack=s&&s.slots[i],signature=stack?stack.id+':'+stack.n:'empty';if(el.dataset.stack===signature)continue;el.dataset.stack=signature;el.innerHTML='';if(stack){el.appendChild(drawItemIcon(stack.id,64));if(stack.n>1){const n=document.createElement('span');n.className='cnt';n.textContent=stack.n;el.appendChild(n);}el.title=itemName(stack.id);}else el.title=['Ingrédient à cuire','Combustible','Résultat'][i];
+    }
+    if($('smeltProgress'))$('smeltProgress').style.width=(s?s.progress/3*100:0)+'%';if($('furnaceFlame')){const burning=!!(s&&s.burn>0);$('furnaceFlame').classList.toggle('burning',burning);if(this.lastFlame!==burning){this.lastFlame=burning;PixelUI.drawFlame(burning);}}
+    if($('furnaceHint'))$('furnaceHint').textContent=this.valid()?'':'Ouvre un fourneau posé pour cuire tes objets.';
+  },
+  serialize(){return Array.from(this.stations,([key,state])=>[key,JSON.parse(JSON.stringify(state))]);},
+  deserialize(data){this.position=null;this.stations=new Map(Array.isArray(data)?data:[]);},
+});
+
 /* ---------------------------- Effets d'écran ---------------------------- */
 function damageFlash(strength = 1) {
   const el = $('hurtTint');
@@ -10737,15 +10886,12 @@ const Armor = {
   },
   clickSlot(slot) {
     const cur = cursorStack;
-    if (cur && ITEMS[cur.id] && ITEMS[cur.id].armor && ITEMS[cur.id].armor.slot === slot) {
-      const prev = this.slots[slot];
-      cursorStack = prev ? { id: prev, n: 1 } : null;
-      this.slots[slot] = cur.id;
-      Sfx.play('place', 0.8);
-      HUD.refreshAll();
-      return;
-    }
-    if (!cur && this.slots[slot]) this.unequip(slot);
+    if(cur && !(ITEMS[cur.id] && ITEMS[cur.id].armor && ITEMS[cur.id].armor.slot === slot))return;
+    const prev=this.slots[slot],oldD=this.dmg[slot]||0;
+    this.slots[slot]=cur?cur.id:null;this.dmg[slot]=cur?(cur.d||0):0;
+    cursorStack=prev?{id:prev,n:1,d:oldD}:null;
+    Sfx.play('place',.8);HUD.refreshAll();renderCursor();
+
   },
 };
 
@@ -11305,6 +11451,7 @@ function buildInventoryUI() {
   buildCraftList();
   buildFurnaceList();
   buildCreativePalette();
+  PixelUI.refresh();
   renderCursor();
 }
 
@@ -11424,15 +11571,6 @@ function invClick(index, half, chestSlot) {
       return;
     }
   }
-  /* armure : clic droit sur un objet d'armure = on l'enfile directement */
-  if (cur && ITEMS[cur.id] && ITEMS[cur.id].armor) {
-    if (Armor.equip(cur.id)) {
-      cur.n -= 1;
-      cursorStack = cur.n > 0 ? cur : null;
-      renderCursor();
-      return;
-    }
-  }
   if (!cur) {
     if (!slot) return;
     if (half) {
@@ -11502,7 +11640,9 @@ function buildCraftList() {
   }
   list.innerHTML = '';
   for (const r of Crafting.recipes) {
-    if (r.cat !== Crafting.cat) continue;
+    if (r.cat !== Crafting.cat && !PixelUI.query) continue;
+    if (PixelUI.query && !itemName(r.out[0]).toLocaleLowerCase('fr').includes(PixelUI.query)) continue;
+    if (PixelUI.tab === 'inv' && (r.stationOnly || r.table || (ITEMS[r.out[0]] && (ITEMS[r.out[0]].tool || ITEMS[r.out[0]].armor)))) continue;
     const unlocked = Crafting.unlocked(r);
     const can = Crafting.can(r);
     const row = document.createElement('div');
@@ -11515,7 +11655,7 @@ function buildCraftList() {
         for (let x = 0; x < 3; x++) {
           const cell = document.createElement('i');
           const ch = (y < r.shape.rows.length && x < r.shape.rows[0].length) ? r.shape.rows[y][x] : ' ';
-          if (ch !== ' ' && ch !== '.') cell.className = 'on';
+          if (ch !== ' ' && ch !== '.') { cell.className = 'on'; cell.appendChild(drawItemIcon(r.shape.keys[ch],20)); }
           pv.appendChild(cell);
         }
       }
@@ -11569,6 +11709,7 @@ function buildFurnaceList() {
   }
   list.innerHTML = '';
   for (const r of Furnace.recipes) {
+    if (PixelUI.query && !itemName(r.out[0]).toLocaleLowerCase('fr').includes(PixelUI.query) && !itemName(r.in[0]).toLocaleLowerCase('fr').includes(PixelUI.query)) continue;
     const can = Furnace.can(r);
     const row = document.createElement('div');
     row.className = 'craftRow';
@@ -11596,7 +11737,7 @@ function buildFurnaceList() {
     info.appendChild(b); info.appendChild(ing);
     row.appendChild(info);
     const btn = document.createElement('button');
-    btn.className = 'mcBtn'; btn.textContent = 'Cuire'; btn.disabled = !can;
+    btn.className = 'mcBtn'; btn.textContent = 'Charger'; btn.disabled = !can;
     btn.addEventListener('click', () => { if (Furnace.smelt(r)) { buildFurnaceList(); buildHotbar(); } });
     row.appendChild(btn);
     list.appendChild(row);
@@ -11608,7 +11749,9 @@ function buildCreativePalette() {
   if (!grid) return;
   if (Game.mode !== 'creative') { grid.innerHTML = ''; return; }
   grid.innerHTML = '';
+  document.querySelectorAll('.creativeCat').forEach(b=>{b.classList.toggle('active',b.dataset.cat===PixelUI.creativeCat);if(b.dataset.cat===PixelUI.creativeCat)$('creativeTitle').textContent=b.title;});
   const addEntry = (id, name, makeIcon, n) => {
+    if (PixelUI.creativeQuery ? !name.toLocaleLowerCase('fr').includes(PixelUI.creativeQuery) : PixelUI.creativeCat!=='all'&&PixelUI.category(id)!==PixelUI.creativeCat) return;
     const item = document.createElement('div');
     item.className = 'invItem';
     item.title = name;
@@ -16277,6 +16420,7 @@ async function newWorld(seedStr, thenPlay, extra) {
   await new Promise(r => setTimeout(r, 30));
 
   Structures.reset();
+  Furnace.deserialize(null);
   Mobs.reset();
   if (typeof Drops !== 'undefined') Drops.clear();
   Railways.carts = []; Railways.riding = null;
@@ -16349,6 +16493,7 @@ async function continueGame(entry) {
   setProgress(0, 'Chargement de la sauvegarde…');
   await new Promise(r => setTimeout(r, 30));
   Structures.reset();
+  Furnace.deserialize(null);
   Mobs.reset();
   if (typeof Drops !== 'undefined') Drops.clear();
   Railways.carts = []; Railways.riding = null;
@@ -17727,6 +17872,7 @@ function boot() {
   try { Fx.init(); } catch (e) { console.error('Fx', e); }
   try { Admin.load(); } catch (e) { console.error('Admin', e); }
   setupInput();
+  PixelUI.init();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
   $('chatSend').addEventListener('click', () => GameChat.submit());
   $('chatClose').addEventListener('click', () => Admin.closeBar());
