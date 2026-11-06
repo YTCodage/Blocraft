@@ -83,8 +83,8 @@ BLOCRAFT est pensé pour être joué **au pouce, en paysage**, plein écran :
 | **Glisser à gauche** (moitié gauche de l'écran) | le joystick apparaît sous le doigt : marcher. Pousser à fond = **courir** |
 | **Glisser à droite** | regarder autour de soi (360°, sans limite) |
 | **SAUTER** | sauter — maintenir en vol fait monter |
-| **MINER** | casser le bloc visé / frapper une créature (maintien = minage continu) |
-| **POSER** | poser un bloc, manger, ouvrir un coffre, **commercer avec un villageois** |
+| **Maintenir le doigt sur un bloc** | miner en continu après 350 ms ; un glissement annule le minage |
+| **Toucher brièvement un bloc / personnage** | poser ou utiliser : coffre, établi, nourriture, commerce ; toucher une créature hostile pour frapper |
 | **SAC** | inventaire, établi, four, blocs (glisser un objet : un tap pour prendre, un tap pour déposer) |
 | **VOLER** (créatif) | active le vol ; deux flèches **▲ ▼** apparaissent pour monter et descendre |
 | **⏸ en haut à droite** | menu de pause (réglages, sauvegarde, touches) |
@@ -105,7 +105,7 @@ BLOCRAFT est pensé pour être joué **au pouce, en paysage**, plein écran :
 
 ### Commercer avec un villageois
 
-Vise un villageois puis **clic droit** (au doigt : **POSER**) : le comptoir s'ouvre.
+Vise un villageois puis **clic droit** (au doigt : **un toucher bref**) : le comptoir s'ouvre.
 Chaque villageois a un **métier** tiré au hasard (fermier, forgeron, armurier,
 bibliothécaire, boucher, prêtre, mineur), donc une liste de 4 échanges.
 Une ligne = un échange : `8 × Blé → 1 × Émeraude`. Touche la ligne (ou **Échanger**),
@@ -130,7 +130,7 @@ Deux nouveaux blocs de mobilier, avec leurs recettes :
 
 | Bloc | Recette | Effet |
 |---|---|---|
-| 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **POSER**) ; ouverte, on passe au travers |
+| 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **un toucher bref**) ; ouverte, on passe au travers |
 | 🛏️ **Lit** | 3 laines blanches + 3 planches | la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
 
 > De jour, le lit refuse : *« On ne dort que la nuit »*. Et si un monstre rôde
@@ -146,17 +146,13 @@ Un villageois frappé **appelle à l'aide** : tous les golems de fer à moins de
 Ils abandonnent au bout d'une trentaine de secondes, ou si tu t'éloignes.
 Frapper un golem directement le met aussi en colère.
 
-### Passer de la survie au créatif (et retour)
+### Choisir le mode de jeu
 
-En jeu, **Échap** → **Passer en créatif** (ou **Passer en survie**). C'est la **même partie** :
-ton monde, ta position, ton sac et ta maison restent là.
-
-| Passage | Ce qui change tout de suite |
-|---|---|
-| → **Créatif** | barre de vie et faim masquées, blocs infinis dans l'inventaire, `F` pour voler |
-| → **Survie** | vie, faim, monstres et dégâts de chute reviennent, le vol se coupe, les blocs redeviennent finis |
-
-Le mode est enregistré avec la partie : si tu étais en créatif, tu reprends en créatif.
+Choisis **Survie** ou **Créatif** au lancement d’une nouvelle partie. Le choix
+est enregistré avec la sauvegarde. Le menu pause contient les réglages et la
+sauvegarde, mais plus de bouton de changement de mode ni de Vision X.
+Les commandes administrateur `/creatif` et `/survie` restent disponibles selon
+les droits existants. La touche `X` reste le raccourci de la Vision X sur PC.
 
 ### Les villages sont habités
 
@@ -488,7 +484,7 @@ case du résultat à droite. **C'est toi qui fabriques**, case par case :
 | Situation | Grille | Ce qu'on peut faire |
 |---|---|---|
 | Aucun établi posé (« table de craft par défaut ») | **2 × 2 — 4 cases** | le strict nécessaire : planches, bâtons, **établi**, torches, four… |
-| **Établi fabriqué (4 planches) et posé** à moins de 4 blocs | **3 × 3 — 9 cases** | tout : pioches, haches, armures, lit, porte, golems… |
+| **Établi fabriqué (4 planches) et posé** à moins de 4 blocs | **3 × 3 — 9 cases** | recettes avancées ; pour les armes et armures, il faut ouvrir directement l’établi |
 
 L'établi **se fabrique à la main** (4 planches en carré dans les 4 cases), puis on le
 **pose** au sol. Le badge en haut à droite indique en permanence l'état :
@@ -728,12 +724,14 @@ Test de logique ciblé : `node tests/death_rails_test.js`.
 
 ## Cinématiques de début et de victoire
 
-Avant chaque nouvelle partie, une **cinématique animée de 20 secondes** présente
-les commandes, la récolte, la fabrication, la perte des objets à la mort et
-l’objectif du dragon. La reprise d’une sauvegarde ne relance pas l’introduction.
+Avant chaque nouvelle partie, une **cinématique narrative animée de 20 secondes**
+montre le personnage arrivant par un ancien portail : il cherchait un refuge,
+le passage se ferme, et il décide de rebâtir un foyer dans ce monde oublié. La reprise d’une sauvegarde ne relance pas l’introduction.
 
 Après la défaite du dragon de l’End, une seconde cinématique de 20 secondes
-célèbre la victoire et rappelle les récompenses, puis rend la main au joueur.
+raconte que le dragon était le dernier de son espèce : les tours le soignaient
+et les endermen le protégeaient. Elle rend ensuite la main au joueur.
+Cette histoire est une fiction propre à Blocraft, pas un récit officiel de Minecraft.
 Le jeu est suspendu pendant la cinématique en solo. En multijoueur, l’autre
 navigateur n’est pas mis en pause.
 
@@ -790,3 +788,39 @@ génération du monde ; ce n’est pas un test complet du moteur du jeu.
 Les autorisations plein écran restent soumises aux limitations du navigateur,
 notamment sur iOS. Les sauvegardes dépendent du navigateur et de l’origine :
 une partie ouverte en `file://` n’est pas automatiquement transférée au site HTTPS.
+
+
+## Tactile, matériaux, eau et discussion
+
+- Les boutons **Miner** et **Poser** ont été supprimés. Un tap sur la scène fait
+  une seule action ; maintenir sans bouger lance le minage. Un glissement ne pose
+  jamais de bloc. Le bloc visé est calculé sous le doigt, pas seulement au centre.
+  Le joystick à gauche et le regard à droite restent disponibles ; les gestes sont
+  annulés à l’ouverture d’un menu, à la mort et à la perte de focus.
+- Les **armes et armures nécessitent l’ouverture d’un établi posé** : elles sont
+  verrouillées dans l’inventaire personnel, même si un établi est proche. Toucher
+  l’établi (ou clic droit) l’ouvre, même en tenant un bloc. Un établi détruit ou
+  devenu trop éloigné ne permet plus ces fabrications.
+- **12 nouveaux blocs** : granit/diorite/andésite polis, marbre veiné, carrelages
+  d’ardoise et de terre cuite, parquet de chêne, grès rouge, grès poli, verres bleu
+  et vert, briques lumineuses. Ils ont leurs textures et recettes, et apparaissent
+  dans le catalogue créatif. Les identifiants existants ne changent pas.
+- La **bedrock (roche-mère)** est disponible en créatif et cassable uniquement
+  dans ce mode ; elle reste indestructible à la main ou avec un outil en survie.
+- Soleil et lune ont un disque **carré**. Les matériaux ont un éclairage directionnel
+  plus doux ; les planches et l’établi ont des textures retravaillées.
+- L’eau utilise désormais une surface raccordée entre les blocs de niveaux
+  différents et des coordonnées de texture continues. Son shader lit la bonne
+  texture d’eau (et non celle de neige), avec transparence, rides et reflets.
+  Les contours et fissures ne sont plus dessinés sur l’eau ou sur un bloc déjà cassé.
+- **Chat à gauche au milieu** : bouton **Chat** sur PC/mobile, ou `T` au clavier.
+  Écris normalement pour discuter ; commence par `/` pour une commande.
+  Les morts sont annoncées avec leur cause, par exemple « Joueur est mort,
+  tué par un zombie ». Les messages sont échangés entre les deux joueurs déjà
+  connectés en WebRTC ; en solo, ils restent locaux. Pas de salon public ni de serveur.
+  L’historique conserve 40 entrées pendant la session ; textes limités à 240 caractères.
+
+Tests supplémentaires : `npm run test:game` vérifie les vrais gestes tactiles
+Chromium, les restrictions de fabrication, le chat et la compilation/rendu WebGL
+sur une petite scène déterministe. Ce test ne remplace pas un essai sur un
+appareil Android/iOS réel, ni une validation complète du multijoueur entre deux appareils.

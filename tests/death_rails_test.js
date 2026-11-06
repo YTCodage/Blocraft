@@ -12,6 +12,7 @@ const ctx = vm.createContext({ Math, console, Set, BLOCKS: {0:{solid:false},1:{s
   Game:{state:'playing',mode:'survival',manager:{dim:'overworld',getBlock:(x,y,z)=>y===0?1:0},inv:{slots:[{id:5,n:64},{id:101,n:1,d:12}],add(){return 0;} }},
   Player:{pos:[0,1,0],vel:[0,0,0]},Players:{active:0},
   Armor:{slots:{head:122},dmg:{head:7},reset(){this.slots={};}}, ARMOR_SLOTS:['head'],
+  TouchActions:{reset(){}}, GameChat:{death(){}},
   cursorStack:{id:7,n:3}, CraftGrid:{slots:[{id:5,n:2}],reset(){this.slots=[];}},
   HUD:{refreshAll(){},toast(){},toastText(){}}, Sfx:{play(){}},
   $:()=>({classList:{remove(){}},textContent:''}),document:{exitPointerLock(){}}, heldItemId:()=>300,

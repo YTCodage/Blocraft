@@ -19,12 +19,12 @@ vm.runInContext(html.slice(start,end)+'\nthis.Cinematics=Cinematics;',ctx);
 (async()=>{
   const intro=ctx.Cinematics.play('intro');
   assert.equal(ctx.Game.state,'cinematic');assert(ctx.Cinematics.active);
-  frame(0);assert.equal(nodes.h1.textContent,'Bienvenue dans BLOCRAFT');
-  frame(4000);assert.equal(nodes.h1.textContent,'Explore et construis');
+  frame(0);assert.equal(nodes.h1.textContent,'De l’autre côté du portail');
+  frame(4000);assert.equal(nodes.h1.textContent,'Un voyage sans retour');
   document.hidden=true;frame(14000);assert.equal(nodes['[data-time]'].textContent,'4 / 20 s');
   document.hidden=false;frame(30000);await intro;
   assert.equal(ctx.Game.state,'menu');assert(!ctx.Cinematics.active);assert.equal(keyHandler,null);
-  ctx.Game.state='playing';const ending=ctx.Cinematics.play('ending');frame(0);assert.equal(nodes.h1.textContent,'Le dernier rugissement');
+  ctx.Game.state='playing';const ending=ctx.Cinematics.play('ending');frame(0);assert.equal(nodes.h1.textContent,'Le dernier battement d’ailes');
   skipHandler();await ending;assert.equal(resumed,1);assert.equal(removed,2);
   const skipped=ctx.Cinematics.play('intro');keyHandler({code:'Escape',preventDefault(){},stopImmediatePropagation(){}});await skipped;
   assert(!ctx.Cinematics.active);

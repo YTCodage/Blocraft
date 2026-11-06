@@ -4,7 +4,8 @@
   },
   "scripts": {
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
-    "test": "node tests/death_rails_test.js && node tests/cinematics_test.js",
-    "test:site": "node tests/site_test.js"
+    "test": "node tests/death_rails_test.js && node tests/cinematics_test.js && node tests/mobile_gameplay_test.js",
+    "test:site": "node tests/site_test.js",
+    "test:game": "node tests/game_browser_test.js"
   }
 }
