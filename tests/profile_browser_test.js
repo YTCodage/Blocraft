@@ -14,9 +14,9 @@ try{
  await page.reload();assert(await page.locator('#menu').isVisible());assert(!await page.locator('#profile').isVisible());
  await page.locator('#btnProfile').click();await page.locator('#chooseCreator').click();
  const testHash=crypto.createHash('sha256').update('123456').digest('hex');await page.evaluate(h=>RoleGate.HASH=h,testHash);
- await page.locator('#creatorPin').fill('123456');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>RoleGate.role==='creator');assert(await page.evaluate(()=>Admin.owner&&Admin.isAdmin()));assert.equal(await page.locator('#creatorPin').inputValue(),'');assert(!await page.locator('#btnCreatorAdmin').evaluate(e=>e.classList.contains('hidden')));
+ await page.locator('#creatorPin').fill('123456');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>RoleGate.role==='creator');assert(await page.evaluate(()=>Admin.owner&&Admin.isAdmin()));assert.equal(await page.locator('#creatorPin').inputValue(),'');assert(!await page.locator('#btnCreatorAdmin').evaluate(e=>e.classList.contains('hidden')));assert(await page.locator('#realm').isVisible());assert(!await page.evaluate(()=>QA.on));
  await page.reload();assert(await page.evaluate(()=>RoleGate.role==='creator'&&Admin.owner));
  await page.locator('#btnProfile').click();await page.locator('#choosePlayer').click();assert(!await page.evaluate(()=>Admin.owner));
- assert.deepEqual(errors,[]);console.log('OK : premier choix Créateur/Joueur, code incorrect refusé, Joueur inchangé, ancien owner non contournant, code correct, droits admin, persistance et changement de profil sur mobile.');
+ assert.deepEqual(errors,[]);console.log('OK : premier choix Admin/Joueur, code incorrect refusé, Joueur inchangé, ancien owner non contournant, code correct, droits Admin, espace Admin, QA désactivé, persistance et changement de profil sur mobile.');
 }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

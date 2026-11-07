@@ -12,11 +12,11 @@ compilation. Double-clique dessus (Chrome, Edge ou Firefox récent) et ça joue.
 
 1. Ouvre <https://ytcodage.github.io/Blocraft/jeu/>. Pour héberger une copie locale,
    conserve `blocraft.html` **et** son dossier `assets/`.
-2. Au premier lancement, choisis ton profil **Joueur** ou **Créateur**. Le code
-   Créateur est demandé sur un écran séparé, avec sa propre progression.
+2. Au premier lancement, choisis ton profil **Joueur** ou **Admin**. Le code
+   Admin est demandé sur un écran séparé, avec sa propre progression.
 3. Clique **Créer une partie**. Un assistant affiche **une seule question à la fois** :
    - **1/4 — Monde** : normal, plat ou mono-bloc ;
-   - **2/4 — Mode** : Survie, Créatif ou Trolle ;
+   - **2/4 — Mode** : Survie, Hardcore, Créatif ou Trolle ;
    - **3/4 — Nom** : le nom de ta partie, entre 3 et 28 caractères ;
    - **4/4 — Graine** : facultative, laisse vide pour un terrain aléatoire.
 4. La barre indique ta progression. **Retour** conserve tes réponses ; **Annuler**
@@ -547,11 +547,11 @@ avec des plafonds même dans les structures difficiles.
 
 ## 7. Mode administrateur
 
-Au premier lancement, choisis **Joueur** (fonctionnement habituel) ou **Créateur**.
-Le profil Créateur demande un **code à 6 chiffres**, communiqué au propriétaire
-par message, puis active les droits d’administration. Le choix est mémorisé sur
-ce navigateur. **Profil** dans le menu permet de changer de choix ; un Créateur
-retrouve **Administration** dans la pause. Ce code n’est pas le code temporaire
+Au premier lancement, choisis **Joueur** (fonctionnement habituel) ou **Admin**.
+Le profil Admin demande un **code à 6 chiffres**, communiqué au propriétaire
+par message, puis ouvre l’espace **Monde Admin**, distinct du jeu normal. Le choix est mémorisé sur
+ce navigateur. **Profil** dans le menu permet de changer de choix ; un Admin
+retrouve **Monde Admin** depuis le menu. Ce code n’est pas le code temporaire
 d’une partie à deux.
 
 Il s’agit d’un **profil local**, sans compte ni serveur d’authentification. Un
@@ -564,12 +564,12 @@ attend 30 secondes dans l’onglet courant.
 
 | Commande | Qui | Effet |
 |---|---|---|
-| `proprietaire` | Créateur déjà déverrouillé | commande de compatibilité ; ne contourne plus le code |
+| `proprietaire` | Admin déjà déverrouillé | commande de compatibilité ; ne contourne plus le code |
 | `pseudo Alex` | tout le monde | changer son nom (affiché au-dessus de l'avatar en ligne) |
-| `admin Alex` | **propriétaire** | nommer un admin |
-| `retirer Alex` | **propriétaire** | destituer un admin |
+| `admin Alex` | Admin hôte | nommer le joueur connecté Admin et mémoriser son profil sur son navigateur |
+| `retirer Alex` | Admin hôte | retirer ses droits dans cette partie (son profil local Admin reste mémorisé) |
 | `admins` | tous | liste des admins |
-| `creatif` / `survie` | admin | changer de mode de jeu (l'hôte l'impose aux joueurs en ligne) |
+| `creatif` / `survie` | solo ou Admin en ligne | changer son mode, hors Hardcore |
 | `donner diamant 32` | admin | recevoir un objet (recherche par nom, insensible aux accents) |
 | `tuer` | admin | foudroyer les monstres à moins de 28 blocs |
 | `explosion` | admin | trou de creeper sur le bloc visé |
@@ -903,14 +903,25 @@ Le test utilise un vérificateur de test, sans inclure le code réel dans le dé
 
 ## Mode Trolle et interfaces simplifiées
 
-Le troisième mode **Trolle** utilise les règles du créatif. Après le choix du
+**Trolle** conserve la construction du créatif, avec les attributs réels de la forme choisie. Après le choix du
 mode et du nom, **Se transformer** permet de rechercher et choisir un animal,
 un monstre courant ou un bloc. Les modèles sont animés et transmis à l’autre
 joueur. Une vue à la troisième personne permet de voir son propre déguisement ;
 le bouton de vue permet de revenir en première personne et l’apparence **Joueur**
-permet de retrouver le personnage normal. Ce sont des déguisements : ils ne
-confèrent pas les pouvoirs des monstres et gardent les collisions d’un joueur.
-Le mode et l’apparence sont sauvegardés.
+permet de retrouver le personnage normal. Les transformations changent réellement les PV maximum, les dégâts, la vitesse,
+la portée, la taille de collision et la hauteur des yeux. **G**, le bouton de capacité
+mobile ou `/capacite` utilise le pouvoir. Exemples : téléportation d’Enderman,
+explosion de Creeper/TNT avec mèche de 1,35 s et mort de la forme, escalade de
+l’araignée au contact d’une paroi, chute ralentie de la poule, vol et résistance au
+feu du Blaze, tirs à distance des squelettes/Blazes/golems de neige. Les morts-vivants
+subissent le soleil ; l’Enderman subit l’eau. Les animaux peuvent récupérer des PV.
+Les blocs sont immobiles, ont une taille et des PV dérivés de leur matière, n’ont
+pas de faim et peuvent poser une copie (les lits restent longs de deux cases).
+Il ne s’agit pas d’une simulation exhaustive de toutes les propriétés de chaque
+bloc ou de chaque créature ; les boss ne sont pas proposés.
+Le mode et l’apparence sont sauvegardés. `/troll` ou `/mode troll` active Trolle
+en cours de partie, sauf en Hardcore. Une forme trop grande pour l’espace libre
+est refusée sans remplacer la précédente.
 
 Les barres de catégories « Combat », « Outils », etc. sont retirées des écrans.
 Le catalogue affiche tous les objets et conserve la recherche. Le livre affiche
@@ -944,3 +955,76 @@ courant et les largeurs 320/390/1280 pixels. Les choix sont conservés dans un
 brouillon jusqu’à la confirmation finale. Les titres reçoivent le focus à chaque
 étape et la progression est exposée aux lecteurs d’écran. Les animations de la
 barre respectent la préférence de réduction des mouvements.
+
+
+## Chat et commandes centralisés
+
+**T** ouvre le chat ; **/** ouvre directement le catalogue. La touche `/` est
+reconnue aussi sur clavier AZERTY. Les commandes existantes et leurs alias sont
+listés et filtrés à la frappe. ↑/↓ sélectionnent, **Tab** complète, **Entrée**
+confirme. Les anciens raccourcis « Codes » du panneau QA conduisent au même chat.
+
+- `/tp` demande **joueur**, **dimension** ou **coordonnées**. Le choix d’un joueur
+  affiche les personnes réellement connectées ; un pseudo inconnu n’envoie jamais
+  vers un autre joueur par défaut. `/tp Alex`, `/tp 20 80 -15`, `/tp end` fonctionnent
+  aussi directement ; une destination bloquée dans la dimension courante est refusée.
+- `/dim` propose Monde normal, Nether et End ; `/mode` propose les modes disponibles.
+- `/donner` propose un objet puis une quantité ; `/spawn` une créature puis un nombre.
+- `/xp`, `/vitesse`, `/portee` proposent des valeurs. Vitesse/portée fonctionnent sans
+  devoir activer QA et sont temporaires, non sauvegardées.
+- `/transforme` ouvre les formes ; `/capacite` utilise leur pouvoir ; `/vue` change la vue.
+- `/joueurs`, `/position`, `/sauver`, `/inventaire`, `/recettes`, `/pause`, `/inviter`,
+  `/renommer Nouveau nom`, `/dormir`, `/retour`, `/pointdepart`, `/hud` complètent les
+  commandes existantes. Dormir exige toujours de regarder un vrai lit placé.
+- `/admin` et `/retirer` proposent le joueur connecté ; la modification des droits
+  passe par l’hôte. En ligne, les commandes de triche/voyage sont réservées aux
+  admins autorisés par l’hôte. Trolle et ses pouvoirs restent accessibles hors Hardcore.
+
+### Hardcore
+
+L’assistant de création propose **Hardcore** dans les mondes normal et mono-bloc.
+C’est une partie **solo**, en survie, avec des dégâts ×1,5, une seule vie et une
+mort définitive mémorisée dans la sauvegarde. Recharger ou reprendre la partie ne
+rend pas la vie ; le bouton Réapparaître reste désactivé. Les changements de mode,
+les téléportations, le retour instantané R, QA, Vision X et les commandes de triche
+sont désactivés ; les commandes d’information et d’interface restent disponibles.
+`/hardcore` peut aussi engager la partie solo actuelle ; ce choix est irréversible
+pour cette partie. Le stockage local demeure modifiable : aucun système de classement
+ou de preuve anti-triche n’est annoncé.
+
+### Monde Admin et QA temporaire
+
+Le code de profil ouvre un écran **Monde Admin** avec un monde plat distinct,
+sauvegardé séparément. L’Admin peut l’utiliser seul ou l’ouvrir à **un autre Admin**
+(la limite réseau reste **2 joueurs**). L’hôte copie une invitation privée composée
+du code du salon et d’un secret aléatoire de 192 bits. L’invité ouvre Monde Admin,
+colle cette invitation et rejoint. Le client normal exige un profil Admin ; une
+preuve HMAC-SHA-256 avec un défi neuf est vérifiée par l’hôte **avant l’envoi du monde**.
+Le code à six chiffres du salon seul ne suffit pas. Une nouvelle publication renouvelle
+l’invitation ; l’hôte doit garder sa page ouverte. Il n’existe pas de serveur permanent.
+
+Un Admin hôte peut nommer le joueur connecté avec `/admin` : ce joueur obtient
+un profil Admin local mémorisé, sans activation automatique de QA. `/retirer` retire
+les droits sur la partie courante, pas ce profil indépendant. Un invité ne peut
+pas envoyer sa propre liste de droits à l’hôte. Les droits réseau restent basés
+sur les pseudos et ne constituent pas des comptes authentifiés.
+
+**Le profil Admin persiste ; QA ne persiste jamais au rechargement**, même si
+une ancienne préférence QA était enregistrée. `/qa` ou le bouton de l’espace Admin
+l’active explicitement pour la session. Ce site statique ne peut garantir l’identité
+d’une personne ayant modifié son client : protège l’invitation comme un mot de passe.
+Pour des comptes révocables et un vrai serveur Admin public sécurisé, un backend
+d’authentification et un serveur de jeu autoritaire restent nécessaires.
+
+### Personnage 3D dans l’inventaire
+
+L’aperçu utilise des cuboïdes texturés projetés en 3D, une tête volumétrique avec
+cheveux et nez, un éclairage par face, l’armure et une respiration animée. La tête
+suit le pointeur ; glisser sur le personnage tourne le corps (souris ou tactile).
+Les flèches gauche/droite fonctionnent aussi après avoir focalisé l’aperçu. La
+préférence de réduction des mouvements supprime la respiration automatique.
+
+Tests complémentaires : `npm run test:commands` (palette, choix guidés, capacités,
+aperçu 3D, sauvegarde de la mort Hardcore, profil/QA) et `npm run test:adminrealm`
+(vrai PeerJS/WebRTC local, profil requis même avec invitation, preuve incorrecte
+refusée sans fuite du monde, invitation valide, droits hôte et nomination Admin).
