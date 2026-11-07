@@ -1375,6 +1375,11 @@
 @media(max-width:650px){#creativeBottom{gap:4px}}
 
 .profilePanel{width:min(560px,94vw);padding:30px;background:#132326;border:2px solid #689966;border-radius:14px;max-height:94dvh;overflow:auto}.profileEyebrow{font-size:11px;letter-spacing:.18em;color:#a6d88c}.profilePanel h2{font-size:clamp(24px,6vw,34px);margin:10px 0}.profilePanel>p{line-height:1.6;color:#c0cecb}.profileChoices{display:flex;gap:12px;margin:20px 0}.profileChoices button{flex:1;white-space:normal}.profileChoices b{font-size:21px}.profileChoices small{display:block;font-size:11px;margin-top:8px;line-height:1.5}#creatorPinForm label{display:block;margin-bottom:10px}#creatorPin{width:100%;font:32px monospace;text-align:center;letter-spacing:.3em;padding:16px;background:#081314;color:#fff;border:2px solid #83ad73;border-radius:8px}#profileError{min-height:24px;color:#ffb2a1}.profileLocal{display:block;color:#9caaa5;line-height:1.6}
+
+#craftCats,#creativeCats,#creativeBottom{display:none!important}
+#trollButton{position:fixed;z-index:12;right:18px;top:84px;font-size:13px}.trollPanel{width:min(720px,96vw);max-height:92dvh;overflow:auto;background:#182a2b}.trollPanel p{font-size:12px;color:#b7c9c5}#trollSearch{width:100%;padding:12px;margin:10px 0;background:#0d1b1d;color:white;border:1px solid #7ca76b}#trollChoices{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-height:55dvh;overflow:auto;margin:12px 0}.trollChoice{background:#2d4440;color:#eef5eb;border:1px solid #72916c;padding:10px;cursor:pointer}.trollChoice canvas{width:48px;height:48px;image-rendering:pixelated}.trollChoice span{display:block;font-size:11px}
+
+#mpHostName,#partyName{padding:12px;background:#0c1a20;color:#eaf2ff;border:1px solid #527547;border-radius:6px;width:100%;font:16px monospace}#partyNameStatus{color:#b7caa4;font-size:11px}
 </style>
 </head>
 <body>
@@ -1415,7 +1420,8 @@
     <div id="bossTrack"><i id="bossFill"></i></div>
   </div>
   <div id="dimBadge">Nether</div>
-  <div id="toasts"></div>
+  <div id="toasts"></div><button id="trollButton" class="btn hidden">Se transformer</button>
+<div id="troll" class="overlay hidden"><section class="panel trollPanel"><h2>Mode Trolle · choisis ton apparence</h2><p>Déguisements animés visibles par ton ami. Les déplacements et collisions restent ceux du joueur.</p><input id="trollSearch" type="search" placeholder="Animal, monstre, bloc…" aria-label="Rechercher un déguisement"><button id="trollView" class="btn small">Vue : ton personnage</button><div id="trollChoices"></div><button id="trollClose" class="btn">Retour au jeu</button></section></div>
 
   <div id="menu" class="overlay hidden">
     <div class="menu-shell">
@@ -1479,7 +1485,7 @@
           <h2 class="menu-h">Mode de jeu</h2>
           <div class="modeRow">
             <button class="modeBtn active" data-mode="survival"><b>Survie</b><small>Vie, faim, monstres…</small></button>
-            <button class="modeBtn" data-mode="creative"><b>Créatif</b><small>Vol, blocs infinis</small></button>
+            <button class="modeBtn" data-mode="creative"><b>Créatif</b><small>Vol, blocs infinis</small></button><button class="modeBtn" data-mode="troll"><b>Trolle</b><small>Deviens un animal, monstre ou bloc</small></button>
           </div>
 
           <div class="menu-sep"></div>
@@ -1493,7 +1499,7 @@
           <div class="menu-sep"></div>
           <button id="btnPlay" class="btn primary big">▶&nbsp; Jouer</button>
           <button id="btnContinue" class="btn hidden">▶ Reprendre la partie</button>
-          <button id="btnOnline" class="btn online">Jouer à deux · code privé</button>
+          <button id="btnOnline" class="btn online">Jouer à deux · rechercher une partie</button>
           <button id="btnProfile" class="btn">Choisir mon profil</button>
         </aside>
       </div>
@@ -1538,6 +1544,7 @@
             <span>Reprendre<small>Retour au monde, sans rien perdre</small></span>
             <span class="ppIco">▶</span>
           </button>
+          <button id="btnShareParty" class="ppBtn">Inviter un ami · publier la partie</button><label for="partyName">Nom de la partie</label><input id="partyName" maxlength="28" placeholder="Nom de la partie"><button id="renameParty" class="ppBtn">Renommer la partie</button><small id="partyNameStatus" role="status"></small>
           <button id="btnCreatorAdmin" class="ppBtn hidden">Administration · Créateur</button>
           <button id="btnSave" class="ppBtn"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 3h11l3 3v11H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 3h6v4H6z" fill="currentColor"/><path d="M6 12h8v5H6z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>Sauvegarder la partie</span></span><span class="ppArw">›</span></button>
           <div class="ppSep"></div>
@@ -1727,24 +1734,25 @@
   <div id="mp" class="overlay hidden">
     <div class="panel mp-panel">
       <h2 class="title" style="margin-bottom:4px">🌐 Jouer à deux</h2>
-      <p class="subtitle" style="margin-bottom:14px">Crée une partie privée, envoie son <b>code à 6 chiffres</b> à ton ami, et jouez ensemble sur PC ou mobile.</p>
+      <p class="subtitle" style="margin-bottom:14px">Publie ta partie avec son <b>nom</b>. Ton ami entre ce nom dans la recherche pour te rejoindre. L’hôte doit rester connecté.</p>
+      <div id="mpNameBox"><label for="mpHostName">Nom de ta partie à publier</label><input id="mpHostName" maxlength="28" placeholder="Exemple : Le monde de Lucas" autocomplete="off"></div>
       <div class="mp-row">
         <button id="btnMpHost" class="btn primary">Créer une partie</button>
         <button id="btnMpJoin" class="btn">Se connecter</button>
       </div>
       <div id="mpHostBox" class="mp-box hidden">
-        <label for="mpCodeOut">Le code de ta partie</label>
+        <label for="mpCodeOut">Code de secours (facultatif)</label>
         <input id="mpCodeOut" readonly inputmode="numeric" aria-label="Code privé à six chiffres" placeholder="······" style="width:100%;font:800 clamp(30px,9vw,50px) monospace;letter-spacing:.25em;text-align:center;padding:20px 10px;background:#0c1a20;color:#b7f39b;border:1px solid #527547;border-radius:10px">
-        <button id="btnMpCopy" class="btn small">Copier les 6 chiffres</button>
+        <button id="btnMpCopy" class="btn small">Copier le code de secours</button>
         <p class="muted" style="font-size:12px;line-height:1.6">Garde cette page ouverte. La partie démarre quand ton ami te rejoint. Ne partage ce code qu’avec lui : il donne accès à ton monde.</p>
       </div>
       <form id="mpJoinBox" class="mp-box hidden">
-        <label for="mpJoinIn">Le code de ton ami</label>
-        <input id="mpJoinIn" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required aria-label="Code de la partie à six chiffres" placeholder="123456" style="width:100%;font:800 clamp(28px,8vw,42px) monospace;letter-spacing:.2em;text-align:center;padding:18px 10px;background:#0c1a20;color:#eaf2ff;border:1px solid #527547;border-radius:10px">
+        <label for="mpJoinIn">Rechercher une partie par son nom</label>
+        <input id="mpJoinIn" type="search" maxlength="28" autocomplete="off" required aria-label="Nom exact de la partie" placeholder="Nom exact de la partie" style="width:100%;font:18px monospace;padding:18px;background:#0c1a20;color:#eaf2ff;border:1px solid #527547;border-radius:10px">
         <button id="btnMpAnswer" type="submit" class="btn primary">Rejoindre la partie</button>
       </form>
       <p class="muted" style="font-size:11px;line-height:1.5">Internet requis. La mise en relation passe par PeerJS Cloud ; la partie se joue directement entre vos navigateurs. L’hôte doit rester connecté. Certains réseaux peuvent bloquer la connexion.</p>
-      <div id="mpStatus" role="status" aria-live="polite">Crée une partie ou connecte-toi avec le code de ton ami.</div>
+      <div id="mpStatus" role="status" aria-live="polite">Crée une partie nommée ou recherche le nom exact de ton ami.</div>
       <button id="btnMpClose" class="btn ghost" style="width:100%">Fermer</button>
     </div>
   </div>
@@ -1821,7 +1829,7 @@
     <div class="panel mcPanel" data-view="inv">
       <header class="mcHead">
         <nav class="mcTabs" aria-label="Interfaces">
-          <button class="mcTab active" data-tab="inv">Inventaire</button><button class="mcTab" data-tab="craft">Établi</button><button class="mcTab" data-tab="furnace">Four</button><button class="mcTab" data-tab="blocks">Créatif</button><button class="mcTab hidden" data-tab="chest" id="tabChestBtn">Coffre</button>
+          <button class="mcTab active" data-tab="inv">Inventaire</button><button class="mcTab" data-tab="craft">Établi</button><button class="mcTab" data-tab="blocks">Créatif</button><button class="mcTab hidden" data-tab="chest" id="tabChestBtn">Coffre</button>
         </nav><span id="invTitle" class="mcTitle">Inventaire</span><button id="btnInvClose" class="mcX" aria-label="Fermer">×</button>
       </header>
       <div class="pixelLayout">
@@ -1878,7 +1886,7 @@
         </div>
         <label class="mcGridLbl" for="ngName" style="color:#9fb3c8">Donne un nom à ta partie</label>
         <input id="ngName" maxlength="28" placeholder="Ma partie" autocomplete="off" spellcheck="false">
-        <p class="subtitle" style="margin:0;font-size:11.5px;line-height:1.5">Ce nom te permet de retrouver la partie dans « Reprendre » (touche un monde ou un mode au-dessus pour changer). Tu peux passer du créatif à la survie à tout moment, sans perdre ta partie.</p>
+        <p class="subtitle" style="margin:0;font-size:11.5px;line-height:1.5">Ce nom identifie ta partie : publie-la dans « Jouer à deux » pour que ton ami la recherche. Tu peux le changer dans la pause. Il permet aussi de la retrouver dans « Reprendre » (touche un monde ou un mode au-dessus pour changer). Tu peux passer du créatif à la survie à tout moment, sans perdre ta partie.</p>
       </div>
       <div class="ngFoot">
         <button id="ngCancel" class="btn">Annuler</button>
@@ -2446,12 +2454,17 @@ const EXTRA_BLOCKS = [
   ['GREEN_GLASS', 'Verre vert', 'green_glass', 'tinted_glass', '#64ab89', '#d5ffe5'],
   ['LUMINOUS_BRICK', 'Briques lumineuses', 'luminous_brick', 'tiles', '#527c87', '#d6f7e5'],
 
+  ['BED_HEAD_PX','Lit · tête','bed_head_px','bed','#c0392b','#e8e2d0'],
+  ['BED_HEAD_NX','Lit · tête','bed_head_nx','bed','#c0392b','#e8e2d0'],
+  ['BED_HEAD_PZ','Lit · tête','bed_head_pz','bed','#c0392b','#e8e2d0'],
+  ['BED_HEAD_NZ','Lit · tête','bed_head_nz','bed','#c0392b','#e8e2d0'],
 ];
 /* visage du golem de neige (deux yeux de charbon + nez de carotte) */
 TEXTURES.push('snow_face');
 TEX.snow_face = TEXTURES.length - 1;
 /* lit : le dessus vient de la texture du bloc, il faut ajouter le flanc */
 TEXTURES.push('bed_side'); TEX.bed_side = TEXTURES.length - 1;
+TEXTURES.push('bed_foot');TEX.bed_foot=TEXTURES.length-1;
 TEXTURES.push('sheep_face'); TEX.sheep_face = TEXTURES.length - 1;
 
 EXTRA_BLOCKS.forEach((e, i) => {
@@ -2484,6 +2497,8 @@ EXTRA_BLOCKS.forEach((e, i) => {
   if (bed) { BLOCKS[id].low = 0.58; BLOCKS[id].bed = true; }
   B[key] = id;
 });
+BLOCKS[B.BED].tex=[TEX.bed_foot,TEX.bed_side,TEX.planks];
+for(const [key,offset] of [['BED_HEAD_PX',[-1,0]],['BED_HEAD_NX',[1,0]],['BED_HEAD_PZ',[0,-1]],['BED_HEAD_NZ',[0,1]]]){BLOCKS[B[key]].bedHead=true;BLOCKS[B[key]].toFoot=offset;}
 if (B.PUMPKIN_LANTERN) BLOCKS[B.PUMPKIN_LANTERN].light = 15;
 if (B.PUMPKIN_CARVED) BLOCKS[B.PUMPKIN_CARVED].light = 0;
 /* les ids 100-162 appartiennent aux objets : on comble pour les boucles */
@@ -3799,6 +3814,7 @@ function generateTextureAtlas() {
     drawers.planks();g.fillStyle='#68452c';g.fillRect(0,0,16,3);g.fillRect(0,13,16,3);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
     g.fillStyle='#d1c6a3';g.fillRect(4,5,6,2);g.fillRect(4,6,2,3);g.fillStyle='#62482e';g.fillRect(7,7,2,5);g.fillStyle='#aa8752';g.fillRect(11,5,1,6);
   };
+  drawers.bed_foot=()=>{noisy('#b83732',6);g.fillStyle='#a22c28';g.fillRect(0,0,1,16);g.fillRect(15,0,1,16);};
   drawers.sheep_face = () => { noisy('#bfb09d',5);g.fillStyle='#ece9df';g.fillRect(0,0,16,4);g.fillStyle='#242328';g.fillRect(3,6,3,3);g.fillRect(10,6,3,3);g.fillStyle='#ddafa3';g.fillRect(6,11,4,3); };
   for (const k in drawers) drawersRef[k] = drawers[k];
 
@@ -6048,6 +6064,7 @@ function blockDrops(type) {
   if (typeof def.drop === 'number') return [[def.drop, 1]];
   if (type === B.LEAVES) return Math.random() < 0.14 ? [[I.APPLE, 1]] : [];
   if (type === B.TALLGRASS) return Math.random() < 0.3 ? [[I.WHEAT, 1]] : [];
+  if (BLOCKS[type] && BLOCKS[type].bedHead) return [[B.BED,1]];
   if (type === B.DOOR_OPEN) return [[B.DOOR_CLOSED, 1]];
   return [[type, 1]];
 }
@@ -6062,7 +6079,9 @@ function finishBreak(t) {
   const tool = itemTool(held);
   const req = blockTier(t.block);
   const canDrop = (!def.needsTool || tool === 'pick') && toolTier(held) >= req;
+  const bedPartner=def.bed?Beds.partner(t):null;
   if (!Game.manager.setBlock(t.x, t.y, t.z, B.AIR, true)) return;
+  if(bedPartner)Game.manager.setBlock(bedPartner.x,bedPartner.y,bedPartner.z,B.AIR,true);
   /* les deux moitiés d'une porte tombent ensemble */
   if (t.block === B.DOOR_CLOSED || t.block === B.DOOR_OPEN) {
     for (const dy of [-1, 1]) {
@@ -6565,6 +6584,7 @@ function placeBlock() {
   }
   if (y < 0 || y >= WH) return;
   if (playerBoxOverlaps(x, y, z)) return;
+  if(type===B.BED){Beds.place(x,y,z);return;}
   if (Game.mode === 'survival' && !Game.inv.remove(type, 1)) {
     HUD.toast(type, 'Plus de ' + itemName(type));
     return;
@@ -6625,8 +6645,25 @@ function isNightTime() {
 }
 
 const Beds = {
+  isBed(id){return id===B.BED||!!(BLOCKS[id]&&BLOCKS[id].bedHead);},
+  origin(t){const d=BLOCKS[Game.manager.getBlock(t.x,t.y,t.z)];return d&&d.bedHead?{x:t.x+d.toFoot[0],y:t.y,z:t.z+d.toFoot[1]}:t;},
+  partner(t){
+    const d=BLOCKS[Game.manager.getBlock(t.x,t.y,t.z)];
+    if(d&&d.bedHead){const p=this.origin(t);return Game.manager.getBlock(p.x,p.y,p.z)===B.BED?p:null;}
+    for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const id=Game.manager.getBlock(t.x+dx,t.y,t.z+dz),head=BLOCKS[id];if(head&&head.bedHead&&head.toFoot[0]===-dx&&head.toFoot[1]===-dz)return{x:t.x+dx,y:t.y,z:t.z+dz};}return null;
+  },
+  place(x,y,z){
+    const mgr=Game.manager,dir=lookDir();let dx=0,dz=0;if(Math.abs(dir[0])>Math.abs(dir[2]))dx=dir[0]>0?1:-1;else dz=dir[2]>0?1:-1;
+    const head=dx===1?B.BED_HEAD_PX:dx===-1?B.BED_HEAD_NX:dz===1?B.BED_HEAD_PZ:B.BED_HEAD_NZ;
+    for(const [bx,bz] of [[x,z],[x+dx,z+dz]]){const floor=BLOCKS[mgr.getBlock(bx,y-1,bz)];if(y<1||y>=WH||!isReplaceable(mgr.getBlock(bx,y,bz))||!floor||!floor.solid||floor.low||playerBoxOverlaps(bx,y,bz)){HUD.toastText('Le lit demande deux cases libres sur un sol solide.',3);return false;}}
+    if(Game.mode==='survival'&&!Game.inv.remove(B.BED,1))return false;
+    if(!mgr.setBlock(x,y,z,B.BED,true)){if(Game.mode==='survival')Game.inv.add(B.BED,1);return false;}
+    if(!mgr.setBlock(x+dx,y,z+dz,head,true)){mgr.setBlock(x,y,z,B.AIR,true);if(Game.mode==='survival')Game.inv.add(B.BED,1);return false;}
+    Sfx.blockPlace(B.BED,1);Game.placeTimer=.22;HUD.refreshAll();return true;
+  },
   sleeping: false,
   sleep(t, remote = false) {
+    if(Game.manager)t=this.origin(t);
     const guest = typeof Net !== 'undefined' && Net.live && Net.role === 'guest';
     if (guest && !remote) { Net.send(['sleep', t.x, t.y, t.z]); HUD.toastText('Tu te couches…', 2); return; }
     const sleeper = remote ? Net.remotePos() : Player.pos;
@@ -6670,7 +6707,7 @@ const WORLD_LABEL = {
 const WORLD_ICON = {
   overworld: '🌍', oneblock: '🧊', flat: '🟩', nether: '🔥', end: '🟣',
 };
-const MODE_LABEL = { survival: 'Survie', creative: 'Créatif' };
+const MODE_LABEL = { survival: 'Survie', creative: 'Créatif', troll:'Trolle' };
 
 const Saves = {
   list: [],
@@ -6738,7 +6775,7 @@ const Saves = {
     entry.data = data;
     entry.ts = Date.now();
     entry.seed = data.seed;
-    entry.mode = data.mode || entry.mode;
+    entry.mode = data.troll?'troll':data.mode || entry.mode;
     entry.world = data.dim || entry.world;
     if (opts && opts.name) { entry.name = opts.name; this.currentName = entry.name; }
     const wasFirst = this.list.indexOf(entry) === 0;
@@ -6782,7 +6819,7 @@ function saveGame(opts) {
       yaw: Player.yaw, pitch: Player.pitch,
       flying: Player.flying,
       time: Game.time,
-      mode: Game.mode,
+      mode: Game.mode, troll:!!Game.troll, morph:Troll.morph,
       name: Saves.currentName || '',
       inv: Game.inv.serialize(),
       stats: Survival.serialize(),
@@ -6897,7 +6934,7 @@ function openNewGameDialog() {
   const w = Game.startWorld || 'overworld';
   const world = $('ngWorld'), mode = $('ngMode'), seed = $('ngSeed');
   if (world) world.textContent = WORLD_LABEL[w] || 'Monde normal';
-  if (mode) mode.textContent = MODE_LABEL[Game.mode] || 'Survie';
+  if (mode) mode.textContent = MODE_LABEL[Game.troll?'troll':Game.mode] || 'Survie';
   const sv = ($('seedInput') && $('seedInput').value || '').trim();
   if (seed) seed.textContent = sv ? 'graine ' + sv : 'graine aléatoire';
   Game.state = 'menu';
@@ -6908,9 +6945,10 @@ function openNewGameDialog() {
 
 async function startNewGameFromDialog() {
   if (Cinematics.active) return;
+  const chosen=$('ngName').value.trim();if(!RoomNames.valid(chosen)){HUD.toastText('Choisis un nom de 3 à 28 caractères.',3);$('ngName').focus();return;}
   await Cinematics.play('intro');
   const name = (($('ngName') && $('ngName').value) || '').trim() || Saves.suggestName();
-  Saves.begin(name, Game.startWorld || 'overworld', Game.mode);
+  Saves.begin(name, Game.startWorld || 'overworld', Game.troll?'troll':Game.mode);
   hideOverlays();
   if (typeof window.__startFromMenu === 'function') window.__startFromMenu(true);
   else newWorld($('seedInput').value, true);
@@ -7104,7 +7142,7 @@ Dimension  ${Dimensions.label(Dimensions.current)}
 Mode       ${Player.flying ? 'vol' : 'marche'}${Player.headInWater ? ' · sous l\'eau' : ''}
 Heure      ${(Game.time * 24).toFixed(1)} h
 Bloc visé  ${Game.target ? BLOCKS[Game.target.block].name : '—'}
-Mode       ${Game.mode === 'survival' ? 'Survie' : 'Créatif'}
+Mode       ${Game.troll?'Trolle':Game.mode === 'survival' ? 'Survie' : 'Créatif'}
 Vie/Faim   ${Math.round(Survival.health)}/${Survival.maxHealth} · ${Math.round(Survival.hunger)}/${Survival.maxHunger}
 Créatures  ${Mobs.list.length}
 Structure  ${Game.manager ? (Game.manager.lastStruct || '—') : '—'}`;
@@ -7218,6 +7256,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     if (typeof savedData.flying === 'boolean') Player.flying = savedData.flying;
     if (typeof savedData.time === 'number') Game.time = savedData.time;
     if (typeof savedData.slot === 'number') Game.slot = savedData.slot;
+    Game.troll=!!savedData.troll;Troll.morph=Troll.valid(savedData.morph)?savedData.morph:null;
     if (savedData.mode === 'survival' || savedData.mode === 'creative') Game.mode = savedData.mode;
     if (!Game.inv) Game.inv = new Inventory();
     if (savedData.inv) Game.inv.deserialize(savedData.inv);
@@ -7597,6 +7636,7 @@ function renderScene(dt, view) {
 
   if (isPlaying || Game.state === 'inventory' || Game.state === 'paused' || Game.state === 'trade') {
     eye = eyePos(); yaw = Player.yaw; pitch = Player.pitch;
+    if(Game.troll&&Troll.third){const d=lookDir(),base=eye.slice();let distance=0;for(let t=.25;t<=3.5;t+=.25){const q=[base[0]-d[0]*t,base[1]-d[1]*t+.25,base[2]-d[2]*t];const block=Game.manager&&BLOCKS[Game.manager.getBlock(...q)];if(block&&block.solid)break;distance=t;}eye=[base[0]-d[0]*distance,base[1]-d[1]*distance+.25,base[2]-d[2]*distance];}
   } else {
     // caméra de menu : orbite lente autour du point d'apparition, toujours au-dessus du relief
     const t = performance.now() * 0.00013;
@@ -8611,7 +8651,7 @@ function useAction() {
     if(Crafting.forceTable)openInventory('craft');else Furnace.openAt(tgt.x,tgt.y,tgt.z); return;
   }
   if (tgt && (tgt.block === B.DOOR_CLOSED || tgt.block === B.DOOR_OPEN)) { Doors.toggle(tgt); return; }
-  if (tgt && tgt.block === B.BED) { Beds.sleep(tgt); return; }
+  if (tgt && Beds.isBed(tgt.block)) { Beds.sleep(tgt); return; }
   if (tgt && tgt.block === B.CHEST) { Chests.openAt(tgt.x, tgt.y, tgt.z); return; }
   if (tgt && tgt.block === B.TNT) { TNT.ignite(tgt.x, tgt.y, tgt.z, 3); return; }
   const heldId = Game.inv.heldId();
@@ -8925,23 +8965,27 @@ function updateMouseHint() {
 
 /* --------------------------- Actions d'état ------------------------------ */
 function showOverlay(id) {
+  if(id==='pause'){$('partyName').value=RoomNames.name||Saves.currentName||'';$('partyNameStatus').textContent='';}
+  if($('trollButton'))$('trollButton').classList.add('hidden');
   if(id==='menu' && typeof RoleGate!=='undefined' && !RoleGate.role)id='profile';
-  for (const o of ['profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
+  for (const o of ['troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
     const el = $(o);
     if (el) el.classList.toggle('hidden', o !== id);
   }
 }
 function hideOverlays() {
-  for (const o of ['profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
+  if($('trollButton'))$('trollButton').classList.toggle('hidden',!Game.troll||Game.state!=='playing');
+  for (const o of ['troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
 }
 
 function startPlaying() {
   if (typeof Net !== 'undefined' && Net.live) Game.twoPlayers = false;
   Game.state = 'playing';
   hideOverlays();
+  $('trollButton').classList.toggle('hidden',!Game.troll);
   $('hud').classList.remove('hidden');
   $('death').classList.add('hidden');
-  $('modeBadge').textContent = Game.mode === 'survival' ? 'Survie' : 'Créatif';
+  $('modeBadge').textContent = Game.troll?'Trolle':Game.mode === 'survival' ? 'Survie' : 'Créatif';
   $('statsCanvas').style.display = Game.mode === 'survival' ? 'block' : 'none';
   const two = Game.twoPlayers && !isTouch;
   if (two) {
@@ -9075,7 +9119,7 @@ function openPause() {
 
 /* Pixel screens share the same inventory and crafting engine: no decorative slots. */
 const PixelUI = {
-  tab:'inv', book:false, query:'', creativeCat:'build', creativeQuery:'',
+  tab:'inv', book:false, query:'', creativeCat:'all', creativeQuery:'',
   init() {
     document.querySelectorAll('.recipeBookBtn').forEach(btn=>{
       const c=document.createElement('canvas');c.width=c.height=20;const g=c.getContext('2d');
@@ -9142,11 +9186,35 @@ const PixelUI = {
   },
 };
 
+/* Troll is a creative-based disguise mode, with ordinary player collisions. */
+const Troll = {
+  morph:null,third:true,
+  valid(m){return !!(Array.isArray(m)&&((m[0]==='mob'&&typeof m[1]==='string'&&MOB_DEFS[m[1]]&&!MOB_DEFS[m[1]].boss)||(m[0]==='block'&&Number.isInteger(m[1])&&BLOCKS[m[1]]&&BLOCKS[m[1]].solid&&!BLOCKS[m[1]].bedHead)));},
+  avatar(m,pos,yaw){
+    if(!this.valid(m))return {type:'player',def:MOB_DEFS.player,pos:pos.slice(),yaw,walkPhase:performance.now()/160,hp:20};
+    const def=m[0]==='mob'?MOB_DEFS[m[1]]:{model:'block',skin:BLOCKS[m[1]].tex[1],face:BLOCKS[m[1]].tex[1],blockTex:BLOCKS[m[1]].tex,blockSize:[1,BLOCKS[m[1]].low||1,BLOCKS[m[1]].bed?2:(BLOCKS[m[1]].thin ? .18 : 1)],w:1,h:1};
+    return {type:m[0]==='mob'?m[1]:'disguise-block',def,pos:pos.slice(),yaw,walkPhase:performance.now()/160,hp:20};
+  },
+  local(){return Game.troll&&this.third&&['playing','paused','inventory'].includes(Game.state)?this.avatar(this.morph,Player.pos,Player.yaw):null;},
+  choose(m){if(!Game.troll||!this.valid(m))return;this.morph=m.slice();this.close();HUD.toastText('Déguisement : '+(m[0]==='mob'?MOB_DEFS[m[1]].name:itemName(m[1])),2);},
+  open(){if(!Game.troll||Game.state!=='playing')return;resetTouchInput();clearKeys();Game.state='paused';showOverlay('troll');try{document.exitPointerLock();}catch(e){}this.render();},
+  close(){Game.state='playing';hideOverlays();if(!isTouch)tryPointerLock(true);},
+  render(){
+    const grid=$('trollChoices');grid.innerHTML='';const q=$('trollSearch').value.toLocaleLowerCase('fr');
+    const add=(m,name,icon)=>{if(q&&!name.toLocaleLowerCase('fr').includes(q))return;const b=document.createElement('button');b.className='trollChoice';b.appendChild(icon);const s=document.createElement('span');s.textContent=name;b.appendChild(s);b.onclick=()=>this.choose(m);grid.appendChild(b);};
+    add(['mob','player'],'Joueur',drawTileIcon(TEX.player_face,48));
+    for(const [type,d] of Object.entries(MOB_DEFS))if(type!=='player'&&!d.boss)add(['mob',type],d.name,drawTileIcon(d.face===undefined?d.skin:d.face,48));
+    for(let id=1;id<BLOCKS.length;id++)if(this.valid(['block',id]))add(['block',id],itemName(id),drawItemIcon(id,48));
+  },
+  init(){ $('trollButton').onclick=()=>this.open();$('trollClose').onclick=()=>this.close();$('trollSearch').oninput=()=>this.render();$('trollView').onclick=()=>{this.third=!this.third;$('trollView').textContent=this.third?'Vue : ton personnage':'Vue : première personne';}; },
+};
+
 const INV_TABS = { inv: 'tabInv', craft: 'tabCraft', furnace: 'tabFurnace', blocks: 'tabBlocks', chest: 'tabChest' };
 const INV_TITLES = { inv: 'Inventaire', craft: 'Établi', furnace: 'Four', blocks: 'Tous les blocs', chest: 'Coffre' };
 
 function setInvTab(wanted) {
   if (!INV_TABS[wanted]) wanted = 'inv';
+  if (wanted === 'furnace' && !Furnace.valid()) { HUD.toastText('Fabrique un four à l’établi, pose-le et ouvre-le.',3); return; }
   if (wanted === 'blocks' && Game.mode !== 'creative') wanted='inv';
   if (wanted === 'craft' && !Crafting.atTable()) { wanted='inv'; HUD.toastText('Ouvre un établi posé pour la grille 3 × 3.',2); }
   if (PixelUI.tab !== wanted && typeof CraftGrid !== 'undefined') CraftGrid.dump();
@@ -11654,7 +11722,7 @@ function buildCraftList() {
   }
   list.innerHTML = '';
   for (const r of Crafting.recipes) {
-    if (r.cat !== Crafting.cat && !PixelUI.query) continue;
+
     if (PixelUI.query && !itemName(r.out[0]).toLocaleLowerCase('fr').includes(PixelUI.query)) continue;
     if (PixelUI.tab === 'inv' && (r.stationOnly || r.table || (ITEMS[r.out[0]] && (ITEMS[r.out[0]].tool || ITEMS[r.out[0]].armor)))) continue;
     const unlocked = Crafting.unlocked(r);
@@ -11786,7 +11854,7 @@ function buildCreativePalette() {
   for (let t = 1; t < BLOCKS.length; t++) {
     const d = BLOCKS[t];
     if (!d || !d.name) continue;
-    if (d.level) continue;              // pas les 7 variantes d'eau
+    if (d.level || d.bedHead) continue;              // pas les 7 variantes d'eau
     if (t === B.TNT_LIT) continue;      // dangereux et inutile
     if (t === B.PORTAL) continue;       // ne se pose pas à la main
     if (t === B.DOOR_OPEN) continue;    // s'obtient en actionnant une porte
@@ -11974,6 +12042,7 @@ const Drops = {
       gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4, 1, gl.FLOAT, false, S, 28);
       gl.bindVertexArray(null);
     }
+    gl.bindVertexArray(this.vao); // Index-buffer bindings belong to the owning VAO, never a terrain chunk.
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
     gl.bufferData(gl.ARRAY_BUFFER, b.v.subarray(0, b.nv * 8), gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
@@ -12634,11 +12703,13 @@ const Mobs = {
   /* -------------------------- rendu ---------------------------- */
   render(VP) {
     const extra = (typeof Net !== 'undefined' && Net.live && Net.avatarMob) ? Net.avatarMob() : null;
-    if (!this.list.length && !extra) return;
+    const local=Troll.local();
+    if (!this.list.length && !extra && !local) return;
     if (!this.builder) this.builder = new GeoBuilder(8);
     const b = this.builder;
     b.reset();
     if (extra) this.buildModel(extra, b, 1);
+    if (local) this.buildModel(local,b,1);
     for (const m of this.list) {
       const light = (m.light !== undefined ? m.light : 1);
       this.buildModel(m, b, light);
@@ -12660,6 +12731,7 @@ const Mobs = {
       gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4, 1, gl.FLOAT, false, S, 28);
       gl.bindVertexArray(null);
     }
+    gl.bindVertexArray(this.vao); // Index-buffer bindings belong to the owning VAO, never a terrain chunk.
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
     gl.bufferData(gl.ARRAY_BUFFER, b.v.subarray(0, b.nv * 8), gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
@@ -12695,7 +12767,7 @@ const Mobs = {
       { c: [0, 1, 5, 4], f: 1 }, // -z
     ];
     for (const face of F) {
-      const t = (face.f === 1 && faceTile !== undefined && faceTile !== null && face.c === F[4].c) ? faceTile : tile;
+      const t = m.def.blockTex ? m.def.blockTex[face===F[2]?0:face===F[3]?2:1] : (face.f === 1 && faceTile !== undefined && faceTile !== null && face.c === F[4].c) ? faceTile : tile;
       const uv = [[0, 1], [1, 1], [1, 0], [0, 0]];
       const vs = face.c.map((ci, i) => {
         const p = corners[ci];
@@ -12714,6 +12786,7 @@ const Mobs = {
     const A = (lx, y0, lz, sx, sy, sz, tile, ft) => this.addBox(b, m, lx, y0, lz, sx, sy, sz, tile === undefined ? skin : tile, ft, light);
     const T = m.type;
 
+    if(def.model==='block'){A(0,0,0,...(def.blockSize||[1,1,1]),def.skin);return;}
     if (def.model === 'player') {
       /* Steve : bras qui pendent et balancent avec les jambes */
       A(-0.15, 0, sw * 0.16, 0.25, 0.74, 0.25, TEX.player_pants);
@@ -13550,8 +13623,8 @@ const Structures = {
     bl.put(x0 + 1, base, z0 + 1, rnd() < 0.55 ? B.CRAFTING : B.FURNACE);
     bl.put(x1 - 1, base, z1 - 2, B.BOOKSHELF);
     /* un lit : chaque maison a de quoi dormir */
-    bl.put(x0 + 1, base, z1 - 1, B.BED);
-    if (twoFloors) bl.put(x0 + 1, base + 4, z1 - 1, B.BED);
+    bl.put(x0 + 1, base, z1 - 1, B.BED); bl.put(x0+1,base,z1-2,B.BED_HEAD_NZ);
+    if (twoFloors) {bl.put(x0 + 1, base + 4, z1 - 1, B.BED);bl.put(x0+1,base+4,z1-2,B.BED_HEAD_NZ);}
     bl.put(x0 + 1, base + 3, z0 + 1, rnd() < 0.5 ? B.BOOKSHELF : B.AIR);
     if (rnd() < 0.55) this.ch(bl, x1 - 1, base, z0 + 1, tier || 'village', 1);
     if (rnd() < 0.8) bl.put(x1 - 1, base + 2, z1 - 1, B.TORCH);
@@ -16478,7 +16551,7 @@ async function newWorld(seedStr, thenPlay, extra) {
   buildHotbar();
   buildInventory();
   if (gl) renderScene(0);
-  $('modeBadge').textContent = Game.mode === 'survival' ? 'Survie' : 'Créatif';
+  $('modeBadge').textContent = Game.troll?'Trolle':Game.mode === 'survival' ? 'Survie' : 'Créatif';
   $('xpWrap').classList.toggle('hidden', Game.mode !== 'survival');
   Xp.draw();
   busyLoading = false;
@@ -16570,6 +16643,38 @@ const ICE_SERVERS = {
   ],
 };
 
+/* Exact-name lookup needs no public directory. PeerJS reserves unique live IDs. */
+const RoomNames = {
+  peer:null,retired:[],name:'',
+  normalize(raw){return String(raw||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('fr');},
+  valid(raw){const n=this.normalize(raw);return n.length>=3&&n.length<=28&&!/^\d{6}$/.test(n)&&!/[\u0000-\u001f\u007f]/.test(n);},
+  async id(name){if(!this.valid(name))throw new Error('Choisis un nom de partie de 3 à 28 caractères.');if(!crypto.subtle)throw new Error('Ouvre le jeu sur le site HTTPS pour utiliser les noms de partie.');const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(this.normalize(name)));return 'blocraft-room-'+Array.from(new Uint8Array(b),v=>v.toString(16).padStart(2,'0')).join('').slice(0,40);},
+  close(){const all=[this.peer,...this.retired];this.peer=null;this.retired=[];this.name='';for(const p of all)try{if(p)p.destroy();}catch(e){}},
+  async publish(name,epoch){
+    const id=await this.id(name);if(epoch!==ShortRooms.epoch)throw new Error('Publication annulée.');
+    return new Promise((resolve,reject)=>{
+      const p=new window.Peer(id,{config:ICE_SERVERS,debug:0});let settled=false;
+      const fail=message=>{if(settled)return;settled=true;clearTimeout(timer);p.destroy();reject(new Error(message));};
+      const timer=setTimeout(()=>fail('Publication du nom trop longue. Réessaie.'),18000);
+      p.on('open',()=>{if(epoch!==ShortRooms.epoch){fail('Publication annulée.');return;}settled=true;clearTimeout(timer);if(this.peer)this.retired.push(this.peer);this.peer=p;this.name=String(name).trim().replace(/\s+/g,' ');resolve(this.name);});
+      p.on('connection',c=>{if(epoch!==ShortRooms.epoch||p!==this.peer||ShortRooms.connection||Net.live){c.close();return;}ShortRooms.attach(c,epoch);});
+      p.on('error',e=>{if(!settled)fail(e.type==='unavailable-id'?'Ce nom est déjà utilisé par une partie ouverte. Choisis un autre nom.':'Impossible de publier ce nom de partie.');});
+      p.on('disconnected',()=>{if(p===this.peer&&!Net.live)ShortRooms.fail('Le nom de partie est déconnecté. Publie à nouveau ta partie.',epoch);});
+    });
+  },
+  async rename(){
+    const name=$('partyName').value.trim();if(!this.valid(name)){$('partyNameStatus').textContent='Entre un nom de 3 à 28 caractères.';return;}
+    if(Net.live&&Net.role==='guest'){$('partyNameStatus').textContent='Seul l’hôte peut renommer cette partie.';return;}
+    $('renameParty').disabled=true;
+    try{
+      if(ShortRooms.peer&&this.normalize(name)!==this.normalize(this.name))await this.publish(name,ShortRooms.epoch);
+      if(ShortRooms.peer)this.name=name;
+      const e=Saves.current();if(e){e.name=name;if(e.data)e.data.name=name;Saves.currentName=name;Saves.persist();}else Saves.currentName=name;
+      $('mpHostName').value=name;if(Net.live&&Net.role==='host')Net.send(['room-name',name]);$('partyNameStatus').textContent='Nom enregistré : '+name;
+    }catch(e){$('partyNameStatus').textContent=e.message;}finally{$('renameParty').disabled=false;}
+  },
+};
+
 const ShortRooms = {
   peer: null, connection: null, epoch: 0, code: '', busy: false,
   loader: null, timer: null, retries: 0,
@@ -16592,7 +16697,7 @@ const ShortRooms = {
     return this.loader;
   },
   close() {
-    this.epoch++; this.busy = false; this.code = ''; clearTimeout(this.timer);
+    this.epoch++; this.busy = false; this.code = ''; clearTimeout(this.timer);RoomNames.close();
     const connection = this.connection, peer = this.peer;
     this.connection = null; this.peer = null;
     try { if (connection) connection.close(); } catch (e) {}
@@ -16608,6 +16713,8 @@ const ShortRooms = {
   },
   async host() {
     if (this.busy) return;
+    const name=$('mpHostName').value.trim();if(!RoomNames.valid(name)){Net.status('Choisis d’abord un nom de partie de 3 à 28 caractères.',true);$('mpHostName').focus();return;}
+    this.requestedName=name;
     Net.reset(); Net.role = 'host'; this.busy = true; this.retries = 0;
     const epoch = this.epoch; $('mpCodeOut').value = '';
     Net.status('Création de ta partie privée…');
@@ -16619,11 +16726,14 @@ const ShortRooms = {
     const peer = new window.Peer('blocraft-' + code, { config: ICE_SERVERS, debug: 0 });
     this.peer = peer;
     this.timer = setTimeout(() => this.fail('Le service de connexion ne répond pas. Vérifie Internet et réessaie.', epoch), 18000);
-    peer.on('open', () => {
+    peer.on('open', async () => {
       if (epoch !== this.epoch || peer !== this.peer) return;
-      clearTimeout(this.timer); this.code = code; this.busy = false;
+      clearTimeout(this.timer);
+      try{await RoomNames.publish(this.requestedName,epoch);}catch(e){this.fail(e.message,epoch);return;}
+      if(epoch!==this.epoch)return;
+      this.code = code; this.busy = false;
       $('mpCodeOut').value = code;
-      Net.status('Code prêt : envoie ces 6 chiffres à ton ami. Garde cette page ouverte.');
+      Net.status('Partie ouverte : '+RoomNames.name+' — ton ami peut rechercher ce nom exact.');Saves.currentName=RoomNames.name;const entry=Saves.current();if(entry){entry.name=RoomNames.name;Saves.persist();}
     });
     peer.on('connection', connection => {
       if (epoch !== this.epoch || peer !== this.peer || this.connection || Net.live) { connection.close(); return; }
@@ -16643,22 +16753,24 @@ const ShortRooms = {
   },
   async join(raw) {
     const code = String(raw || '').trim();
-    if (!this.valid(code)) { Net.status('Entre exactement les 6 chiffres du code de ton ami.', true); return; }
+    if(Net.live){Net.status('Tu es déjà connecté à une partie.',true);return;}
+    if (!this.valid(code)&&!RoomNames.valid(code)) { Net.status('Entre le nom exact de la partie (3 à 28 caractères).', true); return; }
     if (this.busy) return;
     Net.reset(); Net.role = 'guest'; this.busy = true;
     const epoch = this.epoch;
     Net.status('Recherche de la partie ' + code + '…');
     try {
       await this.load(); if (epoch !== this.epoch) return;
+      const target=this.valid(code)?'blocraft-'+code:await RoomNames.id(code);if(epoch!==this.epoch)return;
       const peer = new window.Peer(undefined, { config: ICE_SERVERS, debug: 0 }); this.peer = peer;
       this.timer = setTimeout(() => this.fail('Partie introuvable ou connexion bloquée. Vérifie le code et demande à ton ami de garder sa page ouverte.', epoch), 20000);
       peer.on('open', () => {
         if (epoch !== this.epoch) return;
-        this.attach(peer.connect('blocraft-' + code, { reliable: true, serialization: 'binary', metadata: { game: 'blocraft', version: 1 } }), epoch);
+        this.attach(peer.connect(target, { reliable: true, serialization: 'binary', metadata: { game: 'blocraft', version: 1 } }), epoch);
       });
       peer.on('error', error => {
         const message = error.type === 'peer-unavailable'
-          ? 'Ce code ne correspond à aucune partie ouverte. Vérifie les 6 chiffres.'
+          ? 'Aucune partie ouverte avec ce nom ou code. Vérifie le nom exact et la présence de l’hôte.'
           : 'La connexion a échoué. Réessaie sur un autre réseau si nécessaire.';
         this.fail(message, epoch);
       });
@@ -16758,7 +16870,7 @@ var Net = {
     const edits = [];
     for (const arr of Game.manager.editLog.values()) for (const e of arr) edits.push(e);
     this.send(['h', Game.seed, Game.mode, Game.time, Dimensions.current, edits,
-      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100]);
+      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'']);
   },
 
   async onHello(m) {
@@ -16770,8 +16882,10 @@ var Net = {
     while (busyLoading && active()) await new Promise(r => setTimeout(r, 150));
     if (!active()) return;
     Game.mode = mode === 'creative' ? 'creative' : 'survival';
+    Game.troll=!!m[9];if(typeof m[10]==='string')Saves.currentName=m[10].slice(0,28);
     Game.twoPlayers = false;
-    await newWorld(String(seed), false, { edits, time, pos: [px, py, pz] });
+    Saves.begin(Saves.currentName||'Partie partagée',dim||'overworld',Game.troll?'troll':Game.mode);
+    await newWorld(String(seed), false, { edits, time, pos: [px, py, pz],troll:!!m[9],morph:null });
     if (!active()) return;
     startPlaying();
     if (dim && dim !== Dimensions.current) {
@@ -16796,7 +16910,7 @@ var Net = {
           r.px = r.x; r.py = r.y; r.pz = r.z;
           r.x = m[1]; r.y = m[2]; r.z = m[3]; r.yaw = m[4]; r.pitch = m[5]; r.hp = m[6];
           r.name = m[7] || 'Ami';
-          r.dim = m[8] || 'overworld';
+          r.dim = m[8] || 'overworld';r.morph=Game.troll&&Troll.valid(m[9])?m[9]:null;
           r.t = performance.now();
           break;
         }
@@ -16819,6 +16933,7 @@ var Net = {
           if (m[1] === 'iron_golem' || m[1] === 'snow_golem') Mobs.add(m[1], m[2], m[3], m[4]);
           break;
         }
+        case 'room-name':if(this.role==='guest'&&typeof m[1]==='string')Saves.currentName=m[1].slice(0,28);break;
         case 'sleep':
           if (this.role === 'host' && m.slice(1,4).length===3 && m.slice(1,4).every(Number.isInteger) && Math.abs(m[1])<30000000 && m[2]>=0 && m[2]<WH && Math.abs(m[3])<30000000) Beds.sleep({x:m[1],y:m[2],z:m[3]},true);
           break;
@@ -16929,7 +17044,7 @@ var Net = {
       this.send(['p',
         Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,
         Math.round(Player.yaw * 100) / 100, Math.round(Player.pitch * 100) / 100,
-        Math.round(Survival.health), Net.playerName, Dimensions.current]);
+        Math.round(Survival.health), Net.playerName, Dimensions.current,Game.troll?Troll.morph:null]);
     }
     /* changements de blocs, en paquets */
     if (this.outBlocks.length) {
@@ -16978,6 +17093,7 @@ var Net = {
     }
     const a = this._avatar;
     a.pos[0] = r.x; a.pos[1] = r.y; a.pos[2] = r.z;
+    const disguise=Troll.avatar(r.morph,[r.x,r.y,r.z],r.yaw||0);a.type=disguise.type;a.def=disguise.def;
     a.yaw = r.yaw || 0;
     a.light = clamp(1 - (Game.manager.heightAt(r.x, r.z) - r.y) * 0.075, 0.4, 1);
     return a;
@@ -17178,6 +17294,7 @@ const Fx = {
       gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4, 1, gl.FLOAT, false, S, 28);
       gl.bindVertexArray(null);
     }
+    gl.bindVertexArray(this.vao); // Index-buffer bindings belong to the owning VAO, never a terrain chunk.
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
     gl.bufferData(gl.ARRAY_BUFFER, b.v.subarray(0, b.nv * 8), gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
@@ -17714,6 +17831,7 @@ const Admin = {
       }
       case 'creatif': case 'survie': case 'creative': case 'survival': {
         if (!this.requireAdmin('changer de mode')) break;
+        Game.troll=false;Troll.morph=null;$('trollButton').classList.add('hidden');
         Game.mode = (cmd === 'creatif' || cmd === 'creative') ? 'creative' : 'survival';
         if (Game.mode === 'survival' && Player.flying) Player.flying = false;
         $('modeBadge').textContent = Game.mode === 'survival' ? 'Survie' : (Player.flying ? 'Vol' : 'Créatif');
@@ -17936,6 +18054,8 @@ function boot() {
   RoleGate.init();
   setupInput();
   PixelUI.init();
+  Troll.init();
+  $('renameParty').onclick=()=>RoomNames.rename();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
   $('chatSend').addEventListener('click', () => GameChat.submit());
   $('chatClose').addEventListener('click', () => Admin.closeBar());
@@ -17996,27 +18116,31 @@ function boot() {
   const showMp = () => {
     initAudioOnce();
     showOverlay('mp');
-    Net.status('Crée une partie ou connecte-toi avec le code de ton ami.');
+    $('mpHostName').value=RoomNames.name||Saves.currentName||'';
+    Net.status('Crée une partie nommée ou recherche le nom exact de ton ami.');
   };
   $('btnOnline').addEventListener('click', showMp);
+  $('btnShareParty').addEventListener('click',showMp);
   $('btnMpClose').addEventListener('click', () => {
-    if (Net.live) hideOverlays(); else showOverlay('menu');
+    if(Game.state==='paused'&&Game.manager)resumeGame();else if (Net.live) hideOverlays(); else showOverlay('menu');
   });
   $('btnMpHost').addEventListener('click', () => {
     initAudioOnce();
     $('mpJoinBox').classList.add('hidden');
+    $('mpNameBox').classList.remove('hidden');
     $('mpHostBox').classList.remove('hidden');
     Net.host();
   });
   $('btnMpJoin').addEventListener('click', () => {
     initAudioOnce();
     $('mpHostBox').classList.add('hidden');
+    $('mpNameBox').classList.add('hidden');
     $('mpJoinBox').classList.remove('hidden');
     Net.status('Entre le code à 6 chiffres de ton ami.');
     $('mpJoinIn').focus();
   });
   $('mpJoinBox').addEventListener('submit', e => { e.preventDefault(); Net.join($('mpJoinIn').value); });
-  $('mpJoinIn').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6); });
+
   const copyFrom = (id) => {
     const ta = $(id);
     if (!ta || !ta.value) return;
@@ -18053,7 +18177,7 @@ function boot() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.worldBtn').forEach(b => b.classList.toggle('active', b === btn));
       Game.startWorld = btn.dataset.world;
-      if (Game.startWorld === 'flat') {
+      if (Game.startWorld === 'flat' && !Game.troll) {
         const cr = document.querySelector('.modeBtn[data-mode="creative"]');
         if (cr && !cr.classList.contains('active')) cr.click();
       }
@@ -18069,9 +18193,10 @@ function boot() {
   document.querySelectorAll('.modeBtn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.modeBtn').forEach(b => b.classList.toggle('active', b === btn));
-      Game.mode = btn.dataset.mode;
-      $('modeBadge').textContent = Game.mode === 'survival' ? 'Survie' : 'Créatif';
+      Game.troll=btn.dataset.mode==='troll';Game.mode=Game.troll?'creative':btn.dataset.mode;Troll.morph=null;
+      $('modeBadge').textContent = Game.troll?'Trolle':Game.mode === 'survival' ? 'Survie' : 'Créatif';
       Sfx.play('click', 0.5);
+      if($('newgame').classList.contains('hidden'))openNewGameDialog();else if(window.__syncNgChips)window.__syncNgChips();
     });
   });
 
@@ -18079,7 +18204,7 @@ function boot() {
   const syncNgChips = () => {
     const wl = $('ngWorld'), ml = $('ngMode'), sl = $('ngSeed');
     if (wl) wl.textContent = WORLD_LABEL[Game.startWorld || 'overworld'] || 'Monde normal';
-    if (ml) ml.textContent = (Game.mode === 'creative') ? 'Créatif' : 'Survie';
+    if (ml) ml.textContent = Game.troll?'Trolle':(Game.mode === 'creative') ? 'Créatif' : 'Survie';
     const sv = (($('seedInput') && $('seedInput').value) || '').trim();
     if (sl) sl.textContent = sv ? 'graine ' + sv : 'graine aléatoire';
   };

@@ -80,7 +80,27 @@ await page.goto(url,{waitUntil:'load'});
     assert((await page.locator('#cinematic h1').textContent()).includes('Le dernier battement'));
     assert(await page.evaluate(()=>Cinematics.scenes.ending.some(s=>s[0]==='Le dernier de son espèce')));
     await page.locator('#cinematic button').click();
+    const beds=await page.evaluate(()=>{
+      Game.state='playing';Game.mode='survival';Game.troll=false;Game.inv=new Inventory();Game.inv.add(B.BED,2);Player.pos=[4.5,61,7.5];Player.pitch=0;Player.yaw=0;
+      const placed=Beds.place(4,61,5),head=Game.manager.getBlock(4,61,4),count=Game.inv.count(B.BED);
+      finishBreak({x:4,y:61,z:4,block:head});const removed=Game.manager.getBlock(4,61,5)===0&&Game.manager.getBlock(4,61,4)===0&&Game.inv.count(B.BED)===2;
+      Game.manager.setBlock(4,61,4,B.STONE,true);const obstructed=!Beds.place(4,61,5)&&Game.inv.count(B.BED)===2;Game.manager.setBlock(4,61,4,B.AIR,true);
+      Game.mode='creative';let allDirections=true;for(const angle of [0,Math.PI/2,Math.PI,-Math.PI/2]){Player.yaw=angle;if(!Beds.place(4,61,5)){allDirections=false;continue;}const p=Beds.partner({x:4,y:61,z:5});allDirections=allDirections&&!!p&&Math.hypot(p.x-4,p.z-5)===1;finishBreak({x:4,y:61,z:5,block:B.BED});}
+      return {placed,head:BLOCKS[head].bedHead,count,removed,obstructed,allDirections};
+    });
+    assert(beds.placed&&beds.head&&beds.count===1&&beds.removed&&beds.obstructed&&beds.allDirections,JSON.stringify(beds));
+    await page.evaluate(()=>openMenuScreen());await page.locator('.modeBtn[data-mode=troll]').click();
+    assert(await page.locator('#newgame').isVisible());assert.equal(await page.locator('#ngMode').textContent(),'Trolle');
+    await page.evaluate(()=>{Game.state='playing';hideOverlays();});
+    await page.locator('#trollButton').click();await page.locator('#trollSearch').fill('Mouton');await page.locator('#trollChoices button').filter({hasText:/^Mouton$/}).click();
+    assert(await page.evaluate(()=>Game.troll&&Game.mode==='creative'&&Troll.local().def.model==='sheep'));
+    await page.evaluate(()=>{Net.live=true;Net.remote={x:6,y:61,z:5,yaw:0,dim:Dimensions.current,morph:['block',B.GRASS]};if(Net.avatarMob().def.model!=='block')throw new Error('Remote disguise missing');renderScene(.1);Net.live=false;Net.remote=null;});
+    await page.locator('#trollButton').click();await page.locator('#trollSearch').fill('Pierre');await page.locator('#trollChoices button').filter({hasText:/^Pierre$/}).click();
+    assert(await page.evaluate(()=>Troll.morph[0]==='block'&&Troll.morph[1]===B.STONE));
+    await page.locator('#trollButton').click();await page.locator('#trollView').click();assert(!await page.evaluate(()=>Troll.third));await page.locator('#trollView').click();await page.locator('#trollClose').click();
+    assert(await page.evaluate(()=>saveGame()&&Saves.current().data.troll&&Saves.current().data.morph[0]==='block'));
+    await page.evaluate(()=>renderScene(.1));assert.equal(await page.evaluate(()=>gl.getError()),0);await page.screenshot({path:'/tmp/blocraft-troll.png'});
     assert.deepEqual(errors,[]);
-    console.log('OK : WebGL, vrais gestes tactiles, pose/minage, établi, chat sécurisé, surfaces d’eau et cinématique.');
+    console.log('OK : WebGL, gestes tactiles, établi, chat, eau, histoire, lit 2 cases/4 orientations/obstacle/butin unique, mode Trolle et déguisements locaux/distants.');
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -124,14 +124,14 @@ c'est fait, avec le compteur de ce qu'il te reste et le nombre d'échanges resta
 > Pas assez d'ingrédients ? La ligne reste grisée et un message indique ce qu'il faut.
 > Échap (ou la croix) referme le comptoir.
 
-### Portes et lit : dormir pour passer la nuit
+### Portes et lit de deux blocs : dormir pour passer la nuit
 
 Deux nouveaux blocs de mobilier, avec leurs recettes :
 
 | Bloc | Recette | Effet |
 |---|---|---|
 | 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **un toucher bref**) ; ouverte, on passe au travers |
-| 🛏️ **Lit** | 3 laines blanches + 3 planches, sur un établi ouvert | la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
+| 🛏️ **Lit** | 3 laines blanches + 3 planches, sur un établi ouvert | occupe **deux cases de long**, orientées selon ton regard ; la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
 
 > De jour, le lit refuse : *« On ne dort que la nuit »*. Et si un monstre rôde
 > à moins de 12 blocs, impossible de fermer l'œil — il faut d'abord nettoyer.
@@ -340,35 +340,35 @@ sont des dimensions **à découvrir en jeu**, par un portail (voir §5) :
 > Le mono-bloc est un monde à part : pour y revenir, choisis-le à nouveau dans le
 > menu. En créatif, tomber dans le vide te ramène sur le bloc (pas de mort).
 
-## 4. Jouer à deux avec un code à 6 chiffres
+## 4. Jouer à deux avec le nom de la partie
 
-Ouvrez tous les deux <https://ytcodage.github.io/Blocraft/jeu/>.
+Après avoir choisi un mode, donne un **nom de 3 à 28 caractères** à ta partie.
+Ce nom reste modifiable dans la pause avec **Renommer la partie**.
 
-**L’hôte :** menu → **Jouer à deux** → **Créer une partie**. Il copie les **6 chiffres**
-et les envoie à son ami. Il garde la page ouverte.
+**L’hôte :** menu → **Jouer à deux**, ou pause → **Inviter un ami**. Vérifie le
+nom et clique **Créer une partie**. Envoie ce nom à ton ami et garde la page ouverte.
 
-**L’ami :** menu → **Jouer à deux** → **Se connecter**. Il entre les 6 chiffres,
-puis clique sur **Rejoindre la partie**. Il n’y a aucun code de réponse à renvoyer.
-La carte de l’hôte est chargée automatiquement sur l’autre appareil.
+**L’ami :** **Jouer à deux → Se connecter**. La barre de recherche accepte le
+**nom exact de la partie**, puis **Rejoindre la partie** établit la connexion.
+Majuscules/minuscules et espaces répétés sont normalisés ; les accents comptent.
+Un nom déjà occupé par une partie ouverte est refusé. Un nom composé exactement
+de six chiffres est réservé aux anciens codes de secours : utilise un autre nom.
 
-Il s’agit d’une session privée temporaire pour **deux joueurs maximum**, pas d’un
-serveur de jeu permanent. Les déplacements, blocs, monstres, discussions et l’heure
-utilisent la liaison WebRTC entre les navigateurs ; l’hôte gère le monde. S’il ferme
-son onglet, la session s’arrête et le code devient inutilisable. L’autre joueur
-peut continuer en solo. Il faut recréer une partie pour obtenir un nouveau code.
+Le renommage d’une partie publiée réserve d’abord le nouveau nom, sans couper
+la connexion existante. En cas de nom occupé, l’ancien reste utilisable. Un **code
+à six chiffres de secours** reste affiché pour compatibilité.
 
-**Infrastructure :** GitHub Pages ne peut pas héberger la mise en relation.
-Le jeu utilise **PeerJS Cloud** pour enregistrer les codes et échanger les informations
-nécessaires à l’établissement de WebRTC. La bibliothèque PeerJS 1.5.5 est fournie
-localement dans `assets/vendor/` avec sa licence MIT. Il faut donc conserver ce
-dossier si l’on héberge le jeu ailleurs. Le monde lui-même n’est pas stocké sur
-PeerJS Cloud, et aucune garantie de disponibilité de ce service tiers n’est fournie.
+Il ne s’agit **pas d’un annuaire mondial ni d’une recherche partielle** : il faut
+connaître le nom exact. Une partie solo n’est publiée que lorsque l’hôte choisit
+**Créer une partie**. Deux joueurs maximum, hôte connecté ; pas de serveur permanent.
+Les noms sont des invitations faciles à deviner, pas des mots de passe.
 
-Ne publiez pas le code : ce n’est pas un mot de passe fort. Il donne accès à la
-session au premier ami qui se connecte. Une troisième connexion est refusée.
-Certains réseaux/NAT bloquent WebRTC : le jeu affiche alors une erreur, sans
-prétendre que la connexion a réussi. Réessayez depuis un autre réseau.
-Aucun relais TURN propre au projet n’est déployé.
+La mise en relation utilise **PeerJS Cloud** et la bibliothèque locale PeerJS 1.5.5
+(`assets/vendor/`, licence MIT). Les données du jeu circulent directement en WebRTC.
+Internet et un réseau compatible sont nécessaires ; aucun relais TURN propre au
+projet n’est déployé. Les noms et codes cessent de fonctionner quand la session
+est fermée. Les sauvegardes restent locales. Rejoindre crée une fiche locale
+séparée, sans écraser la partie solo précédente du joueur invité.
 
 ## 5. La survie, comme dans Minecraft
 
@@ -891,3 +891,37 @@ Le soleil et la lune utilisent maintenant des contours carrés nets et un motif
 le profil Joueur, l’ancienne commande propriétaire, l’activation de
 l’administration, la mémorisation et le changement de profil à 390 pixels.
 Le test utilise un vérificateur de test, sans inclure le code réel dans le dépôt.
+
+
+## Mode Trolle et interfaces simplifiées
+
+Le troisième mode **Trolle** utilise les règles du créatif. Après le choix du
+mode et du nom, **Se transformer** permet de rechercher et choisir un animal,
+un monstre courant ou un bloc. Les modèles sont animés et transmis à l’autre
+joueur. Une vue à la troisième personne permet de voir son propre déguisement ;
+le bouton de vue permet de revenir en première personne et l’apparence **Joueur**
+permet de retrouver le personnage normal. Ce sont des déguisements : ils ne
+confèrent pas les pouvoirs des monstres et gardent les collisions d’un joueur.
+Le mode et l’apparence sont sauvegardés.
+
+Les barres de catégories « Combat », « Outils », etc. sont retirées des écrans.
+Le catalogue affiche tous les objets et conserve la recherche. Le livre affiche
+les recettes autorisées, avec recherche et remplissage. Les armes ne sont pas
+supprimées du jeu : elles restent soumises aux règles d’établi.
+
+Il n’existe plus d’onglet **Four** dans l’inventaire. Le four se fabrique avec
+8 pierres taillées/cobblestone à l’établi, puis doit être posé et ouvert dans le
+monde. La grille personnelle ne permet pas de fabriquer le four.
+
+Les lits nouvellement posés utilisent deux cases sur un sol solide. Si une case
+est occupée, aucune ressource n’est consommée. Casser l’une des moitiés retire
+l’autre et ne rend qu’un lit. Les têtes internes ne sont pas des objets du catalogue.
+Les anciens lits d’une seule case présents dans des sauvegardes restent compatibles
+pour dormir ; casse-les et repose-les pour obtenir le nouveau format.
+
+Les tests `test:game` couvrent le choix du mode, l’écran de nom, les apparences
+locales/distantes, le rendu WebGL répété et les lits dans quatre orientations.
+`test:rooms` utilise un vrai PeerServer local pour les noms Unicode, les collisions,
+le renommage avec connexion conservée, le handshake Trolle et l’ancien code de secours.
+La disponibilité du service public et les NAT de réseaux physiques ne sont pas
+validés par ces tests locaux.
