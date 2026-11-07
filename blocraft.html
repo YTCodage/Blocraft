@@ -1391,6 +1391,7 @@
 
 #commandMenu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:#111e1cf5;border:1px solid #8ccf83;border-radius:12px;max-height:min(46vh,400px);overflow:auto;padding:10px;box-shadow:0 15px 50px #0009;display:grid;gap:6px;color:#effff2}#commandMenu.hidden{display:none}#commandMenu h3{font:700 15px system-ui;margin:4px 6px 9px}#commandMenu button{width:100%;text-align:left;white-space:normal;background:#ffffff09;border-color:#ffffff20;font:14px system-ui;padding:10px;line-height:1.5}#commandMenu button:focus,#commandMenu button.selected{background:#365e39;outline:2px solid #afe193}#commandMenu small{display:block;color:#bacdc2;font-size:12px}#skinPreview{cursor:grab;touch-action:none;image-rendering:pixelated}#skinPreview:active{cursor:grabbing}#realm .panel{max-height:90dvh;overflow:auto}#realm p{line-height:1.7}#realm input{max-width:100%;box-sizing:border-box;border:1px solid #66857c;border-radius:7px;padding:11px;background:#091516;color:#e4f7ed;margin:7px 0 13px;font:13px monospace}#realm .btn{margin:5px 0}#realm label{display:block;margin-top:10px;font-size:13px}#powerButton{position:fixed;right:16px;top:115px;z-index:13;background:#243b2e;color:#dfffe3;border:1px solid #8abd7a;border-radius:9px;padding:10px;max-width:200px}#powerButton small{display:block;font-size:11px}body:not(.chat-enabled) #powerButton{display:none}@media(max-width:600px){#powerButton{top:85px;max-width:145px;font-size:12px}#newgame .wizardChoice{padding:10px 13px}#newgame .wizardChoices{gap:6px}}
 
+#weatherCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}#worldCoordinates{position:fixed;left:12px;top:10px;display:flex;gap:9px;align-items:center;z-index:14;background:#07131dc9;padding:7px 10px;border-radius:9px;font:11px monospace;color:#d6efe5;pointer-events:none}#worldCoordinates.hidden{display:none}.compassRose{position:relative;width:40px;height:40px;border:1px solid #8fb3a877;border-radius:50%}.compassRose span{position:absolute;font:9px monospace}.compassRose span:nth-child(1){top:0;left:16px}.compassRose span:nth-child(2){right:1px;top:15px}.compassRose span:nth-child(3){bottom:0;left:16px}.compassRose span:nth-child(4){left:1px;top:15px}.compassRose i{display:block;position:absolute;left:13px;top:11px;color:#ff9b85;transform-origin:7px 9px;font-style:normal}#vehicleExit{position:fixed;right:15px;bottom:190px;z-index:30;padding:12px;border:1px solid #95ccaa;border-radius:9px;background:#18382e;color:#eaffee}.qaSite:has(button:nth-of-type(2)){grid-template-columns:minmax(0,1fr) auto auto}.qaSite:has(button:nth-of-type(2)) .d{grid-column:1/-1;grid-row:2}.qaSite .d{white-space:normal}#victory .panel p{line-height:1.7}#victory .btn{margin-top:12px}@media(max-width:500px){#worldCoordinates{font-size:9px;gap:5px;padding:5px;left:6px;top:5px}#worldCoordinates .compassRose{width:40px;flex-shrink:0}#modeBadge{top:66px!important;right:7px!important;font-size:11px}#powerButton{top:100px!important}}
 </style>
 </head>
 <body>
@@ -1772,6 +1773,9 @@
   <button id="chatToggle" type="button" aria-label="Ouvrir le chat">☵ <span>Chat</span></button>
   <button id="powerButton" class="hidden" type="button">Capacité · G<small id="powerHint"></small></button>
 <div id="realm" class="overlay hidden"><section class="panel"><h2 class="title">Monde Admin</h2><p>Ton accès Admin est mémorisé sur cet appareil. QA reste désactivé à chaque rechargement.</p><button id="realmPlay" class="btn primary">Entrer dans mon monde Admin</button><button id="realmPublish" class="btn">Ouvrir ce monde aux admins invités</button><p id="realmStatus" role="status"></p><label>Invitation privée (à transmettre uniquement à un Admin)<input id="realmToken" readonly aria-label="Invitation Admin" style="width:100%"></label><button id="realmCopy" class="btn">Copier l’invitation privée</button><label>Invitation reçue<input id="realmJoinToken" maxlength="80" placeholder="Code du monde : invitation privée" style="width:100%"></label><button id="realmJoin" class="btn">Rejoindre le monde Admin invité</button><p><small>Salon privé hébergé par le navigateur, 2 joueurs. L’hôte doit rester connecté. Ce n’est pas une authentification serveur : le profil local est modifiable.</small></p><button id="realmQA" class="btn">Activer QA pour cette session</button><button id="realmClose" class="btn">Retour au menu</button></section></div>
+
+<canvas id="weatherCanvas" aria-hidden="true"></canvas><div id="worldCoordinates" class="hidden"><div class="compassRose"><span>N</span><span>E</span><span>S</span><span>O</span><i id="compassNeedle">▲</i></div><div><div id="coordinateText"></div><small id="compassDegrees"></small></div></div><button id="vehicleExit" class="hidden" type="button">Descendre · X</button>
+<div id="victory" class="overlay hidden"><section class="panel"><h2 class="title">Le dragon est vaincu !</h2><p id="victoryLocation"></p><p>Une tête du dragon, son cœur unique et un équipement rare t’attendent. Le cœur te permet de rentrer dans ton monde.</p><button id="victoryLoot" class="btn primary">Aller au coffre de victoire</button><button id="victoryHome" class="btn">Retourner dans l’Overworld</button></section></div>
 
 <div id="chatLog" role="log" aria-live="polite" aria-label="Discussion et événements"></div>
   <div id="adminBadge">👑 ADMIN</div>
@@ -2524,6 +2528,21 @@ for (let i = 100; i < 163; i++) {
   if (!BLOCKS[i]) BLOCKS[i] = { name: null, tex: null, solid: false, opaque: false, hard: -1 };
 }
 
+/* Machine blocks use new IDs; old saves and item IDs remain unchanged. */
+for(const [i,key,name,props] of [
+[400,'LEVER_OFF','Levier',{lever:true,low:.3}],[401,'LEVER_ON','Levier activé',{lever:true,power:true,low:.3,internal:true}],
+[402,'BUTTON_OFF','Bouton',{button:true,low:.12}],[403,'BUTTON_ON','Bouton appuyé',{button:true,power:true,low:.08,internal:true}],
+[404,'PLATE_OFF','Plaque de pression',{plate:true,low:.08}],[405,'PLATE_ON','Plaque enfoncée',{plate:true,power:true,low:.04,internal:true}],
+[406,'REPEATER_OFF','Répéteur',{repeater:true,directional:true,low:.15}],[407,'REPEATER_ON','Répéteur alimenté',{repeater:true,directional:true,power:true,low:.15,internal:true}],
+[408,'COMPARATOR_OFF','Comparateur',{comparator:true,directional:true,low:.15}],[409,'COMPARATOR_ON','Comparateur alimenté',{comparator:true,directional:true,power:true,low:.15,internal:true}],
+[410,'REDTORCH_OFF','Torche redstone éteinte',{redtorch:true,directional:true,low:.6,internal:true}],[411,'REDTORCH_ON','Torche de redstone',{redtorch:true,directional:true,power:true,light:7,low:.6}],
+[412,'PISTON_OFF','Piston',{piston:true,solid:true}],[413,'PISTON_ON','Piston étendu',{piston:true,solid:true,internal:true}],
+[414,'PISTON_HEAD','Tête de piston',{solid:true,internal:true,drop:'none'}],[415,'STICKY_PISTON_OFF','Piston collant',{piston:true,sticky:true,solid:true}],[416,'STICKY_PISTON_ON','Piston collant étendu',{piston:true,sticky:true,solid:true,internal:true}],
+[417,'DETECTOR_RAIL','Rail détecteur',{rail:true,detector:true,power:true,low:.06}],[418,'ACTIVATOR_RAIL','Rail activateur',{rail:true,low:.06}],[419,'CURVED_RAIL','Rail courbe (angle automatique)',{rail:true,low:.06}],
+[420,'DRAGON_HEAD','Tête du dragon',{solid:true,low:.7,trophy:true}]
+]){B[key]=i;const tex=props.trophy?TEX.dragon_face:props.piston||key==='PISTON_HEAD'?TEX.planks:props.power?TEX.redstone:TEX.cobble;BLOCKS[i]={name,tex:[tex,tex,tex],solid:false,opaque:false,hard:props.piston?2:props.trophy?1:.5,circuit:!props.trophy,...props};}
+for(const [from,to]of [[401,400],[403,402],[405,404],[407,406],[409,408],[410,411],[413,412],[416,415]])BLOCKS[from].drop=to;
+for(let i=BLOCKS.length-1;i>=0;i--)if(!BLOCKS[i])BLOCKS[i]={name:null,tex:null,solid:false,opaque:false,hard:-1};
 /* index de tuile par face : 0 = haut, 1 = côté, 2 = bas */
 for (const b of BLOCKS) {
   if (!b.tex) continue;
@@ -4065,7 +4084,7 @@ const WorldGen = {
 
   /* génère un chunk de blocs (Uint8Array) + une liste d'arbres à planter */
   generateChunk(cx, cz) {
-    const data = new Uint8Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * WH * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
     const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
@@ -4138,8 +4157,8 @@ const WorldGen = {
         // citrouilles sauvages : petites plaques éparses sur l'herbe
         if (!desert && !snow && h > SEA + 1 && get(lx, h, lz) === B.GRASS) {
           const patch = this.nDetail(wx * 0.21 + 57.3, wz * 0.21 - 19.7);
-          if (patch > 0.66 && this.nDetail(wx * 2.1, wz * 2.1) > 0.1) {
-            set(lx, h + 1, lz, this.nDetail(wx * 3.3, wz * 3.3) > 0.55 ? B.PUMPKIN_CARVED : B.PUMPKIN);
+          if (patch > 0.86 && this.nDetail(wx * 2.1, wz * 2.1) > 0.78) {
+            set(lx, h + 1, lz, B.PUMPKIN);
           }
         }
 
@@ -4209,7 +4228,7 @@ const WorldGenNether = {
   },
 
   generateChunk(cx, cz) {
-    const data = new Uint8Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * WH * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
     const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
@@ -4318,7 +4337,7 @@ const WorldGenEnd = {
   },
 
   generateChunk(cx, cz) {
-    const data = new Uint8Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * WH * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
     const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
@@ -5122,7 +5141,7 @@ const WorldGenOneBlock = {
   init(seed) { this.seed = seed >>> 0; },
   /* pas de terrain : uniquement le bloc unique, au centre du monde */
   generateChunk(cx, cz) {
-    const data = new Uint8Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * WH * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     if (cx === 0 && cz === 0) data[CHUNK * (CHUNK * 64)] = B.GRASS;
     return { data, trees: [], HEIGHTS };
@@ -5136,7 +5155,7 @@ const WorldGenFlat = {
   seed: 0,
   init(seed) { this.seed = seed >>> 0; },
   generateChunk(cx, cz) {
-    const data = new Uint8Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * WH * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
     for (let lz = 0; lz < CHUNK; lz++) {
@@ -5467,6 +5486,7 @@ class ChunkManager {
           const def = BLOCKS[t];
 
           /* plantes croisées */
+          if(def.rail){Railways.mesh(solid,x,y,z,cx*16+x,cz*16+z,this,lightAt(x,y,z));continue;}
           if (def.cross) {
             const l = lightAt(x, y, z);
             const layer = texOf(t, 0);
@@ -5858,6 +5878,7 @@ function movePlayer(dt) {
   Player.inWater = (footBlockIsWater(feet) || footBlockIsWater(body));
   function footBlockIsWater(t) { return t === B.WATER || !!(BLOCKS[t] && BLOCKS[t].water); }
 
+  if(typeof Railways!=='undefined'&&(Railways.riding||typeof Boats!=='undefined'&&Boats.riding)){v[0]=v[1]=v[2]=0;return;}
   // vitesse souhaitée
   let speed;
   if (Player.flying) speed = Player.sprint ? 26 : 12;
@@ -5873,14 +5894,15 @@ function movePlayer(dt) {
   let ix = Input.r - Input.l, iz = Input.f - Input.b;
   const len = Math.hypot(ix, iz);
   if (len > 1) { ix /= len; iz /= len; }
-  const wx = (ix * cosY - iz * sinY) * speed;
-  const wz = (-ix * sinY - iz * cosY) * speed;
+  const forward=iz*(Player.flying?Math.cos(Player.pitch):1);
+  const wx=(ix*cosY-forward*sinY)*speed;
+  const wz=(-ix*sinY-forward*cosY)*speed;
 
   if (Player.flying) {
     const accel = 1 - Math.exp(-dt * 9);
     v[0] += (wx - v[0]) * accel;
     v[2] += (wz - v[2]) * accel;
-    let vy = 0;
+    let vy = (Input.f-Input.b)*Math.sin(Player.pitch)*speed;
     if (Input.jump) vy = speed * 0.8;
     if (Input.down) vy = -speed * 0.8;
     v[1] += (vy - v[1]) * (1 - Math.exp(-dt * 10));
@@ -6073,7 +6095,7 @@ function blockDrops(type) {
     return ore ? [[B.COBBLE, 1], ore] : [[B.COBBLE, 1]];
   }
   if (type === B.GRAVEL) {
-    return Math.random() < 0.28 ? [[I.FLINT, 1]] : [[B.GRAVEL, 1]];
+    return Math.random() < 0.28 ? [[I.FLINT_SHARD, 1]] : [[B.GRAVEL, 1]];
   }
   if (def.drop === 'chest') {
     const loot = [
@@ -6102,8 +6124,10 @@ function finishBreak(t) {
   const tool = itemTool(held);
   const req = blockTier(t.block);
   const canDrop = (!def.needsTool || tool === 'pick') && toolTier(held) >= req;
+  if(typeof EndVictory!=='undefined'&&EndVictory.loot(t.x,t.y,t.z)){HUD.toastText('Ce coffre de victoire est protégé : ouvre-le pour prendre le butin.',3);return;}
   const bedPartner=def.bed?Beds.partner(t):null;
   if (!Game.manager.setBlock(t.x, t.y, t.z, B.AIR, true)) return;
+  if(def.piston){const st=Circuits.state(t.x,t.y,t.z),v=Railways.D[st.dir||0];if(Game.manager.getBlock(t.x+v[0],t.y,t.z+v[1])===B.PISTON_HEAD)Game.manager.setBlock(t.x+v[0],t.y,t.z+v[1],B.AIR,true);Circuits.meta.delete(Circuits.key(t.x,t.y,t.z));}
   if(bedPartner)Game.manager.setBlock(bedPartner.x,bedPartner.y,bedPartner.z,B.AIR,true);
   /* les deux moitiés d'une porte tombent ensemble */
   if (t.block === B.DOOR_CLOSED || t.block === B.DOOR_OPEN) {
@@ -6182,6 +6206,7 @@ function breakBlock() {
 
 /* ------------------------------ Combat ---------------------------------- */
 function tryAttack(aim) {
+  if(heldItemId()===I.BOW){Archery.shoot();return true;}
   if (Game.attackCd > 0) return false;
   const direction = aim || (TouchActions.mining ? TouchActions.direction() : lookDir());
   const hit = entityRaycast(typeof MorphPowers!=='undefined'&&MorphPowers.active()?MorphPowers.stats().reach:4.6, direction);
@@ -6323,7 +6348,7 @@ const EnderEye = {
       const sp = 15.5;
       vx = dx / d * sp; vz = dz / d * sp; vy = 3.4;
       const dist = Math.round(tgt.dist);
-      HUD.toastText('👁️ L\'œil de l\'End file vers le portail · ' + dist + ' blocs au ' +
+      HUD.toastText('👁️ L\'œil de l\'End file vers le portail · ' + dist + ' blocs · '+Coordinates.xyz(tgt.x,tgt.y,tgt.z)+' au ' +
         this.bearing(dx, dz), 3.4);
     } else {
       vx = dir[0] * 15.5; vy = 3.4; vz = dir[2] * 15.5;
@@ -6376,7 +6401,7 @@ const EnderEye = {
     if (t) {
       const d = Math.round(Math.hypot(t.x - Player.pos[0], t.z - Player.pos[2]));
       HUD.toastText('👁️ L\'œil retombe : portail de l\'End à ' + d + ' blocs au ' +
-        this.bearing(t.x - Player.pos[0], t.z - Player.pos[2]) + '. Touche X pour le voir.', 5);
+        this.bearing(t.x - Player.pos[0], t.z - Player.pos[2])+' · '+Coordinates.xyz(t.x,t.y,t.z)+'. Touche X pour le voir.', 5);
     } else {
       HUD.toastText('👁️ L\'œil est revenu dans ton sac', 2.6);
     }
@@ -6543,6 +6568,8 @@ function useBucket() {
 
 function placeBlock() {
   const t = Game.target;
+  if(heldItemId()===I.BOW){Archery.shoot();return;}
+  if(heldItemId()===I.BOAT){Boats.use(t);return;}
   /* la perle de l'End ne se pose pas : c'est un objet de lancer */
   if (heldItemId() === I.ENDER_PEARL) return;
   if (!t) return;
@@ -6613,6 +6640,7 @@ function placeBlock() {
     return;
   }
   if (Game.manager.setBlock(x, y, z, type, true)) {
+    if(BLOCKS[type].circuit)Circuits.placed(x,y,z,type);
     Sfx.blockPlace(type, 1);
     if (typeof Fx !== 'undefined' && BLOCKS[type] && BLOCKS[type].tex) {
       Fx.puff(x + 0.5, y + 0.5, z + 0.5, 5, BLOCKS[type].tex[1] !== undefined ? BLOCKS[type].tex[1] : BLOCKS[type].tex[0]);
@@ -6849,7 +6877,7 @@ function saveGame(opts) {
       armor: Armor.serialize(),
       furnaces: Furnace.serialize(),
       xp: Xp.serialize(),
-      drops: Drops.list, carts: Railways.carts,
+      drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
       slot: Game.slot,
       twoPlayers: !!(Game.twoPlayers && !isTouch),
       players: Players.count > 1 ? Players.list.map(p => ({
@@ -7188,7 +7216,8 @@ function updateDebug(fps) {
   const hud = `BLOCRAFT — F3
 ──────────────────
 FPS        ${fps.toFixed(0)}
-Position   ${p[0].toFixed(1)} / ${p[1].toFixed(1)} / ${p[2].toFixed(1)}
+Position   X : ${p[0].toFixed(1)} · Y : ${p[1].toFixed(1)} · Z : ${p[2].toFixed(1)}
+Direction  ${Coordinates.bearing().cardinal} · ${Math.round(Coordinates.bearing().degrees)}°
 Chunk      ${Math.floor(p[0] / 16)}, ${Math.floor(p[2] / 16)}
 Chunks     ${mgr.chunks.size} chargés
 Biome      ${biome}
@@ -7262,6 +7291,8 @@ function findSpawn(seed) {
 
 async function loadWorld(seed, savedData, onProgress, opts) {
   Game.seed = seed >>> 0;
+  Adventure.load(savedData);Railways.riding=null;
+  if(!savedData)Railways.carts=[];
   const dim = (opts && opts.dim) || (savedData && savedData.dim) || 'overworld';
   const startDim = (dim === 'oneblock' || dim === 'flat') ? dim : 'overworld';
   Game.manager = new ChunkManager(startDim);
@@ -7319,7 +7350,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     MorphPowers.apply();Survival.deserialize(savedData.stats);
     Armor.deserialize(savedData.armor);
     Furnace.deserialize(savedData.furnaces);
-    Drops.list = savedData.drops || []; Railways.carts = savedData.carts || []; Railways.riding = null;
+    Drops.list=savedData.drops||[];Railways.load(savedData.carts);
     Xp.deserialize(savedData.xp);
   }
   if (!Game.inv) Game.inv = new Inventory();
@@ -7731,6 +7762,7 @@ function renderScene(dt, view) {
   const fogStart = inf
     ? Math.max(renderDist * 0.34, 60)
     : (dimId === 3 ? 34 : (dimId ? Math.min(renderDist * 0.42, 58) : Math.min(renderDist * 0.62, 78)));
+  if(dimId===0&&typeof Weather!=='undefined'&&Weather.kind!=='clair'){const k=Weather.kind==='orage'?.55:.78;sunTint=sunTint.map(v=>v*k);fogColor=fogColor.map(v=>v*.8);}
   const fogEnd = inf
     ? renderDist * 0.90
     : (dimId === 3 ? 118 : (dimId ? Math.min(renderDist * 0.80, 92) : Math.min(renderDist * 0.94, 108)));
@@ -7964,7 +7996,7 @@ const Vision = {
     if (!this.sites.length) { t.textContent = 'aucun portail de l\'End dans ce monde (ou dans le Nether)'; return; }
     const n = this.sites[0];
     const opened = this.sites.filter(s => s.open).length;
-    t.textContent = 'portail le plus proche à ' + Math.round(n.dist) + ' blocs · ' +
+    t.textContent = 'Portail · '+Coordinates.xyz(n.x,n.y,n.z)+' · '+Math.round(n.dist)+' blocs · ' +
       this.sites.length + ' forteresse' + (this.sites.length > 1 ? 's' : '') + ' repérée' + (this.sites.length > 1 ? 's' : '') +
       (opened ? ' · ' + opened + ' ouvert' + (opened > 1 ? 's' : '') : '');
   },
@@ -8227,7 +8259,7 @@ const QA = {
       const n = document.createElement('span'); n.className = 'n';
       n.textContent = String(s.name).replace(/^[^\p{L}\p{N}]+/u, '').trim() + (s.under ? ' · sous terre' : '');
       const d = document.createElement('span'); d.className = 'd';
-      d.textContent = s.x + ' , ' + s.z + ' · ' + s.dist + ' m';
+      d.textContent=Coordinates.xyz(s.x,Number.isFinite(s.y)?s.y:Game.manager.heightAt(s.x,s.z)+1,s.z)+' · '+s.dist+' m';
       const b = document.createElement('button'); b.className = 'qaBtn small'; b.textContent = 'TP';
       b.addEventListener('click', (ev) => { ev.stopPropagation(); this.tpTo(s.x, s.y, s.z, s.under); });
       row.appendChild(n); row.appendChild(d); row.appendChild(b);
@@ -8240,7 +8272,7 @@ const QA = {
     const list = $('qaEntList');
     if (!list) return;
     const ents = [];
-    for (const m of Mobs.list) ents.push({ kind: 'mob', name: m.def.name, pos: m.pos, hp: m.hp, hostile: !!m.def.hostile });
+    for (const m of Mobs.list) ents.push({ mob:m,kind: 'mob', name: m.def.name, pos: m.pos, hp: m.hp, hostile: !!m.def.hostile });
     if (typeof Net !== 'undefined' && Net.live && Net.remote) {
       const r = Net.remote;
       ents.push({ kind: 'player', name: r.name || 'Ami', pos: [r.x, r.y, r.z], hp: r.hp });
@@ -8260,13 +8292,13 @@ const QA = {
       const n = document.createElement('span'); n.className = 'n';
       n.textContent = (e.kind === 'player' ? 'Joueur · ' : (e.hostile ? 'Hostile · ' : 'Passif · ')) + e.name;
       const dd = document.createElement('span'); dd.className = 'd';
-      dd.textContent = d + ' m · ❤ ' + Math.max(0, Math.round(e.hp === undefined ? 20 : e.hp));
+      dd.textContent=Coordinates.xyz(...e.pos)+' · '+d+' m · ❤ '+Math.max(0,Math.round(e.hp===undefined?20:e.hp));
       const b = document.createElement('button'); b.className = 'qaBtn small'; b.textContent = 'TP';
       b.addEventListener('click', (ev) => {
         ev.stopPropagation();
-        this.tpTo(e.pos[0], e.pos[1] + 1, e.pos[2], false);
+        CommandHub.teleport([e.pos[0]+1,e.pos[1]+.2,e.pos[2]],Dimensions.current);this.close();
       });
-      row.appendChild(n); row.appendChild(dd); row.appendChild(b);
+      row.appendChild(n);row.appendChild(dd);row.appendChild(b);if(e.mob){const kill=document.createElement('button');kill.className='qaBtn small';kill.textContent='Tuer';kill.onclick=ev=>{ev.stopPropagation();if(Net.live&&Net.role==='guest'){Net.send(['qa-kill',e.mob.id]);}else Mobs.hurt(e.mob,9999,[0,0,0],true);this.buildEnts();};row.appendChild(kill);}
       list.appendChild(row);
     }
   },
@@ -8281,7 +8313,7 @@ const QA = {
     Player.vel = [0, 0, 0];
     Player.fallDist = 0;
     this.close();
-    try { HUD.toastText('📍 ' + Math.round(x) + ' ' + Math.round(yy) + ' ' + Math.round(z), 2.5); } catch (e) { }
+    try { HUD.toastText('📍 '+Coordinates.xyz(x,yy,z), 2.5); } catch (e) { }
   },
 
   tpSurface() {
@@ -8312,7 +8344,7 @@ const QA = {
         coord.style.display = '';
         let dim = 'Overworld';
         try { dim = Dimensions.label(Dimensions.current); } catch (e) { }
-        coord.textContent = 'XYZ  ' + Player.pos[0].toFixed(1) + '  ' + Player.pos[1].toFixed(1) + '  ' + Player.pos[2].toFixed(1)
+        coord.textContent = 'X :  ' + Player.pos[0].toFixed(1) + '  Y : ' + Player.pos[1].toFixed(1) + '  Z : ' + Player.pos[2].toFixed(1)
           + '   ·   ' + dim + '   ·   ' + Math.round(Player.yaw * 180 / Math.PI) + '°';
       } else {
         coord.style.display = 'none';
@@ -8506,6 +8538,7 @@ function tick(dt) {
   Mobs.update(dt);
   if (typeof Drops !== 'undefined') Drops.update(dt);
   Railways.update(dt);
+  Adventure.tick(dt);Transport.tick(dt);
   if (typeof VillageLife !== 'undefined') VillageLife.update(dt);
   Music.update(dt);
   HUD.drawStats();
@@ -8531,6 +8564,7 @@ function checkContainerRange(dt) {
 function frame(now) {
   requestAnimationFrame(frame);
   GameChat.tick();
+  Coordinates.update();EndVictory.tick();Weather.draw();
   const dt = Math.min((now - lastFrame) / 1000, 0.1);
   lastFrame = now;
   Furnace.tick(dt);
@@ -8690,6 +8724,10 @@ function canLook() { return Game.state === 'playing' && !Admin.barOpen(); }
 /* Utilisation / pose : clic droit souris ou bouton « Poser » au doigt */
 function useAction() {
   const tgt = Game.target;
+  if(heldItemId()===I.BOW){Archery.shoot();return;}
+  if(heldItemId()===I.DRAGON_HEART){EndVictory.returnHome();return;}
+  if(Circuits.use(tgt))return;
+  if(Boats.use(tgt))return;
   if (Railways.use(tgt)) return;
   if (tgt && (tgt.block === B.CRAFTING || tgt.block === B.FURNACE)) {
     Crafting.forceTable = tgt.block === B.CRAFTING;
@@ -8699,7 +8737,7 @@ function useAction() {
   if (tgt && (tgt.block === B.DOOR_CLOSED || tgt.block === B.DOOR_OPEN)) { Doors.toggle(tgt); return; }
   if (tgt && Beds.isBed(tgt.block)) { Beds.sleep(tgt); return; }
   if (tgt && tgt.block === B.CHEST) { Chests.openAt(tgt.x, tgt.y, tgt.z); return; }
-  if (tgt && tgt.block === B.TNT) { TNT.ignite(tgt.x, tgt.y, tgt.z, 3); return; }
+  if(tgt&&tgt.block===B.TNT){if(heldItemId()===I.FLINT){if(Net.live&&Net.role==='guest')Net.send(['ignite-tnt',tgt.x,tgt.y,tgt.z]);else TNT.ignite(tgt.x,tgt.y,tgt.z,3);}else HUD.toastText('Utilise un briquet pour allumer la TNT (ou un signal redstone).',3);return;}
   const heldId = Game.inv.heldId();
   if (tgt && heldId === I.FLINT && tgt.block === B.OBSIDIAN) {
     Portals.ignite(tgt.x, tgt.y, tgt.z);
@@ -8788,7 +8826,8 @@ function setupInput() {
         Sfx.play('click', 0.7);
       }
       if (Keys.has('inventory', e.code)) { e.preventDefault(); openInventory(); }
-      if (e.code === 'KeyR' && !Survival.dead && !Game.hardcore) respawn();
+      if(e.code==='KeyX'&&(Railways.riding||Boats.riding)){e.preventDefault();$('vehicleExit').click();return;}
+    if (e.code === 'KeyR' && !Survival.dead && !Game.hardcore) respawn();
       if (e.code === 'KeyM') {
         SETTINGS.musicOn = SETTINGS.musicOn === false;
         if (SETTINGS.musicOn === false) Music.setVolume(0.0001);
@@ -9016,14 +9055,14 @@ function showOverlay(id) {
   if(id==='pause'){$('partyName').value=RoomNames.name||Saves.currentName||'';$('partyNameStatus').textContent='';}
   if($('trollButton'))$('trollButton').classList.add('hidden');
   if(id==='menu' && typeof RoleGate!=='undefined' && !RoleGate.role)id='profile';
-  for (const o of ['realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
+  for (const o of ['victory','realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
     const el = $(o);
     if (el) el.classList.toggle('hidden', o !== id);
   }
 }
 function hideOverlays() {
   if($('trollButton'))$('trollButton').classList.toggle('hidden',!Game.troll||Game.state!=='playing');
-  for (const o of ['realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
+  for (const o of ['victory','realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
 }
 
 function startPlaying() {
@@ -9078,7 +9117,7 @@ function showSitesBanner() {
   const next = () => {
     if (i >= nearest.length) return;
     const s2 = nearest[i++];
-    HUD.toast(0, `${s2.name} à ${s2.dist} blocs (x ${s2.x}, z ${s2.z})`);
+    HUD.toast(0, `${s2.name} à ${s2.dist} blocs (X : ${s2.x} · Y : ${s2.y} · Z : ${s2.z})`);
     setTimeout(next, 2600);
   };
   setTimeout(next, 1200);
@@ -9414,7 +9453,7 @@ const Mobile = {
         const f = $('mobFps');
         if (f) f.textContent = fps.toFixed(0);
         const p = $('mobPos');
-        if (p) p.textContent = `${Math.round(Player.pos[0])}, ${Math.round(Player.pos[2])}`;
+        if(p)p.textContent=Coordinates.xyz(...Player.pos);
       }
     }
     refreshFlyButtons();
@@ -9501,7 +9540,7 @@ const TouchActions = {
       Game.target = raycastVoxel(eyePos(), direction, 7, Game.manager, Player.inWater || Player.headInWater);
       const hit = entityRaycast(typeof MorphPowers!=='undefined'&&MorphPowers.active()?MorphPowers.stats().reach:4.6, direction);
       const visibleMob = hit && (!Game.target || hit.dist < Game.target.dist);
-      if (visibleMob && !hit.mob.def.trade) tryAttack(direction);
+      if (visibleMob && !hit.mob.def.trade && heldItemId()!==I.BOW) tryAttack(direction);
       else {
         const previous = Mobs.target;
         Mobs.target = visibleMob ? hit : null;
@@ -9692,10 +9731,11 @@ Object.assign(I, {
   IRON_PICK: 152, IRON_SWORD: 153, BOOK: 154,
   BUCKET: 155, BUCKET_WATER: 156, BUCKET_LAVA: 157,
   IRON_AXE: 158, DIAMOND_AXE: 159, IRON_SHOVEL: 160, DIAMOND_SHOVEL: 161,
-  MEAT_COOKED: 162, MINECART: 300,
+  MEAT_COOKED:162,MINECART:300,BOW:301,ARROW:302,BOAT:303,DRAGON_HEART:304,FLINT_SHARD:305,FEATHER:306,
 });
 
 const ITEMS = {
+  301:{name:'Arc',icon:'bow',stack:1,dur:384},302:{name:'Flèche',icon:'arrow',stack:64},303:{name:'Bateau en bois',icon:'boat',stack:1},304:{name:'Cœur unique du dragon · retour au monde',icon:'dragon_heart',stack:1},305:{name:'Silex',icon:'shard',stack:64},306:{name:'Plume',icon:'feather',stack:64},
   300: { name: 'Wagonnet en fer', icon: 'minecart_iron', stack: 1 },
   100: { name: 'Bâton', icon: 'stick', stack: 64 },
   101: { name: 'Pioche en bois', icon: 'pick_wood', stack: 1, tool: 'pick', speed: 2.6, damage: 2, tier: 1 },
@@ -9858,7 +9898,7 @@ const ARMOR_NAMES = { head: 'Casque', chest: 'Plastron', legs: 'Jambières', fee
 
 const START_KIT = [1, 2, 3, 5, 7, 6, 22, 8, 4];   // herbe, terre, pierre, bois, planches, feuilles, verre, luminite, sable
 
-function isExtraBlock(id) { return id >= 163 && id < 256 && !!BLOCKS[id] && !!BLOCKS[id].name; }
+function isExtraBlock(id) { return id>=163&&!!BLOCKS[id]&&!!BLOCKS[id].name&&!ITEMS[id]; }
 function itemName(id) {
   if (isExtraBlock(id)) return BLOCKS[id].name;
   return id >= 100 ? (ITEMS[id] ? ITEMS[id].name : '???') : (BLOCKS[id] && BLOCKS[id].name ? BLOCKS[id].name : '???');
@@ -10773,7 +10813,7 @@ function drawItemIcon(id, size, skipOutline) {
       R(3.4, 11.4, 4, 2.2, dark); R(8.6, 11.4, 4, 2.2, dark);
       R(3.4, 8.4, 4, 1.2, mid); R(8.6, 8.4, 4, 1.2, mid);
     }
-  } else if (ic === 'flint') {
+  } else if(ic==='bow'){poly([[5,2],[9,4],[11,8],[9,12],[5,14],[7,11],[8,8],[7,5]],'#bb8043');poly([[5,2],[6,2],[6,14],[5,14]],'#ecdfbf');}else if(ic==='arrow'){poly([[3,13],[12,4],[13,5],[4,14]],'#b89253');poly([[10,2],[14,2],[14,6]],'#e3e7ec');poly([[2,10],[6,14],[2,14]],'#ededdf');}else if(ic==='boat'){poly([[1,7],[15,7],[12,13],[4,13]],'#a77943');R(4,6,8,3,'#57412a');}else if(ic==='dragon_heart'){poly([[8,14],[2,8],[2,4],[5,2],[8,5],[11,2],[14,4],[14,8]],'#b260ed');R(6,5,3,4,'#f8dfff');}else if(ic==='feather'){poly([[3,14],[5,5],[12,2],[14,4],[9,11]],'#ece9de');}else if(ic==='shard'){poly([[3,12],[5,4],[11,2],[13,9],[9,14]],'#626773');}else if (ic === 'flint') {
     R(3.4, 4.6, 5.4, 5.4, '#6e6e78'); R(4, 5.2, 4.2, 3.4, '#9a9aa6');
     R(9, 7.6, 3.6, 3.6, '#c9c9d4'); R(9.6, 8.2, 2.2, 2.2, '#efeff6');
   } else if (ic.startsWith('ingot_')) {
@@ -11609,6 +11649,7 @@ const Chests = {
   },
 
   lootFor(x, y, z, tier) {
+    const reward=typeof EndVictory!=='undefined'?EndVictory.loot(x,y,z):null;if(reward)return reward;
     const rnd = mulberry32(hashString(`chest|${Game.seed}|${x}|${y}|${z}`));
     const t = tier || (typeof Structures !== 'undefined' ? Structures.chestTierOf(x, y, z) : null) || 'village';
     const pool = typeof lootPool === 'function' ? lootPool(t) : [[I.BREAD, 1, 4], [I.COAL, 1, 5]];
@@ -11662,7 +11703,7 @@ const Chests = {
     Game.openChest = { x: x + 0.5, y: y + 0.5, z: z + 0.5 };
     openInventory('chest');
   },
-  close() { this.open = null; Game.openChest = null; },
+  close(){const reward=this.open&&EndVictory.loot(this.open.x,this.open.y,this.open.z);this.open=null;Game.openChest=null;if(reward)saveGame({silent:true});},
 };
 
 /* clic : slot du coffre (chestSlot défini) ou du sac */
@@ -11888,19 +11929,22 @@ function buildCreativePalette() {
     span.textContent = name;
     item.appendChild(span);
     item.addEventListener('click', () => {
-      /* en créatif : le bloc choisi remplace la case tenue et devient infini */
-      Game.inv.slots[Game.slot] = { id, n: 999, inf: true };
+      // Prefer an existing stack, otherwise the next empty inventory slot. Never erase a choice.
+      let target=Game.inv.slots.findIndex(sl=>sl&&sl.id===id);
+      if(target<0)target=Game.inv.slots.findIndex(sl=>!sl);
+      if(target<0){HUD.toastText('Inventaire plein : libère une case.',2);return;}
+      Game.inv.slots[target]={id,n:999,inf:true};if(target<9)Game.slot=target;
       Game.hotbar = Game.inv.slots.slice(0, 9);
       buildHotbar();
       if (Game.state === 'inventory') buildInventoryUI();
-      HUD.toast(id, name + ' ×∞ · case ' + (Game.slot + 1));
+      HUD.toast(id, name + ' ×∞ · case ' + (target + 1));
     });
     grid.appendChild(item);
   };
   for (let t = 1; t < BLOCKS.length; t++) {
     const d = BLOCKS[t];
     if (!d || !d.name) continue;
-    if (d.level || d.bedHead) continue;              // pas les 7 variantes d'eau
+    if (d.level || d.bedHead || d.internal) continue;              // pas les 7 variantes d'eau
     if (t === B.TNT_LIT) continue;      // dangereux et inutile
     if (t === B.PORTAL) continue;       // ne se pose pas à la main
     if (t === B.DOOR_OPEN) continue;    // s'obtient en actionnant une porte
@@ -11919,39 +11963,64 @@ function buildCreativePalette() {
    lui-même en 3D, puis se ramasse quand on passe à côté.
    ========================================================================= */
 /* Rails droits : orientation déduite des voisins, clic droit pour monter/descendre. */
+/* Rails use an entry/exit graph, not an axis guessed every frame. */
 const Railways = {
-  carts: [], riding: null,
-  rail(x, y, z) { const b = Game.manager.getBlock(x, y, z); return BLOCKS[b] && BLOCKS[b].rail ? b : 0; },
-  use(t) {
-    if (this.riding) { this.riding = null; HUD.toastText('Tu descends du wagonnet.', 2); return true; }
-    const near = this.carts.find(c => c.dim === Game.manager.dim && Math.hypot(c.pos[0]-Player.pos[0], c.pos[1]-Player.pos[1], c.pos[2]-Player.pos[2]) < 3);
-    if (heldItemId() !== I.MINECART) {
-      if (!near) return false;
-      this.riding = near; HUD.toastText('Wagonnet : avance automatiquement · clic droit pour descendre.', 3); return true;
-    }
-    if (!t || !this.rail(t.x, t.y, t.z)) { HUD.toastText('Pose le wagonnet sur un rail.', 2); return true; }
-    this.carts.push({pos:[t.x+.5,t.y+.15,t.z+.5], dim:Game.manager.dim, speed:2, dir:1});
-    if (Game.mode !== 'creative') Game.inv.remove(I.MINECART, 1);
-    HUD.refreshAll(); return true;
+  carts:[],riding:null,serial:0,D:[[0,-1],[1,0],[0,1],[-1,0]],
+  rail(x,y,z,mgr=Game.manager){const t=mgr.getBlock(x,y,z);return BLOCKS[t]&&BLOCKS[t].rail?t:0;},
+  links(x,y,z,mgr=Game.manager){return this.D.map((d,i)=>this.rail(x+d[0],y,z+d[1],mgr)?i:-1).filter(i=>i>=0);},
+  power(x,y,z){return typeof Circuits!=='undefined'?Circuits.powerAt(x,y,z)>0:typeof Redstone!=='undefined'&&Redstone.powerAt?Redstone.powerAt(x,y,z):false;},
+  path(x,y,z,mgr=Game.manager){
+    const a=this.links(x,y,z,mgr);if(a.length===0)return [0,2];if(a.length===1)return [a[0],(a[0]+2)%4];if(a.length===2)return a;
+    if(a.length===4)return this.power(x,y,z)?[1,3]:[0,2];
+    const stem=a.find(i=>!a.includes((i+2)%4)),branches=a.filter(i=>i!==stem);return [stem,branches[this.power(x,y,z)?1:0]];
   },
-  update(dt) {
-    for (const c of this.carts) {
-      if (c.dim !== Game.manager.dim) continue;
-      const x=Math.floor(c.pos[0]), y=Math.floor(c.pos[1]), z=Math.floor(c.pos[2]);
-      const rail=this.rail(x,y,z);
-      if (!rail) { if (this.riding===c) this.riding=null; continue; }
-      const axis=(this.rail(x-1,y,z)||this.rail(x+1,y,z)) ? 0 : 2;
-      c.axis=axis;
-      c.speed=rail===B.POWERED_RAIL ? Math.min(12,c.speed+8*dt) : Math.max(this.riding===c?2:0,c.speed-0.3*dt);
-      const next=c.pos[axis]+c.dir*c.speed*dt;
-      const nx=axis===0?Math.floor(next):x, nz=axis===2?Math.floor(next):z;
-      if (this.rail(nx,y,nz)) c.pos[axis]=next;
-      else { c.dir*=-1; c.speed=2; }
-      c.pos[axis===0?2:0]=(axis===0?z:x)+.5;
-      if (this.riding===c) { Player.pos=[c.pos[0],c.pos[1]+.35,c.pos[2]]; Player.vel=[0,0,0]; }
+  point(x,y,z,entry,exit,t){const a=this.D[entry],b=this.D[exit],s=1-t;return [x+.5+(s*s*a[0]+t*t*b[0])*.5,y+.15,z+.5+(s*s*a[1]+t*t*b[1])*.5];},
+  mesh(b,x,y,z,wx,wz,mgr,light){
+    const [a,c]=this.path(wx,y,wz,mgr),p=[];for(let i=0;i<=10;i++)p.push(this.point(x,y,z,a,c,i/10));
+    const quad=(A,B,width,tile,lift)=>{const dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,nx=-dz/len*width,nz=dx/len*width,yy=y+lift;
+      const q=[[A[0]-nx,yy,A[2]-nz],[B[0]-nx,yy,B[2]-nz],[B[0]+nx,yy,B[2]+nz],[A[0]+nx,yy,A[2]+nz]].map((v,i)=>[...v,i===1||i===2?1:0,i>1?1:0,tile,light,1]);b.quad(q[0],q[3],q[2],q[1]);};
+    for(let i=0;i<10;i++){const A=p[i],B=p[i+1],dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,n=[-dz/len,dx/len];
+      if(i%2===0)quad([A[0]+n[0]*.38,y,A[2]+n[1]*.38],[A[0]-n[0]*.38,y,A[2]-n[1]*.38],.045,TEX.planks,.035);
+      for(const side of [-1,1])quad([A[0]+n[0]*.25*side,y,A[2]+n[1]*.25*side],[B[0]+n[0]*.25*side,y,B[2]+n[1]*.25*side],.045,TEX.iron_block||TEX.iron,.055);
     }
   },
-  visuals() { return this.carts.flatMap(c => [[0,0,0,3,.35,3],[-.4,.1,0,.35,1.5,3],[.4,.1,0,.35,1.5,3],[0,.1,-.4,3,1.5,.35],[0,.1,.4,3,1.5,.35]].map(([x,y,z,w,h,d])=>({id:B.IRON_BLOCK,pos:[c.pos[0]+x,c.pos[1]+y,c.pos[2]+z],yaw:0,t:0,bob:0,scale:[w,h,d],dim:c.dim}))); }
+  create(t){const pair=this.path(t.x,t.y,t.z),d=typeof lookDir==='function'?lookDir():[1,0,0];const exit=pair.slice().sort((a,b)=>this.D[b][0]*d[0]+this.D[b][1]*d[2]-this.D[a][0]*d[0]-this.D[a][1]*d[2])[0],entry=pair.find(i=>i!==exit);const c={id:'cart'+(++this.serial),cell:[t.x,t.y,t.z],entry,exit,t:.5,pos:this.point(t.x,t.y,t.z,entry,exit,.5),dim:Game.manager.dim,speed:2,dir:1,driver:null};this.carts.push(c);return c;},
+  use(t){
+    if(typeof Transport!=='undefined'&&Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.MINECART||this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.1));return relevant?Transport.request('cart',t):false;}
+    if(this.riding){this.exit();return true;}
+    const held=heldItemId();
+    if(held===I.MINECART){if(!t||!this.rail(t.x,t.y,t.z)){HUD.toastText('Pose le wagonnet sur un rail.',2);return true;}if(this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7)){const c=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7);if(!c.mob&&!c.driver){this.riding=c;c.driver='player';HUD.toastText('Dans le wagonnet · X pour descendre.',2);}else HUD.toastText('Ce wagonnet est occupé.',2);return true;}this.create(t);if(Game.mode!=='creative')Game.inv.remove(I.MINECART,1);HUD.refreshAll();return true;}
+    const near=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.1));
+    if(!near)return false;if(near.driver){HUD.toastText('Ce wagonnet est occupé.',2);return true;}if(near.mob){if(typeof Input!=='undefined'&&Input.down)this.release(near);else HUD.toastText('Un passager est installé. Accroupis-toi + utilise pour le faire descendre.',3);return true;}
+    this.riding=near;near.driver='player';HUD.toastText('Dans le wagonnet · X ou Utiliser pour descendre.',3);return true;
+  },
+  exit(){const c=this.riding;if(!c)return;this.riding=null;c.driver=null;this.safeExit(c.pos);HUD.toastText('Tu descends du wagonnet.',2);},
+  safeExit(pos){if(typeof collidesAt!=='function')return;for(const [x,z]of [[1,0],[-1,0],[0,1],[0,-1]]){const p=[pos[0]+x,pos[1]+.2,pos[2]+z];if(!collidesAt(p)){Player.pos=p;Player.vel=[0,0,0];return;}}Player.pos=[pos[0],pos[1]+1, pos[2]];Player.vel=[0,0,0];},
+  release(c){if(c.mob){const m=Mobs.byId.get(c.mob);if(m){m.vehicle=null;const options=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dz])=>[c.pos[0]+dx,c.pos[1]+.3,c.pos[2]+dz]);m.pos=options.find(p=>!Mobs.collidesAt(p,m.def))||[c.pos[0],c.pos[1]+1,c.pos[2]];m.vel=[0,0,0];}c.mob=null;}},
+  carrier(m){return this.carts.find(c=>c.mob===m.id&&c.dim===Game.manager.dim)||(typeof Boats!=='undefined'?Boats.list.find(c=>c.mob===m.id&&c.dim===Game.manager.dim):null);},
+  push(dt){
+    const pushers=[{pos:Player.pos,moving:Math.hypot(Player.vel[0],Player.vel[2])>.4}];if(typeof Net!=='undefined'&&Net.live&&Net.role==='host'&&Net.remote&&Net.remote.dim===Game.manager.dim){const r=Net.remote;pushers.push({pos:[r.x,r.y,r.z],moving:performance.now()-r.t<250&&Math.hypot(r.x-r.px,r.z-r.pz)>.015});}for(const m of Mobs.list){if(m.def.boss||m.hp<=0||m.vehicle)continue;for(const actor of pushers){const dx=m.pos[0]-actor.pos[0],dz=m.pos[2]-actor.pos[2],r=Math.hypot(dx,dz);if(r>.01&&r<.9&&Math.abs(m.pos[1]-actor.pos[1])<1.4&&actor.moving){const p=[m.pos[0]+dx/r*dt*2.8,m.pos[1],m.pos[2]+dz/r*dt*2.8];if(!Mobs.collidesAt(p,m.def))m.pos=p;}}
+      for(const c of this.carts){if(c.dim!==Game.manager.dim||c.mob||c.driver||this.riding===c)continue;if(Math.hypot(m.pos[0]-c.pos[0],m.pos[2]-c.pos[2])<.62&&Math.abs(m.pos[1]-c.pos[1])<1.1){c.mob=m.id;m.vehicle=c.id;m.vel=[0,0,0];break;}}
+    }
+  },
+  update(dt){
+    if(typeof Net!=='undefined'&&Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.3,this.riding.pos[2]];Player.vel=[0,0,0];}return;}
+    for(const c of this.carts){if(c.dim!==Game.manager.dim)continue;
+      if(!c.cell){const x=Math.floor(c.pos[0]),y=Math.floor(c.pos[1]),z=Math.floor(c.pos[2]),pair=this.path(x,y,z);c.cell=[x,y,z];c.entry=pair[0];c.exit=pair[1];c.t=.5;c.id=c.id||'cart'+(++this.serial);}
+      let [x,y,z]=c.cell,rail=this.rail(x,y,z);if(!rail){c.speed=0;this.release(c);if(this.riding===c)this.exit();if(c.driver==='guest')c.driver=null;continue;}
+      if(rail===B.POWERED_RAIL)c.speed=this.power(x,y,z)?Math.min(12,c.speed+8*dt):Math.max(0,c.speed-8*dt);else c.speed=Math.max(2,c.speed-.2*dt);
+      let remaining=c.speed*dt;let guard=0;while(remaining>0&&guard++<30){const step=Math.min(1-c.t,remaining);c.t+=step;remaining-=step;if(c.t<1-1e-8)break;const d=this.D[c.exit],nx=x+d[0],nz=z+d[1];if(!this.rail(nx,y,nz)){const old=c.entry;c.entry=c.exit;c.exit=old;c.t=0;remaining=0;break;}
+        c.entry=(c.exit+2)%4;c.cell=[x=nx,y,z=nz];const pair=this.path(x,y,z),a=this.links(x,y,z);c.exit=pair.includes(c.entry)?pair.find(i=>i!==c.entry):pair[0];if(c.exit===undefined)c.exit=a.find(i=>i!==c.entry)??c.entry;c.t=0;}
+      const old=c.pos;c.pos=this.point(x,y,z,c.entry,c.exit,c.t);c.yaw=Math.atan2(c.pos[0]-old[0],c.pos[2]-old[2]);
+      if(rail===B.ACTIVATOR_RAIL&&this.power(x,y,z)){this.release(c);if(this.riding===c)this.exit();}
+      if(c.mob){const m=Mobs.byId.get(c.mob);if(m){m.pos=[c.pos[0],c.pos[1]+.2,c.pos[2]];m.yaw=c.yaw||0;m.vel=[0,0,0];}else c.mob=null;}
+      if(this.riding===c){Player.pos=[c.pos[0],c.pos[1]+.3,c.pos[2]];Player.vel=[0,0,0];Player.fallDist=0;}
+    }
+    if(typeof Mobs!=='undefined')this.push(dt);
+  },
+  visuals(){return this.carts.flatMap(c=>[[0,0,0,3,.35,3],[-.4,.1,0,.35,1.5,3],[.4,.1,0,.35,1.5,3],[0,.1,-.4,3,1.5,.35],[0,.1,.4,3,1.5,.35]].map(([x,y,z,w,h,d])=>({id:B.IRON_BLOCK,pos:[c.pos[0]+x,c.pos[1]+y,c.pos[2]+z],yaw:c.yaw||0,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
+  serialize(){return this.carts.map(c=>({...c,driver:null,mob:null,passenger:c.mob&&Mobs.byId.has(c.mob)?{type:Mobs.byId.get(c.mob).type,hp:Mobs.byId.get(c.mob).hp}:null}));},
+  load(list){this.riding=null;this.carts=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100):[];this.serial=this.carts.length;for(const c of this.carts){c.id='cart'+(++this.serial);c.driver=null;c.mob=null;if(c.passenger&&MOB_DEFS[c.passenger.type]&&!MOB_DEFS[c.passenger.type].boss){const m=Mobs.add(c.passenger.type,...c.pos);if(m){m.hp=Math.min(m.hp,c.passenger.hp||m.hp);m.vehicle=c.id;c.mob=m.id;}}}},
 };
 
 const Drops = {
@@ -12044,12 +12113,12 @@ const Drops = {
   },
 
   render(VP) {
-    if (!this.list.length && !Railways.carts.length) return;
+    if (!this.list.length && !Railways.carts.length && !Boats.list.length) return;
     if (!this.builder) this.builder = new GeoBuilder(8);
     const b = this.builder;
     b.reset();
     const s = 0.30, h = s * 0.5;
-    for (const d of this.list.concat(Railways.visuals())) {
+    for (const d of this.list.concat(Railways.visuals(),Boats.visuals())) {
       if (d.dim && d.dim !== Game.manager.dim) continue;
       const def = BLOCKS[d.id];
       let tile = TEX.glow;
@@ -12281,6 +12350,7 @@ const Mobs = {
     for (let i = this.list.length - 1; i >= 0; i--) {
       const m = this.list[i];
       const def = m.def;
+      if(m.vehicle&&Railways.carrier(m))continue;else if(m.vehicle)m.vehicle=null;
       const p = pickP(m.pos);
       m.hurtT = Math.max(0, m.hurtT - dt);
       m.attackCd = Math.max(0, m.attackCd - dt);
@@ -15651,84 +15721,12 @@ const TNT = {
    REDSTONE — poudre conductrice, lampe, bloc de redstone
    ========================================================================= */
 const Redstone = {
-  busy: false,
-  NEI: [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],
-
-  key(x, y, z) { return x + ',' + y + ',' + z; },
-
-  onBlockChange(mgr, x, y, z, oldT, newT) {
-    if (!mgr) return;
-    if (!mgr.redDust) { mgr.redDust = new Set(); mgr.redDevices = new Set(); }
-    const def = BLOCKS[newT] || {};
-    const k = this.key(x, y, z);
-    if (def.dust) mgr.redDust.add(k); else mgr.redDust.delete(k);
-    if (def.lamp !== undefined || newT === B.TNT) mgr.redDevices.add(k); else mgr.redDevices.delete(k);
-    this.schedule();
-  },
-
-  schedule() {
-    clearTimeout(this._t);
-    this._t = setTimeout(() => this.recompute(), 40);
-  },
-
-  recompute() {
-    if (this.busy) return;
-    const mgr = Game.manager;
-    if (!mgr || !mgr.redDust) return;
-    this.busy = true;
-    const dust = [...mgr.redDust];
-    const powered = new Set();
-    const isSource = (x, y, z) => {
-      const d = BLOCKS[mgr.getBlock(x, y, z)];
-      return !!(d && d.power);
-    };
-    /* graines : poudre collée à une source */
-    const queue = [];
-    for (const k of dust) {
-      const [x, y, z] = k.split(',').map(Number);
-      for (const [dx, dy, dz] of this.NEI) {
-        if (isSource(x + dx, y + dy, z + dz)) { queue.push([x, y, z]); break; }
-      }
-    }
-    /* propagation dans la poudre (15 blocs) */
-    const dist = new Map();
-    for (const [x, y, z] of queue) dist.set(this.key(x, y, z), 0);
-    let head = 0;
-    const q = queue.map(([x, y, z]) => [x, y, z, 0]);
-    while (head < q.length) {
-      const [x, y, z, d] = q[head++];
-      if (d >= 15) continue;
-      for (const [dx, dy, dz] of this.NEI) {
-        const k2 = this.key(x + dx, y + dy, z + dz);
-        if (!mgr.redDust.has(k2)) continue;
-        if (dist.has(k2) && dist.get(k2) <= d + 1) continue;
-        dist.set(k2, d + 1);
-        q.push([x + dx, y + dy, z + dz, d + 1]);
-      }
-    }
-    for (const k of dist.keys()) powered.add(k);
-
-    /* lampes : allumées si adjacentes à une source ou une poudre alimentée */
-    for (const k of [...mgr.redDevices]) {
-      const [x, y, z] = k.split(',').map(Number);
-      const t = mgr.getBlock(x, y, z);
-      const def = BLOCKS[t] || {};
-      let on = false;
-      for (const [dx, dy, dz] of this.NEI) {
-        const nk = this.key(x + dx, y + dy, z + dz);
-        if (powered.has(nk) || isSource(x + dx, y + dy, z + dz)) { on = true; break; }
-      }
-      if (def.lamp !== undefined) {
-        const want = on ? B.LAMP_ON : B.LAMP_OFF;
-        if (t !== want) mgr.setBlock(x, y, z, want, true);
-      } else if (t === B.TNT && on) {
-        this.busy = false;
-        TNT.ignite(x, y, z, 1.6);
-        continue;
-      }
-    }
-    this.busy = false;
-  },
+  NEI:[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],
+  key(x,y,z){return x+','+y+','+z;},
+  onBlockChange(mgr,x,y,z,oldT,newT){if(!mgr.redDust){mgr.redDust=new Set();mgr.redDevices=new Set();}const d=BLOCKS[newT]||{},k=this.key(x,y,z);if(d.dust)mgr.redDust.add(k);else mgr.redDust.delete(k);if(d.circuit||d.rail||d.lamp!==undefined||d.power||d.thin||newT===B.TNT)mgr.redDevices.add(k);else mgr.redDevices.delete(k);if((BLOCKS[oldT]||{}).rail||d.rail)for(const [dx,dz]of [[-1,0],[1,0],[0,-1],[0,1]])if(mgr.markDirty)mgr.markDirty((x+dx)>>4,(z+dz)>>4);this.schedule();},
+  schedule(){clearTimeout(this._t);this._t=setTimeout(()=>this.recompute(),40);},
+  recompute(){if(typeof Circuits!=='undefined')Circuits.recompute();},
+  powerAt(x,y,z){return typeof Circuits!=='undefined'?Circuits.powerAt(x,y,z):0;},
 };
 
 /* =========================================================================
@@ -15953,7 +15951,7 @@ const Dragon = {
   },
 
   tick(dt) {
-    if (this.active && this.active.hp <= 0) this.reset();
+    if(this.active&&this.active.hp<=0)this.onDeath();
   },
 
   onDeath() {
@@ -15963,15 +15961,9 @@ const Dragon = {
     const bar = $('bossBar');
     if (bar) bar.classList.add('hidden');
     Sfx.play('boss', 1);
-    Game.inv.add(I.NETHERITE_INGOT, 5);
-    Game.inv.add(I.DIAMONDGEM, 8);
-    HUD.refreshAll();
-    HUD.toastText('🏆 VICTOIRE — le Dragon de l\'End est tombé !', 6);
-    setTimeout(() => HUD.toastText('+5 lingots de netherite, +8 diamants, +2 perles de l\'End', 5), 900);
-    Game.inv.add(I.ENDER_PEARL, 2);
-    HUD.refreshAll();
-    if (typeof Net !== 'undefined' && Net.live && Net.role === 'host') Net.send(['dragon-ending']);
-    setTimeout(() => { if (Game.state === 'playing') Cinematics.play('ending'); }, 0);
+    EndVictory.win();HUD.refreshAll();HUD.toastText('Victoire ! Un coffre unique t’attend dans l’End.',5);
+    if(Net.live&&Net.role==='host')Net.send(['dragon-ending',EndVictory.serialize()]);
+    setTimeout(()=>EndVictory.tick(),0);
   },
 };
 
@@ -16098,7 +16090,7 @@ const Dimensions = {
         if (dim === 'end') {
           setTimeout(() => {
             if (Dimensions.current !== 'end') return;
-            if (!Dragon.active && !Dragon.defeated) Dragon.summonEnd(0, END_SEA + 4, 0);
+            if (!Dragon.active && !Dragon.defeated && !EndVictory.won) Dragon.summonEnd(0, END_SEA + 4, 0);
           }, 1400);
         }
       });
@@ -16317,6 +16309,7 @@ const End = {
     }
     for (let i = 1; i <= 2; i++)
       for (let j = 1; j <= 3; j++) set(bx + i, ground + j, bz, B.END_PORTAL);
+    if(EndVictory.won)EndVictory.ensureChest(mgr);
   },
 
   /* chute dans le vide */
@@ -16889,6 +16882,7 @@ var Net = {
   disconnected() {
     if (!this.live) return;
     this.live = false;
+    if(typeof Transport!=='undefined')Transport.disconnect();
     this.role = null;
     this.remote = null;
     ShortRooms.close(); if ($('mpCodeOut')) $('mpCodeOut').value = '';
@@ -16923,7 +16917,7 @@ var Net = {
     const edits = [];
     for (const arr of Game.manager.editLog.values()) for (const e of arr) edits.push(e);
     this.send(['h', Game.seed, Game.mode, Game.time, Dimensions.current, edits,
-      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm]);
+      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm,{victory:EndVictory.serialize(),weather:{kind:Weather.kind,remaining:Weather.remaining},circuits:[...Circuits.meta]}]);
   },
 
   async onHello(m) {
@@ -16939,7 +16933,7 @@ var Net = {
     Game.troll=!!m[9];if(typeof m[10]==='string')Saves.currentName=m[10].slice(0,28);
     Game.twoPlayers = false;
     Saves.begin(Saves.currentName||'Partie partagée',dim||'overworld',Game.troll?'troll':Game.mode);
-    await newWorld(String(seed), false, { edits, time, dim:dim||'overworld',pos: [px, py, pz],troll:!!m[9],morph:null,hardcore:!!m[11],adminRealm:!!m[12] });
+    await newWorld(String(seed), false, { edits, time, dim:dim||'overworld',pos: [px, py, pz],troll:!!m[9],morph:null,hardcore:!!m[11],adminRealm:!!m[12],...(m[13]||{}) });
     if (!active()) return;
     startPlaying();
     if (dim && dim !== Dimensions.current) {
@@ -16999,8 +16993,19 @@ var Net = {
         case 'g': this.applyDim(m); break;
         case 't': if (Math.abs(Game.time - m[1]) > 0.02) Game.time = m[1]; break;
         case 'dragon-ending':
-          if (this.role === 'guest' && !Dragon.defeated) { Dragon.defeated = true; Dragon.active = null; $('bossBar').classList.add('hidden'); setTimeout(() => Cinematics.play('ending'), 0); }
+          if(this.role==='guest'){EndVictory.load(m[1]);EndVictory.pending=true;Dragon.defeated=true;Dragon.active=null;$('bossBar').classList.add('hidden');setTimeout(()=>EndVictory.tick(),0);}
           break;
+        case 'vehicle-use':Transport.applyUse(m);break;
+        case 'machines':Transport.receive(m[1]);break;
+        case 'vehicle-consumed':if(this.role==='guest'&&Game.mode!=='creative'&&[I.MINECART,I.BOAT].includes(m[1])){Game.inv.remove(m[1],1);HUD.refreshAll();}break;
+        case 'boat-input':if(this.role==='host')Transport.remoteBoat={f:m[1]?1:0,b:m[2]?1:0};break;
+        case 'ignite-tnt':if(this.role==='host'&&this.remote&&m.slice(1,4).every(Number.isInteger)&&Math.hypot(m[1]-this.remote.x,m[2]-this.remote.y,m[3]-this.remote.z)<8)TNT.ignite(m[1],m[2],m[3],3);break;
+        case 'circuit-meta':if(this.role==='host'&&this.remote&&Array.isArray(m[1])&&m[1].every(Number.isInteger)&&Math.hypot(m[1][0]-this.remote.x,m[1][1]-this.remote.y,m[1][2]-this.remote.z)<8){const st=Circuits.state(...m[1]),v=m[2]||{};if(Number.isInteger(v.dir)&&v.dir>=0&&v.dir<4)st.dir=v.dir;if([.2,.4,.6,.8].some(n=>Math.abs(n-v.delay)<.01))st.delay=v.delay;st.subtract=!!v.subtract;}break;
+        case 'weather':if(this.role==='guest'&&Weather.set(m[1],false))Weather.remaining=Number(m[2])||180;break;
+        case 'thunder':if(this.role==='guest'){Flash.trigger(.85);Sfx.explosion(.28,.65);}break;
+        case 'arrow-flight':if(this.role==='guest'&&Array.isArray(m[1])&&m[1].length===3&&m[1].every(Number.isFinite))Archery.launch(m[1],m[2],false,true);break;
+        case 'bow-shot':if(this.role==='host'&&this.remote&&performance.now()>(this.remoteBowAt||0)){this.remoteBowAt=performance.now()+600;Archery.launch([this.remote.x,this.remote.y+1.62,this.remote.z],m[1],true);}break;
+        case 'qa-kill':if(this.role==='host'&&this.remote&&Admin.admins.includes(this.remote.name)){const mob=Mobs.byId.get(m[1]);if(mob)Mobs.hurt(mob,9999,[0,0,0],true);}break;
         case 'chat': case 'player-death': GameChat.receive(m[0], m[1]); break;
         case 'c': HUD.toastText('💬 ' + m[1], 5); Admin.say('💬 ' + m[1], 'sys'); break;
         case 'a': {
@@ -17805,7 +17810,7 @@ const Admin = {
         const yy = hit.under ? hit.y + 2 : Game.manager.heightAt(hit.x, hit.z) + 1;
         Player.pos = [hit.x + 0.5, yy, hit.z + 0.5];
         Player.vel = [0, 0, 0];
-        ok('Téléporté à ' + hit.name + ' (' + hit.x + ' ' + Math.round(yy) + ' ' + hit.z + ')');
+        ok('Téléporté à ' + hit.name + ' ('+Coordinates.xyz(hit.x,yy,hit.z)+')');
         break;
       }
       case 'jour': case 'day':
@@ -18080,7 +18085,7 @@ const CommandHub = {
     if(cmd==='dormir'){if(Game.target&&Beds.isBed(Game.target.block))Beds.sleep(Game.target);else Admin.say('Regarde un lit placé à portée.','warn');return;}
     if(cmd==='joueurs'){Admin.say('Joueurs : '+this.players().map(p=>p.name).join(', '),'sys');return;}
     if(['vitesse','speed','portee','reach'].includes(cmd)){const n=Number(arg),isSpeed=['vitesse','speed'].includes(cmd);if(!Number.isFinite(n)||n<(isSpeed?.25:2)||n>(isSpeed?20:64)){Admin.say(isSpeed?'Vitesse : nombre entre 0,25 et 20.':'Portée : nombre entre 2 et 64.','warn');return;}if(isSpeed){this.speed=n;QA.speedMul=n;}else{this.reach=n;QA.reach=n;}Admin.say((isSpeed?'Vitesse ×':'Portée : ')+n,'sys');return;}
-    if(cmd==='position'){Admin.say(Dimensions.current+' · '+Player.pos.map(n=>n.toFixed(1)).join(' '),'sys');return;}
+    if(cmd==='position'){Admin.say(Dimensions.current+' · '+Coordinates.xyz(...Player.pos),'sys');return;}
     if(cmd==='sauver'){saveGame();Admin.say('Partie sauvegardée.','sys');return;}
     if(cmd==='pointdepart'){Game.spawn=Player.pos.slice();Admin.say('Point de départ enregistré.','sys');return;}
     if(cmd==='retour'){this.teleport(Game.spawn,Game.homeDim||'overworld');return;}
@@ -18102,7 +18107,7 @@ const CommandHub = {
     if(!pos.every(Number.isFinite)){Admin.say('Position du joueur indisponible.','warn');return;}
     if(dim!==Dimensions.current)Dimensions.go(dim,{x:pos[0],y:pos[1],z:pos[2]});
     else {const old=Player.pos;Player.pos=pos.slice();try{Game.manager.ensureChunk(Math.floor(pos[0]/16),Math.floor(pos[2]/16));if(collidesAt(Player.pos)){Player.pos=old;Admin.say('Destination bloquée : téléportation annulée.','warn');return;}}catch(e){Player.pos=old;Admin.say('Terrain indisponible.','warn');return;}}
-    Player.vel=[0,0,0];Player.fallDist=0;Admin.say('Téléportation · '+dim+' · '+pos.map(n=>n.toFixed(1)).join(' '),'sys');
+    Player.vel=[0,0,0];Player.fallDist=0;Admin.say('Téléportation · '+dim+' · '+Coordinates.xyz(...pos),'sys');
   },
 };
 CommandHub.legacyNames=[...Admin.run.toString().matchAll(/case '([^']+)'/g)].map(m=>m[1]);
@@ -18225,6 +18230,154 @@ const AdminRealm={
     }
     return false;
   },
+};
+
+/* Discrete circuit simulation. Signals attenuate to zero after 15 dust blocks. */
+const Circuits={
+  meta:new Map(),levels:new Map(),timer:0,busy:false,
+  key(x,y,z,mgr=Game.manager){return (mgr.dim||'overworld')+'|'+x+','+y+','+z;},
+  state(x,y,z){const k=this.key(x,y,z);if(!this.meta.has(k))this.meta.set(k,{dir:((Math.round(-(Player.yaw||0)/(Math.PI/2))%4)+4)%4,delay:.2});return this.meta.get(k);},
+  load(data){this.meta=new Map(Array.isArray(data)?data:[]);this.levels=new Map();this.timer=0;},
+  source(x,y,z,mgr=Game.manager){const t=mgr.getBlock(x,y,z),d=BLOCKS[t]||{};if(!d.power)return 0;if(d.directional||d.detector){const m=this.meta.get(this.key(x,y,z,mgr));if(d.detector)return m&&m.level||0;return m&&m.level!==undefined?m.level:15;}return 15;},
+  powerAt(x,y,z,includeDust=true){let p=0;for(const [dx,dy,dz]of Redstone.NEI){const sx=x+dx,sy=y+dy,sz=z+dz,t=Game.manager.getBlock(sx,sy,sz),d=BLOCKS[t]||{};let n=this.source(sx,sy,sz);if(d.directional){const m=this.meta.get(this.key(sx,sy,sz));const dir=Railways.D[m?m.dir:0];if(sx+dir[0]!==x||sz+dir[1]!==z||sy!==y)n=0;}p=Math.max(p,n,includeDust?(this.levels.get(this.key(sx,sy,sz))||0):0);}return p;},
+  use(t){if(!t)return false;const d=BLOCKS[t.block]||{},s=this.state(t.x,t.y,t.z);
+    if(d.lever){Game.manager.setBlock(t.x,t.y,t.z,t.block===B.LEVER_ON?B.LEVER_OFF:B.LEVER_ON,true);this.recompute();Sfx.play('click',.6);return true;}
+    if(d.button){Game.manager.setBlock(t.x,t.y,t.z,B.BUTTON_ON,true);s.until=performance.now()+1000;this.recompute();return true;}
+    if(d.repeater){s.delay=s.delay>=.8?.2:s.delay+.2;HUD.toastText('Répéteur : '+Math.round(s.delay*10)+' dixièmes de seconde.',2);if(Net.live&&Net.role==='guest')Net.send(['circuit-meta',[t.x,t.y,t.z],s]);return true;}
+    if(d.comparator){s.subtract=!s.subtract;HUD.toastText(s.subtract?'Comparateur : soustraction':'Comparateur : comparaison',2);if(Net.live&&Net.role==='guest')Net.send(['circuit-meta',[t.x,t.y,t.z],s]);return true;}return false;
+  },
+  placed(x,y,z,type){const d=BLOCKS[type]||{};if(d.circuit){const s=this.state(x,y,z);s.dir=((Math.round(-(Player.yaw||0)/(Math.PI/2))%4)+4)%4;if(Net.live&&Net.role==='guest')Net.send(['circuit-meta',[x,y,z],s]);}this.recompute();},
+  scanCache:new WeakMap(),
+  scan(){const mgr=Game.manager;if(!mgr)return [];if(!mgr.redDevices){mgr.redDevices=new Set();mgr.redDust=new Set();}let cache=this.scanCache.get(mgr);if(!cache){cache=new WeakMap();this.scanCache.set(mgr,cache);}if(mgr.editLog)for(const arr of mgr.editLog.values()){let n=cache.get(arr)||0;if(n>arr.length)n=0;for(;n<arr.length;n++){const [x,y,z,t]=arr[n],d=BLOCKS[t]||{},k=x+','+y+','+z;if(d.dust)mgr.redDust.add(k);else mgr.redDust.delete(k);if(d.circuit||d.rail||d.lamp!==undefined||d.power||d.thin||t===B.TNT)mgr.redDevices.add(k);else mgr.redDevices.delete(k);}cache.set(arr,n);}return [...new Set([...mgr.redDevices,...mgr.redDust])].map(k=>k.split(',').map(Number));},
+  recompute(){if(this.busy||!Game.manager||(Net.live&&Net.role==='guest'))return;this.busy=true;
+    try{const mgr=Game.manager,positions=this.scan();this.levels=new Map();const queue=[];
+      for(const [x,y,z]of positions){if(!(BLOCKS[mgr.getBlock(x,y,z)]||{}).dust)continue;const n=this.powerAt(x,y,z,false);if(n>0){const k=this.key(x,y,z);this.levels.set(k,n);queue.push([x,y,z,n]);}}
+      for(let i=0;i<queue.length&&i<10000;i++){const [x,y,z,n]=queue[i];if(n<=1)continue;for(const [dx,dy,dz]of Redstone.NEI){const p=[x+dx,y+dy,z+dz],k=this.key(...p);if((BLOCKS[mgr.getBlock(...p)]||{}).dust&&(this.levels.get(k)||0)<n-1){this.levels.set(k,n-1);queue.push([...p,n-1]);}}}
+      const now=performance.now();for(const [x,y,z]of positions){const t=mgr.getBlock(x,y,z),d=BLOCKS[t]||{},s=this.state(x,y,z),p=this.powerAt(x,y,z);
+        if(d.button&&t===B.BUTTON_ON&&now>=(s.until||0))mgr.setBlock(x,y,z,B.BUTTON_OFF,true);
+        if(d.plate||t===B.DETECTOR_RAIL){const occupied=(Math.hypot(Player.pos[0]-x-.5,Player.pos[2]-z-.5)<.7&&Math.abs(Player.pos[1]-y)<1.5)||Mobs.list.some(m=>Math.hypot(m.pos[0]-x-.5,m.pos[2]-z-.5)<.7&&Math.abs(m.pos[1]-y)<1.5)||Railways.carts.some(c=>c.dim===mgr.dim&&Math.hypot(c.pos[0]-x-.5,c.pos[2]-z-.5)<.65);
+          if(d.plate){const want=occupied?B.PLATE_ON:B.PLATE_OFF;if(want!==t)mgr.setBlock(x,y,z,want,true);}else{s.level=occupied?15:0;}}
+        if(d.repeater||d.comparator||d.redtorch){const v=Railways.D[s.dir||0],rear=[x-v[0],y,z-v[1]],input=Math.max(this.source(...rear),this.levels.get(this.key(...rear))||0);let level=d.redtorch?(input?0:15):input;
+          if(d.comparator){const side=Railways.D[((s.dir||0)+1)%4],sidePower=Math.max(this.source(x+side[0],y,z+side[1]),this.source(x-side[0],y,z-side[1]),this.levels.get(this.key(x+side[0],y,z+side[1]))||0,this.levels.get(this.key(x-side[0],y,z-side[1]))||0);level=s.subtract?Math.max(0,input-sidePower):input>=sidePower?input:0;}
+          if(s.desired!==level){s.desired=level;s.due=now+(d.repeater?(s.delay||.2)*1000:0);}if(now>=(s.due||0)){s.level=level;const want=d.repeater?(level?B.REPEATER_ON:B.REPEATER_OFF):d.comparator?(level?B.COMPARATOR_ON:B.COMPARATOR_OFF):(level?B.REDTORCH_ON:B.REDTORCH_OFF);if(t!==want)mgr.setBlock(x,y,z,want,true);}}
+        if(d.lamp!==undefined){const want=p?B.LAMP_ON:B.LAMP_OFF;if(t!==want)mgr.setBlock(x,y,z,want,true);}
+        if(t===B.TNT&&p)TNT.ignite(x,y,z,1.6);
+        if(t===B.DOOR_CLOSED||t===B.DOOR_OPEN){if(s.powered!==!!p){if(p||s.powered){const want=p?B.DOOR_OPEN:B.DOOR_CLOSED;if(t!==want)mgr.setBlock(x,y,z,want,true);}s.powered=!!p;}}
+        if(d.piston){if(p&&!s.extended)this.extend(x,y,z,s,d.sticky);else if(!p&&s.extended)this.retract(x,y,z,s,d.sticky);}
+        if(d.rail&&s.signal!==!!p){s.signal=!!p;if(mgr.markDirty)mgr.markDirty(x>>4,z>>4);}
+      }
+    }finally{this.busy=false;}
+  },
+  extend(x,y,z,s,sticky){const mgr=Game.manager,v=Railways.D[s.dir||0],blocks=[];if(playerBoxOverlaps(x+v[0],y,z+v[1]))return;for(let n=1;n<=13;n++){const p=[x+v[0]*n,y,z+v[1]*n],t=mgr.getBlock(...p),d=BLOCKS[t]||{};if(!t||!d.solid)break;if(n>12||d.hard<0||[B.CHEST,B.FURNACE,B.OBSIDIAN,B.PISTON_HEAD].includes(t))return;blocks.push({p,t});}for(const b of blocks.reverse()){const dest=[b.p[0]+v[0],y,b.p[2]+v[1]];if(playerBoxOverlaps(...dest))return;}
+    for(const b of blocks){mgr.setBlock(b.p[0]+v[0],y,b.p[2]+v[1],b.t,true);}mgr.setBlock(x+v[0],y,z+v[1],B.PISTON_HEAD,true);mgr.setBlock(x,y,z,sticky?B.STICKY_PISTON_ON:B.PISTON_ON,true);s.extended=true;
+  },
+  retract(x,y,z,s,sticky){const mgr=Game.manager,v=Railways.D[s.dir||0],head=[x+v[0],y,z+v[1]];if(mgr.getBlock(...head)===B.PISTON_HEAD)mgr.setBlock(...head,B.AIR,true);if(sticky){const p=[x+v[0]*2,y,z+v[1]*2],t=mgr.getBlock(...p),d=BLOCKS[t]||{};if(t&&d.solid&&d.hard>=0&&![B.CHEST,B.FURNACE,B.OBSIDIAN,B.PISTON_HEAD].includes(t)&&!playerBoxOverlaps(...head)){mgr.setBlock(...head,t,true);mgr.setBlock(...p,B.AIR,true);}}mgr.setBlock(x,y,z,sticky?B.STICKY_PISTON_OFF:B.PISTON_OFF,true);s.extended=false;},
+  update(dt){this.timer+=dt;if(this.timer<.1)return;this.timer=0;if(!(Net.live&&Net.role==='guest'))this.recompute();},
+};
+
+const Boats={
+  list:[],riding:null,serial:0,
+  use(t){if(Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.BOAT||this.list.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.3));return relevant?Transport.request('boat',t):false;}if(this.riding){const c=this.riding;this.riding=null;c.driver=null;Railways.safeExit(c.pos);return true;}if(heldItemId()===I.BOAT){const hit=t&&(BLOCKS[t.block]||{}).water?t:raycastVoxel(eyePos(),lookDir(),7,Game.manager,true);if(!hit||!(BLOCKS[Game.manager.getBlock(hit.x,hit.y,hit.z)]||{}).water){HUD.toastText('Vise de l’eau pour poser le bateau.',2);return true;}const existing=this.list.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-hit.x-.5,c.pos[2]-hit.z-.5)<.9);if(existing){if(!existing.driver){this.riding=existing;existing.driver='player';}else HUD.toastText('Ce bateau est occupé.',2);return true;}this.list.push({id:'boat'+(++this.serial),pos:[hit.x+.5,hit.y+.9,hit.z+.5],yaw:Player.yaw,speed:0,dim:Game.manager.dim});if(Game.mode!=='creative')Game.inv.remove(I.BOAT,1);HUD.refreshAll();return true;}
+    const c=this.list.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.3));if(!c)return false;if(c.driver){HUD.toastText('Ce bateau est occupé.',2);return true;}this.riding=c;c.driver='player';HUD.toastText('Bateau : avancer/reculer, regarder pour diriger · X pour descendre.',3);return true;},
+  update(dt){if(Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.15,this.riding.pos[2]];Player.vel=[0,0,0];}return;}for(const c of this.list){if(c.dim!==Game.manager.dim)continue;let water=null;for(let y=Math.floor(c.pos[1])+1;y>=Math.floor(c.pos[1])-3;y--)if((BLOCKS[Game.manager.getBlock(Math.floor(c.pos[0]),y,Math.floor(c.pos[2]))]||{}).water){water=y;break;}
+      if(water!==null)c.pos[1]+=(water+.9-c.pos[1])*Math.min(1,dt*6);
+      if(this.riding===c||c.driver==='guest'){const guest=c.driver==='guest';c.yaw=guest&&Net.remote?Net.remote.yaw||0:Player.yaw;const control=guest?Transport.remoteBoat:Input;c.speed+=((control.f-control.b)*5-c.speed)*Math.min(1,dt*3);const p=[c.pos[0]-Math.sin(c.yaw)*c.speed*dt,c.pos[1],c.pos[2]-Math.cos(c.yaw)*c.speed*dt];const block=Game.manager.getBlock(Math.floor(p[0]),Math.floor(p[1]),Math.floor(p[2]));if(water!==null&&!(BLOCKS[block]||{}).solid)c.pos=p;else c.speed=0;if(this.riding===c){Player.pos=[c.pos[0],c.pos[1]+.15,c.pos[2]];Player.vel=[0,0,0];Player.fallDist=0;}}}
+  },
+  visuals(){return this.list.flatMap(c=>[[0,0,0,3.8,.3,5],[-.55,.12,0,.3,1.2,5],[.55,.12,0,.3,1.2,5],[0,.12,-.7,3.8,1.2,.3],[0,.12,.7,3.8,1.2,.3]].map(([x,y,z,w,h,d])=>({id:B.PLANKS,pos:[c.pos[0]+x*Math.cos(c.yaw)-z*Math.sin(c.yaw),c.pos[1]+y,c.pos[2]-x*Math.sin(c.yaw)-z*Math.cos(c.yaw)],yaw:c.yaw,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
+  serialize(){return this.list.map(c=>({...c,driver:null}));},
+  load(list){this.riding=null;this.list=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50).map(c=>({...c,driver:null})):[];this.serial=this.list.reduce((n,c)=>Math.max(n,parseInt(String(c.id).replace('boat',''))||0),0);},
+};
+
+const Archery={
+  list:[],cooldown:0,
+  shoot(){const now=performance.now();if(now<this.cooldown)return true;if(Game.mode!=='creative'&&Game.inv.count(I.ARROW)<1){HUD.toastText('Il te faut des flèches.',2);return true;}this.cooldown=now+650;if(Game.mode!=='creative')Game.inv.remove(I.ARROW,1);wearHeld(1);HUD.refreshAll();const pos=eyePos(),d=lookDir();if(Net.live&&Net.role==='guest')Net.send(['bow-shot',d]);else this.launch(pos,d);Sfx.play('throw',.8);return true;},
+  launch(pos,d,remote=false,visualOnly=false){if(!Array.isArray(d)||d.length!==3||!d.every(Number.isFinite))return;const len=Math.hypot(...d);if(len<.9||len>1.1)return;this.list.push({pos:pos.map((v,i)=>v+d[i]*.6),vel:d.map(v=>v*29),dim:Game.manager.dim,age:0,remote,visualOnly});if(Net.live&&Net.role==='host')Net.send(['arrow-flight',pos,d]);},
+  update(dt){for(let i=this.list.length-1;i>=0;i--){const a=this.list[i];if(a.dim!==Game.manager.dim||a.age>7){this.list.splice(i,1);continue;}a.age+=dt;let hit=false;const steps=Math.max(1,Math.ceil(Math.hypot(...a.vel)*dt/.15));for(let k=0;k<steps&&!hit;k++){a.vel[1]-=7*dt/steps;const prev=a.pos.slice();a.pos=a.pos.map((v,j)=>v+a.vel[j]*dt/steps);const block=Game.manager.getBlock(...a.pos.map(Math.floor));if((BLOCKS[block]||{}).solid){hit=true;if(!a.visualOnly&&Game.mode!=='creative')Drops.add(I.ARROW,1,...prev,0,0,0);break;}
+        const mob=Mobs.list.find(m=>m.hp>0&&Math.hypot(a.pos[0]-m.pos[0],a.pos[2]-m.pos[2])<m.def.w/2+.15&&a.pos[1]>m.pos[1]&&a.pos[1]<m.pos[1]+m.def.h);if(mob&&!a.visualOnly){if(a.remote)mob.lastHitter='guest';Mobs.hurt(mob,7,[a.vel[0]/29,0,a.vel[2]/29],true);Fx.puff(...a.pos,5);hit=true;}}
+      if(hit)this.list.splice(i,1);else if(Fx.list)Fx.list.push({x:a.pos[0],y:a.pos[1],z:a.pos[2],vx:0,vy:0,vz:0,size:.055,tile:TEX.planks,life:.08,max:.08});}
+  },
+};
+
+const Coordinates={
+  xyz(x,y,z){return 'X : '+Number(x).toFixed(1)+' · Y : '+Number(y).toFixed(1)+' · Z : '+Number(z).toFixed(1);},
+  bearing(){const degrees=((-Player.yaw*180/Math.PI)%360+360)%360;return {degrees,cardinal:['N','NE','E','SE','S','SO','O','NO'][Math.round(degrees/45)%8]};},
+  update(){const el=$('worldCoordinates');if(!el)return;el.classList.toggle('hidden',!['playing','paused','inventory'].includes(Game.state));const b=this.bearing();$('coordinateText').textContent=this.xyz(...Player.pos);$('compassDegrees').textContent=b.cardinal+' · '+Math.round(b.degrees)+'°';$('compassNeedle').style.transform='rotate('+b.degrees+'deg)';const ride=Railways.riding||Boats.riding;$('vehicleExit').classList.toggle('hidden',!ride);},
+};
+
+const Weather={
+  kind:'clair',remaining:180,lightning:12,time:0,
+  load(v){this.kind=v&&['clair','pluie','neige','orage'].includes(v.kind)?v.kind:'clair';this.remaining=v&&Number.isFinite(v.remaining)?Math.max(1,v.remaining):180;this.lightning=8;},
+  set(kind,broadcast=true){const aliases={clear:'clair',rain:'pluie',snow:'neige',thunder:'orage',storm:'orage'};kind=aliases[kind]||kind;if(!['clair','pluie','neige','orage'].includes(kind))return false;this.kind=kind;this.remaining=180+Math.random()*180;this.lightning=8;if(broadcast&&Net.live&&Net.role==='host')Net.send(['weather',this.kind,this.remaining]);return true;},
+  outdoors(){return Game.manager&&['overworld','flat'].includes(Game.manager.dim)&&Game.manager.heightAt(Player.pos[0],Player.pos[2])<Player.pos[1]+Player.height;},
+  update(dt){if(Game.state!=='playing')return;this.time+=dt;if(!(Net.live&&Net.role==='guest')){this.remaining-=dt;if(this.remaining<=0){const cold=Game.manager&&Game.manager.heightAt(Player.pos[0],Player.pos[2])>SNOW_LINE;this.set(this.kind==='clair'?(Math.random()<.25?'orage':cold?'neige':'pluie'):'clair');}if(this.kind==='orage'&&this.outdoors()){this.lightning-=dt;if(this.lightning<=0){this.lightning=8+Math.random()*14;Flash.trigger(.85);Sfx.explosion(.28,.65);if(Net.live)Net.send(['thunder']);}}}},
+  draw(){const c=$('weatherCanvas');if(!c)return;const g=c.getContext('2d');if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight;}g.clearRect(0,0,c.width,c.height);if(this.kind==='clair'||!this.outdoors()||!['playing','paused'].includes(Game.state))return;g.fillStyle=this.kind==='orage'?'#18243866':'#31405a20';g.fillRect(0,0,c.width,c.height);const snow=this.kind==='neige';g.strokeStyle='#b9d9f577';g.fillStyle='#ecf5ffd0';g.lineWidth=1;
+    const t=this.time;for(let i=0;i<130;i++){const depth=.4+(i%11)/10,x=((i*83.7+Math.sin(t+i)* (snow?25:2)-Player.yaw*140*depth)%c.width+c.width)%c.width,y=((i*131.3+t*(snow?30:460)*depth)%c.height+c.height)%c.height;if(snow){g.beginPath();g.arc(x,y,1.5*depth,0,7);g.fill();}else{g.beginPath();g.moveTo(x,y);g.lineTo(x-3,y+15*depth);g.stroke();}}},
+};
+
+/* A victory is persistent, idempotent and can wait for QA/pause to release focus. */
+const EndVictory={
+  won:false,seen:false,pending:false,reward:null,
+  load(d){this.won=!!(d&&d.won);this.seen=!!(d&&d.seen);this.pending=this.won&&!this.seen;this.reward=d&&d.reward||null;Dragon.defeated=this.won;},
+  serialize(){return {won:this.won,seen:this.seen,reward:this.reward};},
+  win(){if(this.won)return;this.won=true;this.pending=true;this.reward={pos:[10,END_SEA+3,22],items:new Array(27).fill(null)};for(const [i,id,n]of [[0,B.DRAGON_HEAD,1],[1,I.DRAGON_HEART,1],[2,I.NETHERITE_INGOT,5],[3,I.DIAMONDGEM,8],[4,I.NETHERITE_SWORD,1],[5,I.ENDER_PEARL,8]])this.reward.items[i]={id,n};this.ensureChest(Game.manager);saveGame({silent:true});},
+  ensureChest(mgr){if(!this.won||!this.reward||mgr.dim!=='end')return;const [x,y,z]=this.reward.pos;mgr.ensureChunk(x>>4,z>>4);mgr.setBlock(x,y-1,z,B.OBSIDIAN,true);mgr.setBlock(x,y,z,B.CHEST,true);},
+  loot(x,y,z){return this.won&&this.reward&&Game.manager.dim==='end'&&this.reward.pos.every((n,i)=>n===[x,y,z][i])?this.reward.items:null;},
+  tick(){if(!this.pending||Cinematics.active||!['playing','paused','inventory'].includes(Game.state))return;this.pending=false;Admin.closeBar();if(Game.state==='inventory')closeInventory();hideOverlays();Game.state='playing';Cinematics.play('ending').then(()=>{this.seen=true;saveGame({silent:true});this.show();});},
+  show(){if(!this.won||Game.state==='dead')return;Game.state='paused';showOverlay('victory');$('victoryLocation').textContent='Coffre de victoire · '+Coordinates.xyz(...this.reward.pos);try{document.exitPointerLock();}catch(e){}},
+  returnHome(){if(Game.state==='inventory')closeInventory();hideOverlays();Game.state='playing';const dim=Game.homeDim==='flat'?'flat':'overworld',p=Dimensions.pos[dim]||Game.spawn;Dimensions.go(dim,{x:p[0],y:p[1]+.2,z:p[2]});},
+};
+
+/* The host owns vehicle movement and mob seats. Guests request use and send boat controls. */
+const Transport={
+  timer:0,lastRequest:0,remoteBoat:{f:0,b:0},
+  request(kind,t){const now=performance.now();if(now-this.lastRequest<200)return true;this.lastRequest=now;Net.send(['vehicle-use',kind,t?{x:t.x,y:t.y,z:t.z,block:t.block}:null,heldItemId(),!!Input.down]);return true;},
+  applyUse(m){if(Net.role!=='host'||!Net.remote||(Net.remote.dim&&Net.remote.dim!==Dimensions.current))return;const pos=Net.remotePos(),t=m[2];if(t&&(![t.x,t.y,t.z].every(Number.isInteger)||Math.hypot(t.x+.5-pos[0],t.y-pos[1],t.z+.5-pos[2])>8))return;
+    if(m[1]==='exit'){for(const c of Railways.carts.concat(Boats.list))if(c.driver==='guest')c.driver=null;this.broadcast();return;}
+    const system=m[1]==='cart'?Railways:m[1]==='boat'?Boats:null;if(!system)return;
+    const active=Railways.carts.concat(Boats.list).find(c=>c.driver==='guest');if(active){active.driver=null;this.broadcast();return;}
+    const old={pos:Player.pos,yaw:Player.yaw,vel:Player.vel,inv:Game.inv,slot:Game.slot,cart:Railways.riding,boat:Boats.riding,down:Input.down};
+    const count=system===Railways?Railways.carts.length:Boats.list.length;
+    try{Player.pos=pos.slice();Player.yaw=Net.remote.yaw||0;Player.vel=[0,0,0];Game.inv=new Inventory();Game.slot=0;const id=Number(m[3]);if([I.MINECART,I.BOAT].includes(id))Game.inv.slots[0]={id,n:1};Input.down=!!m[4];Railways.riding=null;Boats.riding=null;system.use(t);const seat=system.riding;if(seat)seat.driver='guest';const after=system===Railways?Railways.carts.length:Boats.list.length;if(after>count)Net.send(['vehicle-consumed',system===Railways?I.MINECART:I.BOAT]);}
+    finally{Player.pos=old.pos;Player.yaw=old.yaw;Player.vel=old.vel;Game.inv=old.inv;Game.slot=old.slot;Input.down=old.down;Railways.riding=old.cart;Boats.riding=old.boat;HUD.refreshAll();}
+    this.broadcast();
+  },
+  broadcast(){if(Net.live&&Net.role==='host')Net.send(['machines',{carts:Railways.carts,boats:Boats.list,levels:[...Circuits.levels],meta:[...Circuits.meta]}]);},
+  receive(data){if(Net.role!=='guest'||!data||!Array.isArray(data.carts)||!Array.isArray(data.boats))return;
+    const oldSeat=Railways.riding||Boats.riding;
+    Railways.carts=data.carts.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100);Boats.list=data.boats.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50);
+    Railways.riding=Railways.carts.find(c=>c.driver==='guest')||null;Boats.riding=Boats.list.find(c=>c.driver==='guest')||null;
+    Circuits.meta=new Map(data.meta||[]);Circuits.levels=new Map(data.levels||[]);if(oldSeat&&!Railways.riding&&!Boats.riding)Railways.safeExit(oldSeat.pos);
+  },
+  tick(dt){this.timer+=dt;if(this.timer<.15||!Net.live)return;this.timer=0;if(Net.role==='host')this.broadcast();else Net.send(['boat-input',Input.f,Input.b]);},
+  disconnect(){for(const c of Railways.carts.concat(Boats.list))if(c.driver==='guest')c.driver=null;this.remoteBoat={f:0,b:0};},
+};
+
+const Adventure={
+  init(){
+    const add=(cat,out,n,ins,rows,keys)=>Crafting.recipes.push({cat,table:true,out:[out,n],in:ins,shape:{rows,keys}});
+    add('combat',I.BOW,1,[[I.STICK,3],[I.STRING,3]],[' ST','S T',' ST'],{S:I.STICK,T:I.STRING});
+    add('combat',I.ARROW,4,[[I.FLINT_SHARD,1],[I.STICK,1],[I.FEATHER,1]],['F','S','P'],{F:I.FLINT_SHARD,S:I.STICK,P:I.FEATHER});
+    add('divers',I.BOAT,1,[[B.PLANKS,5]],['P P','PPP'],{P:B.PLANKS});
+    add('divers',B.LEVER_OFF,1,[[I.STICK,1],[B.COBBLE,1]],['S','C'],{S:I.STICK,C:B.COBBLE});
+    add('divers',B.BUTTON_OFF,1,[[B.STONE,1]],['S'],{S:B.STONE});
+    add('divers',B.PLATE_OFF,1,[[B.PLANKS,2]],['PP'],{P:B.PLANKS});
+    add('divers',B.REDTORCH_ON,1,[[I.STICK,1],[I.REDSTONE,1]],['R','S'],{R:I.REDSTONE,S:I.STICK});
+    add('divers',B.REPEATER_OFF,1,[[B.STONE,3],[I.REDSTONE,1],[B.REDTORCH_ON,2]],['TRT','SSS'],{T:B.REDTORCH_ON,R:I.REDSTONE,S:B.STONE});
+    add('divers',B.COMPARATOR_OFF,1,[[B.STONE,3],[I.QUARTZ,1],[B.REDTORCH_ON,3]],[' T ','TQT','SSS'],{T:B.REDTORCH_ON,Q:I.QUARTZ,S:B.STONE});
+    add('divers',B.PISTON_OFF,1,[[B.PLANKS,3],[B.COBBLE,4],[I.IRON_INGOT,1],[I.REDSTONE,1]],['PPP','CIC','CRC'],{P:B.PLANKS,C:B.COBBLE,I:I.IRON_INGOT,R:I.REDSTONE});
+    add('divers',B.STICKY_PISTON_OFF,1,[[B.PISTON_OFF,1],[I.WHEAT,1]],['W','P'],{W:I.WHEAT,P:B.PISTON_OFF});
+    add('divers',B.CURVED_RAIL,1,[[B.RAIL,1]],['R'],{R:B.RAIL});
+    add('divers',B.DETECTOR_RAIL,6,[[I.IRON_INGOT,6],[B.PLATE_OFF,1],[I.REDSTONE,1]],['I I','IPI','IRI'],{I:I.IRON_INGOT,P:B.PLATE_OFF,R:I.REDSTONE});
+    add('divers',B.ACTIVATOR_RAIL,6,[[I.IRON_INGOT,6],[I.STICK,2],[B.REDTORCH_ON,1]],['ISI','ITI','ISI'],{I:I.IRON_INGOT,S:I.STICK,T:B.REDTORCH_ON});
+    MOB_DEFS.chicken.drops.push([I.FEATHER,1,2]);
+    $('vehicleExit').onclick=()=>{if(Net.live&&Net.role==='guest'){const seat=Railways.riding||Boats.riding;Transport.request('exit',null);Railways.riding=null;Boats.riding=null;if(seat)Railways.safeExit(seat.pos);return;}if(Railways.riding)Railways.exit();else if(Boats.riding){const c=Boats.riding;Boats.riding=null;Railways.safeExit(c.pos);}};
+    $('victoryHome').onclick=()=>EndVictory.returnHome();$('victoryLoot').onclick=()=>{hideOverlays();Game.state='playing';const p=EndVictory.reward.pos;CommandHub.teleport([p[0]+.5,p[1],p[2]+2.5],'end');};
+    const run=Admin.run.bind(Admin);Admin.run=raw=>{const parts=String(raw).trim().replace(/^\//,'').split(/\s+/);if(['meteo','weather'].includes(Admin.norm(parts[0]))){if(Game.hardcore||Net.live&&!Admin.isAdmin()){Admin.say('Météo réservée aux admins hors Hardcore.','warn');return;}if(!parts[1]){CommandHub.open('/meteo ');return;}Admin.say(Weather.set(Admin.norm(parts[1]))?'Météo : '+Weather.kind:'Choisis clair, pluie, neige ou orage.','sys');return;}if(parts[0]==='victoire'&&EndVictory.won){EndVictory.show();return;}run(raw);};
+    CommandHub.entries.push('meteo','victoire');CommandHub.descriptions.meteo='Clair, pluie, neige ou orage : /meteo orage';CommandHub.descriptions.victoire='Retrouver le coffre et le retour de victoire';
+    const oldGuide=CommandHub.guide.bind(CommandHub);CommandHub.guide=(raw,submit=true)=>{if(/^\/?(?:meteo|weather)\s*$/.test(raw)){CommandHub.list('Quelle météo ?',['clair','pluie','neige','orage'].map(k=>({label:k,action:()=>{CommandHub.fill('/meteo '+k);CommandHub.hide();GameChat.submit();}})));return true;}return oldGuide(raw,submit);};
+  },
+  load(data){Circuits.load(data&&data.circuits);Weather.load(data&&data.weather);EndVictory.load(data&&data.victory);Boats.load(data&&data.boats);Archery.list=[];},
+  tick(dt){Coordinates.update();Weather.update(dt);Circuits.update(dt);Boats.update(dt);Archery.update(dt);},
 };
 
 /* éclair d'écran (foudre, explosion admin) */
@@ -18357,7 +18510,7 @@ function boot() {
   PixelUI.init();
   Troll.init();
   NewGameWizard.init();
-  CommandHub.init();Preview3D.init();AdminRealm.init();
+  CommandHub.init();Preview3D.init();AdminRealm.init();Adventure.init();
   $('renameParty').onclick=()=>RoomNames.rename();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
   $('chatSend').addEventListener('click', () => GameChat.submit());

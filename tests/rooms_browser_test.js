@@ -62,6 +62,19 @@ await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:
     await guest.waitForFunction(()=>Saves.currentName.startsWith('Partie bis'));
     assert(await host.evaluate(()=>Net.live));
     await guest.evaluate(()=>ShortRooms.join('123'));assert(await guest.evaluate(()=>Net.live));
+    // Vehicle ownership, guest inputs and weather really traverse the data channel.
+    for(const p of [host,guest])await p.evaluate(()=>{window.cells=new Map([['0,61,0',B.RAIL],['0,61,-1',B.RAIL],['0,61,-2',B.RAIL]]);Game.manager={dim:'flat',chunks:new Map(),editLog:new Map([['fixture',[]]]),redDust:new Set(),redDevices:new Set(),getBlock:(x,y,z)=>cells.get([x,y,z].join(','))||0,setBlock:(x,y,z,t)=>{cells.set([x,y,z].join(','),t);return true;},markDirty(){},heightAt:()=>60};Dimensions.current='flat';Game.mode='survival';Game.inv=new Inventory();Game.slot=0;Game.inv.slots[0]={id:I.MINECART,n:2};Player.pos=[.5,61,.5];Player.yaw=Player.pitch=0;Railways.carts=[];Railways.riding=null;Boats.list=[];Boats.riding=null;Mobs.reset();Net.remote={x:.5,y:61,z:.5,yaw:0,dim:'flat',name:'Invité'};});
+    await guest.evaluate(()=>Railways.use({x:0,y:61,z:0,block:B.RAIL}));
+    await guest.waitForFunction(()=>Railways.carts.length===1&&Game.inv.count(I.MINECART)===1);
+    await guest.waitForTimeout(250);await guest.evaluate(()=>Railways.use({x:0,y:61,z:0,block:B.RAIL}));await guest.waitForFunction(()=>!!Railways.riding);
+    assert(await host.evaluate(()=>Railways.carts[0].driver==='guest'&&!Railways.riding));
+    await host.evaluate(()=>{Railways.update(.1);Transport.broadcast();});await guest.waitForFunction(()=>Railways.riding&&Railways.riding.pos[2]<.5);
+    await host.evaluate(()=>{Game.inv.slots[0]=null;Railways.use({x:0,y:61,z:0,block:B.RAIL});});assert(!await host.evaluate(()=>Railways.riding));
+    await guest.waitForTimeout(250);await guest.evaluate(()=>Transport.request('exit',null));await guest.waitForFunction(()=>!Railways.riding);assert.equal(await host.evaluate(()=>Railways.carts[0].driver),null);
+    await host.evaluate(()=>Weather.set('orage'));await guest.waitForFunction(()=>Weather.kind==='orage');
+    await host.evaluate(()=>{Mobs.add('zombie',.5,61,-7);});await guest.evaluate(()=>{Game.inv.slots[0]={id:I.BOW,n:1};Game.inv.slots[1]={id:I.ARROW,n:2};Archery.shoot();});await host.waitForFunction(()=>Archery.list.length===1);await guest.waitForFunction(()=>Archery.list.length===1&&Archery.list[0].visualOnly);
+    await host.evaluate(()=>{for(let i=0;i<40;i++)Archery.update(.02);});assert.equal(await host.evaluate(()=>Mobs.list[0].hp),13);
+    assert.equal(await guest.evaluate(()=>Game.inv.count(I.ARROW)),1);
     const third=await makePage();await third.locator('#btnMpJoin').click();await third.locator('#mpJoinIn').fill(code);await third.locator('#btnMpAnswer').click();
     await third.waitForFunction(()=>document.querySelector('#mpStatus').classList.contains('err'),null,{timeout:25000});
     assert(!await third.evaluate(()=>Net.live));assert(await host.evaluate(()=>Net.live));assert(await guest.evaluate(()=>Net.live));
@@ -69,7 +82,7 @@ await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:
     await third.waitForFunction(()=>document.querySelector('#mpStatus').textContent.toLowerCase().includes('aucune partie'),null,{timeout:15000});
     await guest.evaluate(()=>Net.reset());await host.waitForFunction(()=>!Net.live);
     assert.equal(await host.locator('#mpCodeOut').inputValue(),'');
-    console.log('OK : PeerJS/WebRTC local, nom exact Unicode/casse, nom occupé, ancien code, renommage sans déconnexion, handshake Trolle, message 100 Ko, 3e joueur refusé et fermeture.');
+    console.log('OK : PeerJS/WebRTC local, nom exact Unicode/casse, nom occupé, ancien code, renommage sans déconnexion, handshake Trolle, message 100 Ko, wagon invité autoritaire/exclusion/décompte, météo, arc visuel invité/dégâts hôte, 3e joueur refusé et fermeture.');
   } finally {
     for(const page of pages)await page.evaluate(()=>Net.reset()).catch(()=>{});
     if(browser)await browser.close();

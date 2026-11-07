@@ -1028,3 +1028,82 @@ Tests complémentaires : `npm run test:commands` (palette, choix guidés, capaci
 aperçu 3D, sauvegarde de la mort Hardcore, profil/QA) et `npm run test:adminrealm`
 (vrai PeerJS/WebRTC local, profil requis même avec invitation, preuve incorrecte
 refusée sans fuite du monde, invitation valide, droits hôte et nomination Admin).
+
+### Rails, véhicules et circuits
+
+- **Utiliser / clic droit / tap** : poser un wagonnet sur un rail, puis l'utiliser
+  pour monter. **X** ou le bouton **Descendre** permet de sortir. Le wagonnet peut
+  aussi être utilisé avec un autre objet en main. Un siège occupé n'est pas écrasé.
+- Marcher contre un mob ou un villageois le pousse ; un wagonnet vide proche le
+  prend comme passager. Accroupissement + utilisation le fait descendre. Les boss
+  ne montent pas. Les passagers et les véhicules sont sauvegardés.
+- Les rails ordinaires prennent automatiquement un **angle** avec leurs voisins ;
+  la géométrie visible et la trajectoire suivent la même courbe. Une boucle fermée
+  tourne indéfiniment à faible vitesse (choix arcade, sans moteur obligatoire).
+  Le rail propulseur accélère sous tension et freine sinon. Les tracés sont **plans**,
+  pas des pentes ni des croisements à niveaux différents.
+- Un aiguillage à trois branches sélectionne l'une des deux branches à partir
+  du tronc ; un **levier adjacent** ou un signal de poussière change la sélection.
+  À quatre voisins, la sélection alterne nord/sud et est/ouest. Les connexions
+  restent des cases adjacentes : pas de téléportation entre rails éloignés.
+- Circuits implémentés : leviers, boutons temporisés, plaques, poussière avec
+  atténuation sur 15 cases, lampes, portes, TNT, répéteurs orientés et réglables,
+  comparateurs comparaison/soustraction de signaux, torches inverseuses, pistons
+  et pistons collants **horizontaux** (12 blocs maximum), détecteurs de wagonnet et
+  rails activateurs qui éjectent les passagers. Utiliser un répéteur change son délai ;
+  utiliser un comparateur change son mode. Les blocs directionnels suivent le regard
+  lors de la pose. Les conteneurs et l'obsidienne ne sont pas poussables.
+- Ce sont des circuits discrets à 10 Hz, **pas toutes les mécaniques de Minecraft** :
+  pas de quasi-connectivité, de lecture analogique des coffres, de pistons verticaux,
+  d'entonnoirs ou de distributeurs. Les recettes figurent dans le livre de l'établi.
+- Poser le **bateau** sur l'eau, puis l'utiliser pour monter. Avancer/reculer avec les
+  commandes habituelles et regarder pour tourner ; X / Descendre pour sortir.
+- En réseau, l'hôte simule les circuits et les véhicules ; l'invité demande la pose,
+  l'embarquement et la sortie, et transmet ses commandes de bateau. Un siège n'a
+  qu'un conducteur. Ce protocole ne transforme pas le client en système anti-triche.
+
+### Arc, TNT, coordonnées et météo
+
+L'**arc** et les **flèches** se fabriquent à l'établi. Le gravier peut fournir du
+silex, les poules des plumes. Tirer consomme une flèche hors créatif et use l'arc ;
+le projectile a une gravité, heurte les blocs et inflige des dégâts aux mobs.
+Une flèche arrêtée par un bloc peut être ramassée. En réseau, l'hôte applique les
+impacts ; les projectiles de l'invité sont affichés sans second calcul des dégâts.
+
+La **TNT exige un briquet pour l'allumage manuel** ; un circuit peut aussi l'amorcer.
+Choisir des blocs en créatif réutilise une pile existante ou remplit la prochaine
+case vide, sans écraser les choix précédents. Si l'inventaire est plein, un message
+invite à libérer une case.
+
+Le HUD affiche **X / Y / Z**, une rose des vents et un angle : nord 0°, est 90°,
+sud 180°, ouest 270°. Les destinations de portails et les listes de lieux indiquent
+également les trois axes. En vol, avancer suit la hauteur du regard ; lever/baisser
+la tête fait monter/descendre. Les citrouilles naturelles sont beaucoup moins
+fréquentes et les citrouilles sculptées ne sont plus générées naturellement.
+
+La météo alterne entre ciel clair, pluie, neige et orage, avec particules extérieures,
+assombrissement, éclairs et tonnerre. `/meteo clair|pluie|neige|orage` est aussi
+accessible depuis le sélecteur `/`. Pas d'accumulation de neige au sol ni d'incendies
+causés par la foudre. Le type de météo est sauvegardé et communiqué à l'invité.
+
+### Victoire et outils QA
+
+La mort du dragon met la cinématique de fin en attente même si QA, l'inventaire ou
+la pause était ouvert. Après la scène, deux choix : rejoindre le **coffre de victoire**
+ou rentrer dans le **monde normal**. `/victoire` rouvre ce choix après la victoire.
+Le coffre contient notamment la **tête du dragon**, son **cœur**, des diamants,
+de la netherite, une arme et des perles. Son contenu est sauvegardé : rouvrir le
+coffre ou recharger ne réattribue pas la récompense. Le cœur permet aussi le retour.
+Comme les coffres ordinaires, son inventaire reste local au client ; il n'existe
+pas encore de gestion transactionnelle des inventaires partagés entre navigateurs.
+
+Dans la liste **QA → entités**, chaque mob a maintenant **TP** et **Tuer**.
+Les contrôles réseau restent soumis aux droits Admin de la partie.
+
+`npm run test:mechanics` couvre les IDs de blocs 16 bits, la boucle et l'aiguillage,
+la propulsion, le passager villageois sauvegardé, la redstone atténuée, le répéteur,
+le piston collant, TNT/briquet, bateau, tir, sélection créative, vol au regard,
+coordonnées, météo et victoire déclenchée depuis la pause. `test:rooms` vérifie aussi
+le wagonnet invité et son siège exclusif, le décompte, la météo et le tir via un
+vrai canal PeerJS/WebRTC local. `test:game` maillage/rendu WebGL inclut les nouveaux
+blocs, rails courbes, wagonnets et bateaux.

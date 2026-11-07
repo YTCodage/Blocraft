@@ -49,14 +49,16 @@ await page.goto(url,{waitUntil:'load'});
     assert((await page.locator('#chatLog').textContent()).includes('tué par un zombie'));
     const rendering=await page.evaluate(()=>{
       WorldGen.init(123);Game.manager=new ChunkManager('flat');Game.mode='creative';Game.time=.32;
-      const data=new Uint8Array(16*16*128),heights=new Float32Array(256).fill(60);
+      const data=new Uint16Array(16*16*128),heights=new Float32Array(256).fill(60);
       const put=(x,y,z,t)=>data[x+16*z+256*y]=t;
       for(let x=0;x<16;x++)for(let z=0;z<16;z++){
         put(x,59,z,B.DIRT);put(x,60,z,x>=8&&x<=11?(x===8?B.WATER:B.WATER1+x-9):B.GRASS);
       }
       [B.CRAFTING,B.MARBLE,B.POLISHED_GRANITE,B.OAK_PARQUET,B.SLATE_TILES,B.LUMINOUS_BRICK].forEach((b,i)=>put(2+i,61,8,b));
+      [B.LEVER_ON,B.REPEATER_OFF,B.COMPARATOR_OFF,B.STICKY_PISTON_OFF,B.DRAGON_HEAD].forEach((b,i)=>put(2+i,61,7,b));
+      [[1,3],[2,3],[2,4]].forEach(([x,z])=>put(x,61,z,B.RAIL));
       Mobs.add('sheep',6,61,6);
-      const chunk=new Chunk(0,0,data,heights);Game.manager.chunks.set('0,0',chunk);Game.manager.buildMesh(chunk);
+      const chunk=new Chunk(0,0,data,heights);Game.manager.chunks.set('0,0',chunk);Game.manager.buildMesh(chunk);Railways.create({x:2,y:61,z:3});Boats.list.push({id:'testBoat',dim:'flat',pos:[9.5,60.9,5.5],yaw:0,speed:0});
       Player.pos=[8,62,14];Player.yaw=0;Player.pitch=-.25;
       renderScene(0);
       return {solid:chunk.meshCount,water:chunk.waterCount,error:gl.getError(),newBlocks:EXTRA_BLOCKS.length};
@@ -72,9 +74,9 @@ await page.goto(url,{waitUntil:'load'});
       Dragon.defeated=false;
       const before=Game.inv.count(I.DIAMONDGEM);
       Dragon.onDeath();Dragon.onDeath();
-      return Game.inv.count(I.DIAMONDGEM)-before;
+      return EndVictory.reward.items.filter(Boolean).find(s=>s.id===I.DIAMONDGEM).n;
     });
-    assert.equal(reward,8,'Dragon death must only reward once');
+    assert.equal(reward,8,'Dragon victory chest must only be awarded once');
     await page.waitForSelector('#cinematic');
     await page.waitForTimeout(100);
     assert((await page.locator('#cinematic h1').textContent()).includes('Le dernier battement'));

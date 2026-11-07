@@ -12,7 +12,8 @@
     "test:profile": "node tests/profile_browser_test.js",
     "test:wizard": "node tests/wizard_browser_test.js",
     "test:commands": "node tests/commands_browser_test.js",
-    "test:adminrealm": "node tests/adminrealm_browser_test.js"
+    "test:adminrealm": "node tests/adminrealm_browser_test.js",
+    "test:mechanics": "node tests/mechanics_browser_test.js"
   },
   "devDependencies": {
     "peer": "^1.0.2"
