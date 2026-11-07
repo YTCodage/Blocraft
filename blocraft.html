@@ -1373,6 +1373,8 @@
 #creativeBottom{display:none;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
 #inventory .mcPanel[data-view="blocks"] #creativeBottom{display:grid}
 @media(max-width:650px){#creativeBottom{gap:4px}}
+
+.profilePanel{width:min(560px,94vw);padding:30px;background:#132326;border:2px solid #689966;border-radius:14px;max-height:94dvh;overflow:auto}.profileEyebrow{font-size:11px;letter-spacing:.18em;color:#a6d88c}.profilePanel h2{font-size:clamp(24px,6vw,34px);margin:10px 0}.profilePanel>p{line-height:1.6;color:#c0cecb}.profileChoices{display:flex;gap:12px;margin:20px 0}.profileChoices button{flex:1;white-space:normal}.profileChoices b{font-size:21px}.profileChoices small{display:block;font-size:11px;margin-top:8px;line-height:1.5}#creatorPinForm label{display:block;margin-bottom:10px}#creatorPin{width:100%;font:32px monospace;text-align:center;letter-spacing:.3em;padding:16px;background:#081314;color:#fff;border:2px solid #83ad73;border-radius:8px}#profileError{min-height:24px;color:#ffb2a1}.profileLocal{display:block;color:#9caaa5;line-height:1.6}
 </style>
 </head>
 <body>
@@ -1492,6 +1494,7 @@
           <button id="btnPlay" class="btn primary big">▶&nbsp; Jouer</button>
           <button id="btnContinue" class="btn hidden">▶ Reprendre la partie</button>
           <button id="btnOnline" class="btn online">Jouer à deux · code privé</button>
+          <button id="btnProfile" class="btn">Choisir mon profil</button>
         </aside>
       </div>
 
@@ -1510,6 +1513,15 @@
     </div>
   </div>
 
+  <div id="profile" class="overlay hidden">
+    <section class="panel profilePanel" aria-labelledby="profileTitle">
+      <p class="profileEyebrow">BIENVENUE DANS BLOCRAFT</p><h2 id="profileTitle">Comment veux-tu jouer ?</h2>
+      <p>Choisis ton profil sur cet appareil.</p>
+      <div class="profileChoices"><button id="chooseCreator" class="btn"><b>Créateur</b><small>Administration · code requis</small></button><button id="choosePlayer" class="btn primary"><b>Joueur</b><small>Jouer comme d’habitude</small></button></div>
+      <form id="creatorPinForm" class="hidden"><label for="creatorPin">Ton code Créateur à 6 chiffres</label><input id="creatorPin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required aria-describedby="profileError"><div class="profileChoices"><button type="button" id="creatorPinBack" class="btn">Retour</button><button id="creatorPinSubmit" class="btn primary" type="submit">Déverrouiller</button></div></form>
+      <p id="profileError" role="status" aria-live="polite"></p><small class="profileLocal">Profil enregistré sur ce navigateur, sans compte en ligne. Le code Créateur est différent du code d’une partie à deux.</small>
+    </section>
+  </div>
   <div id="pause" class="overlay hidden">
     <div class="panel pp">
       <header class="ppHead">
@@ -1526,6 +1538,7 @@
             <span>Reprendre<small>Retour au monde, sans rien perdre</small></span>
             <span class="ppIco">▶</span>
           </button>
+          <button id="btnCreatorAdmin" class="ppBtn hidden">Administration · Créateur</button>
           <button id="btnSave" class="ppBtn"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 3h11l3 3v11H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 3h6v4H6z" fill="currentColor"/><path d="M6 12h8v5H6z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>Sauvegarder la partie</span></span><span class="ppArw">›</span></button>
           <div class="ppSep"></div>
           <div class="ppSub">Réglages</div>
@@ -8912,13 +8925,14 @@ function updateMouseHint() {
 
 /* --------------------------- Actions d'état ------------------------------ */
 function showOverlay(id) {
-  for (const o of ['menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
+  if(id==='menu' && typeof RoleGate!=='undefined' && !RoleGate.role)id='profile';
+  for (const o of ['profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
     const el = $(o);
     if (el) el.classList.toggle('hidden', o !== id);
   }
 }
 function hideOverlays() {
-  for (const o of ['menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
+  for (const o of ['profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
 }
 
 function startPlaying() {
@@ -17278,6 +17292,53 @@ const GameChat = {
   },
 };
 
+/* Local profile gate, not server authentication: this project is a static site. */
+const RoleGate = {
+  KEY:'blocraft.profile.v1',role:null,pending:false,epoch:0,
+  HASH:'19da7b9da3ca4ee0a91df4473843856fc37b83a50a2cd248ba6892abcb8ec2a2',
+  init(){
+    try{const v=JSON.parse(localStorage.getItem(this.KEY)||'null');if(v&&['creator','player'].includes(v.role))this.role=v.role;}catch(e){}
+    $('choosePlayer').onclick=()=>this.commit('player');
+    $('chooseCreator').onclick=()=>{ $('creatorPinForm').classList.remove('hidden');$('creatorPin').focus();$('profileError').textContent=''; };
+    $('creatorPin').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);};
+    $('creatorPinForm').onsubmit=e=>{e.preventDefault();this.verify();};
+    $('creatorPinBack').onclick=()=>{this.epoch++;$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';};
+    $('btnProfile').onclick=()=>this.show();
+    $('btnCreatorAdmin').onclick=()=>{if(this.role==='creator'){QA.on=true;QA.open();}};
+    this.apply();
+  },
+  show(){this.epoch++;resetTouchInput();clearKeys();Game.state='menu';showOverlay('profile');$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';},
+  apply(){
+    Admin.owner=this.role==='creator';
+    if(this.role!=='creator')Admin.admins=Admin.admins.filter(n=>n!==Admin.me);
+    if(this.role==='creator')QA.on=true;
+    Admin.save();Admin.refreshBadge();
+    $('btnProfile').textContent='Profil · '+(this.role==='creator'?'Créateur':this.role==='player'?'Joueur':'Choisir');
+    $('btnCreatorAdmin').classList.toggle('hidden',this.role!=='creator');
+  },
+  commit(role){
+    this.epoch++;this.role=role;try{localStorage.setItem(this.KEY,JSON.stringify({role}));}catch(e){}
+    $('creatorPin').value='';this.apply();openMenuScreen();
+  },
+  async verify(){
+    if(this.pending)return;
+    const pin=$('creatorPin').value;if(!/^\d{6}$/.test(pin)){$('profileError').textContent='Entre exactement 6 chiffres.';return;}
+    let attempts={n:0,until:0};try{attempts=JSON.parse(sessionStorage.getItem('blocraft.pin.attempts')||'null')||attempts;}catch(e){}
+    if(attempts.until>Date.now()){$('profileError').textContent='Trop d’essais. Attends 30 secondes avant de réessayer.';return;}
+    const epoch=this.epoch;this.pending=true;$('creatorPinSubmit').disabled=true;
+    try{
+      if(!crypto.subtle)throw new Error('Ouvre le jeu depuis le site HTTPS pour vérifier le code.');
+      const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
+      if(epoch!==this.epoch)return;
+      const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+      if(hash!==this.HASH){attempts.n++;if(attempts.n>=5){attempts.n=0;attempts.until=Date.now()+30000;}try{sessionStorage.setItem('blocraft.pin.attempts',JSON.stringify(attempts));}catch(e){}$('profileError').textContent='Code incorrect. Réessaie ou choisis Joueur.';return;}
+      try{sessionStorage.removeItem('blocraft.pin.attempts');}catch(e){}
+      this.commit('creator');
+    }catch(e){$('profileError').textContent=e.message||'Vérification indisponible. Réessaie.';}
+    finally{this.pending=false;$('creatorPinSubmit').disabled=false;}
+  },
+};
+
 const Admin = {
   SAVE: 'blocraft.admin.v1',
   owner: false,
@@ -17452,6 +17513,7 @@ const Admin = {
       }
 
       case 'proprietaire': case 'owner':
+        if(RoleGate.role!=='creator'){this.say('Choisis le profil Créateur et entre son code à 6 chiffres depuis le menu.','warn');break;}
         if (this.owner) { this.say('Tu es déjà propriétaire de ce navigateur.'); break; }
         this.owner = true;
         this.admins = [];
@@ -17871,6 +17933,7 @@ function boot() {
   initSelection();
   try { Fx.init(); } catch (e) { console.error('Fx', e); }
   try { Admin.load(); } catch (e) { console.error('Admin', e); }
+  RoleGate.init();
   setupInput();
   PixelUI.init();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
@@ -18124,7 +18187,9 @@ function boot() {
   }, 120000);
 
   // démarre avec un monde par défaut
+  if(RoleGate.role){
   newWorld(null, false);
+  }else RoleGate.show();
   requestAnimationFrame(frame);
 }
 

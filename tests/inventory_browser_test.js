@@ -5,6 +5,7 @@ try{
 const page=await browser.newPage({viewport:{width:1100,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
 let html=fs.readFileSync(path.join(__dirname,'..','blocraft.html'),'utf8').replace('  newWorld(null, false);','  Game.state="menu";showOverlay("menu");').replace('  requestAnimationFrame(frame);\n}', '}');
 await page.route('**/blocraft.html',r=>r.fulfill({contentType:'text/html',body:html}));
+await page.addInitScript(()=>localStorage.setItem('blocraft.profile.v1',JSON.stringify({role:'player'})));
 await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href,{timeout:90000});await page.evaluate(()=>document.fonts.ready);
 await page.evaluate(()=>{
 Game.state='playing';Game.mode='survival';Game.inv=new Inventory();Game.inv.add(B.LOG,8);Game.inv.add(I.IRONRAW,3);Game.inv.add(I.COAL,2);Game.inv.slots[9]={id:I.IRON_HELM,n:1,d:7};Player.pos=[.5,4,.5];

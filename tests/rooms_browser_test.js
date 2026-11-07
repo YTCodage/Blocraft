@@ -19,7 +19,8 @@ const fs = require('fs'), path = require('path'), assert = require('assert');
     const makePage=async(mobile=false)=>{
       const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1000,height:750},isMobile:mobile,hasTouch:mobile});pages.push(page);
       await page.route('**/blocraft.html',r=>r.fulfill({contentType:'text/html',body:html}));
-      await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href);
+      await page.addInitScript(()=>localStorage.setItem('blocraft.profile.v1',JSON.stringify({role:'player'})));
+await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href);
       await page.addScriptTag({path:path.join(__dirname,'..','assets/vendor/peerjs.min.js')});
       await page.evaluate(port=>{
         const NativePeer=window.Peer;

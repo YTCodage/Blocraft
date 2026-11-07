@@ -14,7 +14,8 @@ const { chromium } = require('playwright');
     html=html.replace('  newWorld(null, false);','  Game.state = "menu"; showOverlay("menu");').replace('  requestAnimationFrame(frame);\n}', '}');
     await page.route('**/blocraft.html',route=>route.fulfill({contentType:'text/html',body:html}));
     const url=new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href;
-    await page.goto(url,{waitUntil:'load'});
+    await page.addInitScript(()=>localStorage.setItem('blocraft.profile.v1',JSON.stringify({role:'player'})));
+await page.goto(url,{waitUntil:'load'});
     assert(await page.evaluate(()=>!!gl&&gl.getError()===0&&isTouch));
     assert.equal(await page.locator('#btnMode,#btnVision,#tBreak,#tPlace').count(),0);
     await page.evaluate(()=>{

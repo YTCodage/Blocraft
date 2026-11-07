@@ -539,12 +539,24 @@ avec des plafonds même dans les structures difficiles.
 
 ## 7. Mode administrateur
 
-Un seul **propriétaire** par navigateur : il tape une fois
-`proprietaire` et devient le chef. **Lui seul peut nommer des admins.**
+Au premier lancement, choisis **Joueur** (fonctionnement habituel) ou **Créateur**.
+Le profil Créateur demande un **code à 6 chiffres**, communiqué au propriétaire
+par message, puis active les droits d’administration. Le choix est mémorisé sur
+ce navigateur. **Profil** dans le menu permet de changer de choix ; un Créateur
+retrouve **Administration** dans la pause. Ce code n’est pas le code temporaire
+d’une partie à deux.
+
+Il s’agit d’un **profil local**, sans compte ni serveur d’authentification. Un
+verrou côté navigateur et un code de six chiffres ne protègent pas contre une
+personne qui modifie le JavaScript ou le stockage local. Seul le vérificateur
+SHA-256 du code est distribué, pas le code en clair ; cela ne rend pas un PIN
+court résistant à la recherche exhaustive. Une véritable sécurité multijoueur
+nécessiterait un backend authentifié. Après cinq mauvais essais, le formulaire
+attend 30 secondes dans l’onglet courant.
 
 | Commande | Qui | Effet |
 |---|---|---|
-| `proprietaire` | tout le monde (une fois) | devenir propriétaire |
+| `proprietaire` | Créateur déjà déverrouillé | commande de compatibilité ; ne contourne plus le code |
 | `pseudo Alex` | tout le monde | changer son nom (affiché au-dessus de l'avatar en ligne) |
 | `admin Alex` | **propriétaire** | nommer un admin |
 | `retirer Alex` | **propriétaire** | destituer un admin |
@@ -873,3 +885,9 @@ cassé et les écrans de largeur 320/390 pixels. Le catalogue créatif propose d
 catégories, une recherche dans tous les objets et une barre d’accès à l’inventaire.
 Le soleil et la lune utilisent maintenant des contours carrés nets et un motif
 à pixels fixes, sans disque arrondi ni cratères lissés.
+
+
+`npm run test:profile` vérifie le premier choix, le refus d’un mauvais code,
+le profil Joueur, l’ancienne commande propriétaire, l’activation de
+l’administration, la mémorisation et le changement de profil à 390 pixels.
+Le test utilise un vérificateur de test, sans inclure le code réel dans le dépôt.
