@@ -1380,6 +1380,14 @@
 #trollButton{position:fixed;z-index:12;right:18px;top:84px;font-size:13px}.trollPanel{width:min(720px,96vw);max-height:92dvh;overflow:auto;background:#182a2b}.trollPanel p{font-size:12px;color:#b7c9c5}#trollSearch{width:100%;padding:12px;margin:10px 0;background:#0d1b1d;color:white;border:1px solid #7ca76b}#trollChoices{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-height:55dvh;overflow:auto;margin:12px 0}.trollChoice{background:#2d4440;color:#eef5eb;border:1px solid #72916c;padding:10px;cursor:pointer}.trollChoice canvas{width:48px;height:48px;image-rendering:pixelated}.trollChoice span{display:block;font-size:11px}
 
 #mpHostName,#partyName{padding:12px;background:#0c1a20;color:#eaf2ff;border:1px solid #527547;border-radius:6px;width:100%;font:16px monospace}#partyNameStatus{color:#b7caa4;font-size:11px}
+
+#menu .menu-worlds,#menu .legacySetup,#menu .menu-sep{display:none!important}
+#menu .menu-body{display:block}#menu .menu-side{max-width:520px;margin:0 auto;padding:22px;text-align:center}.wizardWelcome{color:#b8ccc4;font-size:14px;margin:0 0 16px}
+#newgame .ngPanel{width:min(580px,96vw);max-height:94dvh;overflow:auto;border:1px solid #6a9067;border-radius:18px;background:linear-gradient(155deg,#1c3433,#101b22);color:#edf6ee}
+.wizardHeader{padding:24px 24px 0}.wizardEyebrow{font-size:10px;letter-spacing:.2em;color:#b0d394}#ngStepLabel{font-size:13px;color:#bdd0c4;margin:12px 0}.wizardProgress{height:8px;overflow:hidden;border-radius:8px;background:#ffffff16}.wizardProgress i{display:block;height:100%;width:25%;background:linear-gradient(90deg,#6cbf6c,#c0ea89);transition:width .22s ease}
+#newgame .ngBody{padding:24px;gap:0}#newgame h2{font-size:clamp(22px,5vw,29px);line-height:1.25;margin:0 0 20px;outline:none;text-wrap:balance}.wizardChoices{display:flex;flex-direction:column;gap:10px}.wizardChoice{background:#ffffff05;border:1px solid #ffffff24;border-radius:12px;padding:15px 17px;text-align:left;color:#e8f0ea;cursor:pointer}.wizardChoice b{display:block;font-size:17px}.wizardChoice small{display:block;font-size:12px;color:#b4c7bd;line-height:1.5;margin-top:5px}.wizardChoice[aria-pressed="true"]{border-color:#a5db7c;background:#9bdd7018;box-shadow:inset 4px 0 #a5db7c}.wizardChoice:focus-visible{outline:3px solid #b5e18a;outline-offset:2px}.wizardChoice:disabled{opacity:.4;cursor:not-allowed}.wizardHelp{font-size:12px;line-height:1.65;color:#b6c8bc;margin:12px 0 0}#ngError{font-size:13px;color:#ffb8aa;min-height:18px;margin:14px 0 0}#newgame .ngFoot{padding:0 24px 24px;display:flex;gap:8px;flex-wrap:wrap}#newgame .ngFoot button{flex:1;padding:12px 9px;font-size:13px}#newgame .ngFoot #ngStart{flex:1.5}#newgame button:disabled{opacity:.45;cursor:not-allowed}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}#profileProgress{margin:16px 0}
+@media(max-width:400px){.wizardHeader{padding:20px 18px 0}#newgame .ngBody{padding:20px 18px}#newgame .ngFoot{padding:0 18px 18px}#newgame .ngFoot button{font-size:12px;padding:12px 6px}}
+@media(prefers-reduced-motion:reduce){.wizardProgress i{transition:none}}
 </style>
 </head>
 <body>
@@ -1482,22 +1490,22 @@
         </section>
 
         <aside class="menu-side">
-          <h2 class="menu-h">Mode de jeu</h2>
-          <div class="modeRow">
+          <h2 class="menu-h">Une nouvelle aventure</h2><p class="wizardWelcome">Crée ta partie, une question à la fois.</p>
+          <div class="modeRow legacySetup">
             <button class="modeBtn active" data-mode="survival"><b>Survie</b><small>Vie, faim, monstres…</small></button>
             <button class="modeBtn" data-mode="creative"><b>Créatif</b><small>Vol, blocs infinis</small></button><button class="modeBtn" data-mode="troll"><b>Trolle</b><small>Deviens un animal, monstre ou bloc</small></button>
           </div>
 
           <div class="menu-sep"></div>
-          <h2 class="menu-h">Graine</h2>
-          <div class="seedRow">
+          <h2 class="menu-h legacySetup">Graine</h2>
+          <div class="seedRow legacySetup">
             <label for="seedInput" style="display:none">Graine</label>
             <input id="seedInput" placeholder="aléatoire" spellcheck="false" autocomplete="off" />
             <button id="btnNew" class="btn small" title="Nouvelle graine aléatoire">Aléa</button>
           </div>
 
           <div class="menu-sep"></div>
-          <button id="btnPlay" class="btn primary big">▶&nbsp; Jouer</button>
+          <button id="btnPlay" class="btn primary big">▶&nbsp; Créer une partie</button>
           <button id="btnContinue" class="btn hidden">▶ Reprendre la partie</button>
           <button id="btnOnline" class="btn online">Jouer à deux · rechercher une partie</button>
           <button id="btnProfile" class="btn">Choisir mon profil</button>
@@ -1522,8 +1530,8 @@
   <div id="profile" class="overlay hidden">
     <section class="panel profilePanel" aria-labelledby="profileTitle">
       <p class="profileEyebrow">BIENVENUE DANS BLOCRAFT</p><h2 id="profileTitle">Comment veux-tu jouer ?</h2>
-      <p>Choisis ton profil sur cet appareil.</p>
-      <div class="profileChoices"><button id="chooseCreator" class="btn"><b>Créateur</b><small>Administration · code requis</small></button><button id="choosePlayer" class="btn primary"><b>Joueur</b><small>Jouer comme d’habitude</small></button></div>
+      <p id="profileIntro">Choisis ton profil sur cet appareil.</p><div id="profileProgress" class="wizardProgress" role="progressbar" aria-label="Choix du profil" aria-valuemin="0" aria-valuemax="2" aria-valuenow="1"><i style="width:50%"></i></div>
+      <div id="profileRoleChoices" class="profileChoices"><button id="chooseCreator" class="btn"><b>Créateur</b><small>Administration · code requis</small></button><button id="choosePlayer" class="btn primary"><b>Joueur</b><small>Jouer comme d’habitude</small></button></div>
       <form id="creatorPinForm" class="hidden"><label for="creatorPin">Ton code Créateur à 6 chiffres</label><input id="creatorPin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required aria-describedby="profileError"><div class="profileChoices"><button type="button" id="creatorPinBack" class="btn">Retour</button><button id="creatorPinSubmit" class="btn primary" type="submit">Déverrouiller</button></div></form>
       <p id="profileError" role="status" aria-live="polite"></p><small class="profileLocal">Profil enregistré sur ce navigateur, sans compte en ligne. Le code Créateur est différent du code d’une partie à deux.</small>
     </section>
@@ -1876,23 +1884,26 @@
   </div>
 
   <div id="newgame" class="overlay hidden">
-    <div class="panel ngPanel">
-      <h2 class="title">Nouvelle partie</h2>
+    <section class="panel ngPanel" aria-label="Créer une partie étape par étape">
+      <header class="wizardHeader"><span class="wizardEyebrow">NOUVELLE PARTIE</span><p id="ngStepLabel" aria-live="polite">Étape 1 sur 4 · Monde</p><div id="ngProgress" class="wizardProgress" role="progressbar" aria-label="Progression de la création" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1"><i id="ngProgressFill"></i></div></header>
       <div class="ngBody">
-        <div class="ngSum">
-          <span class="ngChip" id="ngWorld">Monde normal</span>
-          <span class="ngChip" id="ngMode">Survie</span>
-          <span class="ngChip" id="ngSeed">graine aléatoire</span>
-        </div>
-        <label class="mcGridLbl" for="ngName" style="color:#9fb3c8">Donne un nom à ta partie</label>
-        <input id="ngName" maxlength="28" placeholder="Ma partie" autocomplete="off" spellcheck="false">
-        <p class="subtitle" style="margin:0;font-size:11.5px;line-height:1.5">Ce nom identifie ta partie : publie-la dans « Jouer à deux » pour que ton ami la recherche. Tu peux le changer dans la pause. Il permet aussi de la retrouver dans « Reprendre » (touche un monde ou un mode au-dessus pour changer). Tu peux passer du créatif à la survie à tout moment, sans perdre ta partie.</p>
+        <section data-step="0"><h2 id="wizardQuestion0" tabindex="-1">Dans quel monde veux-tu jouer ?</h2><div class="wizardChoices">
+          <button type="button" class="wizardChoice wizardWorld" data-world="overworld"><b>Monde normal</b><small>Explore les villages, montagnes et grottes.</small></button>
+          <button type="button" class="wizardChoice wizardWorld" data-world="flat"><b>Monde plat</b><small>Un terrain plat pour créer sans limites.</small></button>
+          <button type="button" class="wizardChoice wizardWorld" data-world="oneblock"><b>Mono-bloc</b><small>Commence sur un seul bloc dans le vide.</small></button>
+        </div></section>
+        <section data-step="1" class="hidden"><h2 id="wizardQuestion1" tabindex="-1">Quel mode de jeu choisis-tu ?</h2><div class="wizardChoices">
+          <button type="button" class="wizardChoice wizardMode" data-mode="survival"><b>Survie</b><small>Récolte, fabrique et survis aux monstres.</small></button>
+          <button type="button" class="wizardChoice wizardMode" data-mode="creative"><b>Créatif</b><small>Vole et construis avec des blocs illimités.</small></button>
+          <button type="button" class="wizardChoice wizardMode" data-mode="troll"><b>Trolle</b><small>Déguise-toi en animal, monstre ou bloc.</small></button>
+        </div><p id="wizardFlatHint" class="wizardHelp hidden">Le monde plat se joue en Créatif ou en Trolle.</p></section>
+        <section data-step="2" class="hidden"><h2 id="wizardQuestion2" tabindex="-1">Comment s’appelle ta partie ?</h2><label class="sr-only" for="ngName">Nom de la partie</label><input id="ngName" maxlength="28" placeholder="Exemple : Le monde de Lucas" autocomplete="off" spellcheck="false" aria-describedby="ngNameHelp ngError"><p id="ngNameHelp" class="wizardHelp">De 3 à 28 caractères. Ton ami pourra rechercher ce nom quand tu publieras ta partie. Tu pourras le modifier plus tard.</p></section>
+        <section data-step="3" class="hidden"><h2 id="wizardQuestion3" tabindex="-1">Une graine personnalisée ?</h2><label class="sr-only" for="wizardSeed">Graine facultative</label><input id="wizardSeed" maxlength="80" placeholder="Laisse vide pour un monde aléatoire" autocomplete="off" spellcheck="false"><p class="wizardHelp">Facultatif : une même graine recrée le même terrain. Tu peux simplement laisser cette case vide.</p></section>
+        <p id="ngError" role="alert" aria-live="polite"></p>
+        <div class="hidden" aria-hidden="true"><span id="ngWorld"></span><span id="ngMode"></span><span id="ngSeed"></span></div>
       </div>
-      <div class="ngFoot">
-        <button id="ngCancel" class="btn">Annuler</button>
-        <button id="ngStart" class="btn primary">Commencer</button>
-      </div>
-    </div>
+      <footer class="ngFoot"><button id="ngCancel" type="button" class="btn">Annuler</button><button id="ngBack" type="button" class="btn">← Retour</button><button id="ngStart" type="button" class="btn primary">Suivant →</button></footer>
+    </section>
   </div>
 
   <div id="death" class="overlay hidden">
@@ -6928,20 +6939,52 @@ function openMenuScreen() {
   $('hud').classList.add('hidden');
 }
 
-function openNewGameDialog() {
-  const nm = $('ngName');
-  if (nm) { nm.value = Saves.suggestName(); }
-  const w = Game.startWorld || 'overworld';
-  const world = $('ngWorld'), mode = $('ngMode'), seed = $('ngSeed');
-  if (world) world.textContent = WORLD_LABEL[w] || 'Monde normal';
-  if (mode) mode.textContent = MODE_LABEL[Game.troll?'troll':Game.mode] || 'Survie';
-  const sv = ($('seedInput') && $('seedInput').value || '').trim();
-  if (seed) seed.textContent = sv ? 'graine ' + sv : 'graine aléatoire';
-  Game.state = 'menu';
-  showOverlay('newgame');
-  $('hud').classList.add('hidden');
-  setTimeout(() => { try { nm.focus(); nm.select(); } catch (e) { } }, 80);
-}
+/* Each screen asks one question; choices stay in a draft until final confirmation. */
+const NewGameWizard = {
+  step:0,starting:false,draft:null,
+  init(){
+    document.querySelectorAll('.wizardWorld').forEach(b=>b.onclick=()=>{this.draft.world=b.dataset.world;if(this.draft.world==='flat'&&this.draft.mode==='survival')this.draft.mode='creative';this.render();});
+    document.querySelectorAll('.wizardMode').forEach(b=>b.onclick=()=>{this.draft.mode=b.dataset.mode;this.render();});
+    $('ngName').oninput=e=>{if(this.draft)this.draft.name=e.target.value;$('ngError').textContent='';};
+    $('wizardSeed').oninput=e=>{if(this.draft)this.draft.seed=e.target.value;};
+    $('ngBack').onclick=()=>{if(this.step>0){this.step--;this.render();}};
+    $('wizardSeed').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();this.next();}};
+  },
+  open(){
+    if(this.starting)return;
+    this.draft={world:Game.startWorld||'overworld',mode:Game.troll?'troll':Game.mode||'survival',name:'',seed:''};
+    if(this.draft.world==='flat'&&this.draft.mode==='survival')this.draft.mode='creative';
+    this.step=0;Game.state='menu';showOverlay('newgame');$('hud').classList.add('hidden');this.render();
+  },
+  render(){
+    const labels=['Monde','Mode de jeu','Nom de la partie','Graine facultative'];
+    document.querySelectorAll('#newgame [data-step]').forEach(p=>p.classList.toggle('hidden',Number(p.dataset.step)!==this.step));
+    $('ngStepLabel').textContent=`Étape ${this.step+1} sur 4 · ${labels[this.step]}`;
+    $('ngProgress').setAttribute('aria-valuenow',String(this.step+1));$('ngProgressFill').style.width=((this.step+1)*25)+'%';
+    $('ngBack').disabled=this.step===0||this.starting;$('ngStart').disabled=this.starting;
+    $('ngStart').textContent=this.step===3?'Créer ma partie':'Suivant →';$('ngError').textContent='';
+    $('ngName').value=this.draft.name;$('wizardSeed').value=this.draft.seed;
+    $('ngWorld').textContent=WORLD_LABEL[this.draft.world]||'Monde normal';$('ngMode').textContent=MODE_LABEL[this.draft.mode]||'Survie';$('ngSeed').textContent=this.draft.seed||'Aléatoire';
+    document.querySelectorAll('.wizardWorld').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.world===this.draft.world)));
+    document.querySelectorAll('.wizardMode').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.mode===this.draft.mode));b.disabled=this.draft.world==='flat'&&b.dataset.mode==='survival';});
+    $('wizardFlatHint').classList.toggle('hidden',this.draft.world!=='flat');
+    const title=$('wizardQuestion'+this.step);if(title)title.focus({preventScroll:true});
+  },
+  async next(){
+    if(this.starting||!this.draft)return;
+    if(this.step===2&&!RoomNames.valid(this.draft.name)){$('ngError').textContent='Entre un nom de 3 à 28 caractères, différent d’un code de 6 chiffres.';$('ngName').focus();return;}
+    if(this.step<3){this.step++;this.render();return;}
+    this.starting=true;$('ngStart').disabled=true;$('ngBack').disabled=true;$('ngCancel').disabled=true;
+    Game.startWorld=this.draft.world;Game.troll=this.draft.mode==='troll';Game.mode=Game.troll?'creative':this.draft.mode;Troll.morph=null;
+    $('seedInput').value=this.draft.seed.trim();$('ngName').value=this.draft.name.trim();
+    $('modeBadge').textContent=MODE_LABEL[this.draft.mode];
+    try{await startNewGameFromDialog();}
+    catch(e){Game.state='menu';showOverlay('newgame');$('ngError').textContent='La partie n’a pas pu démarrer. Réessaie.';console.error(e);}
+    finally{this.starting=false;$('ngStart').disabled=false;$('ngBack').disabled=this.step===0;$('ngCancel').disabled=false;}
+  },
+};
+
+function openNewGameDialog() { NewGameWizard.open(); }
 
 async function startNewGameFromDialog() {
   if (Cinematics.active) return;
@@ -6950,8 +6993,8 @@ async function startNewGameFromDialog() {
   const name = (($('ngName') && $('ngName').value) || '').trim() || Saves.suggestName();
   Saves.begin(name, Game.startWorld || 'overworld', Game.troll?'troll':Game.mode);
   hideOverlays();
-  if (typeof window.__startFromMenu === 'function') window.__startFromMenu(true);
-  else newWorld($('seedInput').value, true);
+  if (typeof window.__startFromMenu === 'function') await window.__startFromMenu(true);
+  else await newWorld($('seedInput').value, true);
   try { HUD.toastText('💾 Partie « ' + name + ' » — elle est dans « Reprendre ».', 4); } catch (e) { }
 }
 
@@ -17416,15 +17459,16 @@ const RoleGate = {
   init(){
     try{const v=JSON.parse(localStorage.getItem(this.KEY)||'null');if(v&&['creator','player'].includes(v.role))this.role=v.role;}catch(e){}
     $('choosePlayer').onclick=()=>this.commit('player');
-    $('chooseCreator').onclick=()=>{ $('creatorPinForm').classList.remove('hidden');$('creatorPin').focus();$('profileError').textContent=''; };
+    $('chooseCreator').onclick=()=>{this.question(true); $('creatorPinForm').classList.remove('hidden');$('creatorPin').focus();$('profileError').textContent=''; };
     $('creatorPin').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);};
     $('creatorPinForm').onsubmit=e=>{e.preventDefault();this.verify();};
-    $('creatorPinBack').onclick=()=>{this.epoch++;$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';};
+    $('creatorPinBack').onclick=()=>{this.epoch++;this.question(false);$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';};
     $('btnProfile').onclick=()=>this.show();
     $('btnCreatorAdmin').onclick=()=>{if(this.role==='creator'){QA.on=true;QA.open();}};
     this.apply();
   },
-  show(){this.epoch++;resetTouchInput();clearKeys();Game.state='menu';showOverlay('profile');$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';},
+  question(code){$('profileRoleChoices').classList.toggle('hidden',code);$('profileTitle').textContent=code?'Quel est ton code Créateur ?':'Comment veux-tu jouer ?';$('profileIntro').textContent=code?'Ce code active les outils d’administration.':'Choisis ton profil sur cet appareil.';$('profileProgress').setAttribute('aria-valuenow',code?'2':'1');$('profileProgress').firstElementChild.style.width=code?'100%':'50%';},
+  show(){this.question(false);this.epoch++;resetTouchInput();clearKeys();Game.state='menu';showOverlay('profile');$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';},
   apply(){
     Admin.owner=this.role==='creator';
     if(this.role!=='creator')Admin.admins=Admin.admins.filter(n=>n!==Admin.me);
@@ -18055,6 +18099,7 @@ function boot() {
   setupInput();
   PixelUI.init();
   Troll.init();
+  NewGameWizard.init();
   $('renameParty').onclick=()=>RoomNames.rename();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
   $('chatSend').addEventListener('click', () => GameChat.submit());
@@ -18067,9 +18112,9 @@ function boot() {
     openNewGameDialog();
   });
   $('ngCancel').addEventListener('click', () => { openMenuScreen(); });
-  $('ngStart').addEventListener('click', () => { initAudioOnce(); startNewGameFromDialog(); });
+  $('ngStart').addEventListener('click', () => { initAudioOnce(); NewGameWizard.next(); });
   $('ngName').addEventListener('keydown', (e) => {
-    if (e.code === 'Enter') { e.preventDefault(); initAudioOnce(); startNewGameFromDialog(); }
+    if (e.code === 'Enter') { e.preventDefault(); initAudioOnce(); NewGameWizard.next(); }
   });
   $('svClose').addEventListener('click', () => openMenuScreen());
   $('svNew').addEventListener('click', () => openNewGameDialog());

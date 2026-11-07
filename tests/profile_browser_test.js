@@ -8,7 +8,7 @@ try{
  await page.route('**/blocraft.html',r=>r.fulfill({contentType:'text/html',body:html}));
  const url=new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href;
  await page.goto(url);assert(await page.locator('#profile').isVisible());assert(!await page.locator('#menu').isVisible());
- await page.locator('#chooseCreator').click();await page.locator('#creatorPin').fill('000000');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>document.querySelector('#profileError').textContent.includes('incorrect'));assert(!await page.evaluate(()=>Admin.owner));
+ await page.locator('#chooseCreator').click();assert(!await page.locator('#profileRoleChoices').isVisible());assert.equal(await page.locator('#profileProgress').getAttribute('aria-valuenow'),'2');await page.locator('#creatorPin').fill('000000');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>document.querySelector('#profileError').textContent.includes('incorrect'));assert(!await page.evaluate(()=>Admin.owner));
  await page.locator('#creatorPinBack').click();await page.locator('#choosePlayer').click();assert(await page.locator('#menu').isVisible());assert.equal(await page.evaluate(()=>RoleGate.role),'player');assert(!await page.evaluate(()=>Admin.owner));
  await page.evaluate(()=>Admin.run('proprietaire'));assert(!await page.evaluate(()=>Admin.owner));
  await page.reload();assert(await page.locator('#menu').isVisible());assert(!await page.locator('#profile').isVisible());

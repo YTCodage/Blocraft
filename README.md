@@ -10,15 +10,23 @@ compilation. Double-clique dessus (Chrome, Edge ou Firefox récent) et ça joue.
 
 ## 1. Lancer le jeu
 
-1. Copie `blocraft.html` où tu veux (Bureau, clé USB…).
-2. Double-clique : le monde se génère (3 à 10 secondes), le menu apparaît.
-3. Choisis **Monde normal**, **Monde plat** ou **Mono-bloc**, puis **Survie** ou **Créatif**.
-   Les cartes **Nether** et **L'End** sont verrouillées : on y entre uniquement par un portail,
-   en jeu (voir §3).
-4. Clique **▶ Jouer** : une petite fenêtre demande **le nom de ta partie** (obligatoire —
-   c'est ce qui te permet de la retrouver). Tu peux y changer le monde et le mode d'un clic
-   sur les pastilles **Monde plat ⇄** / **Créatif ⇄**.
-5. **Commencer** : le monde se génère et tu joues.
+1. Ouvre <https://ytcodage.github.io/Blocraft/jeu/>. Pour héberger une copie locale,
+   conserve `blocraft.html` **et** son dossier `assets/`.
+2. Au premier lancement, choisis ton profil **Joueur** ou **Créateur**. Le code
+   Créateur est demandé sur un écran séparé, avec sa propre progression.
+3. Clique **Créer une partie**. Un assistant affiche **une seule question à la fois** :
+   - **1/4 — Monde** : normal, plat ou mono-bloc ;
+   - **2/4 — Mode** : Survie, Créatif ou Trolle ;
+   - **3/4 — Nom** : le nom de ta partie, entre 3 et 28 caractères ;
+   - **4/4 — Graine** : facultative, laisse vide pour un terrain aléatoire.
+4. La barre indique ta progression. **Retour** conserve tes réponses ; **Annuler**
+   abandonne la création sans changer ta partie actuelle. Le monde plat propose
+   Créatif ou Trolle, pas Survie.
+5. **Créer ma partie** confirme tes choix, lance l’introduction puis la génération.
+   Rien n’est créé lors du simple passage d’une question à l’autre.
+
+Les anciennes sélections simultanées du menu ont été remplacées par cet assistant.
+Les cartes **Nether** et **L’End** restent accessibles par les portails en jeu (voir §3).
 
 La partie est sauvegardée dans le navigateur : automatiquement (toutes les 2 minutes et à
 chaque changement de mode), avec le bouton **Sauvegarder** de la pause, et en quittant.
@@ -925,3 +933,14 @@ locales/distantes, le rendu WebGL répété et les lits dans quatre orientations
 le renommage avec connexion conservée, le handshake Trolle et l’ancien code de secours.
 La disponibilité du service public et les NAT de réseaux physiques ne sont pas
 validés par ces tests locaux.
+
+
+### Assistant de création : vérifications
+
+`npm run test:wizard` vérifie l’unique question visible, les quatre valeurs de
+progression, les retours sans perte, le nom obligatoire, la graine facultative,
+la confirmation sans double lancement, l’annulation sans modification du monde
+courant et les largeurs 320/390/1280 pixels. Les choix sont conservés dans un
+brouillon jusqu’à la confirmation finale. Les titres reçoivent le focus à chaque
+étape et la progression est exposée aux lecteurs d’écran. Les animations de la
+barre respectent la préférence de réduction des mouvements.

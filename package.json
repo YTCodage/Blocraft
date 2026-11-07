@@ -9,7 +9,8 @@
     "test:game": "node tests/game_browser_test.js",
     "test:rooms": "node tests/rooms_browser_test.js",
     "test:inventory": "node tests/inventory_browser_test.js",
-    "test:profile": "node tests/profile_browser_test.js"
+    "test:profile": "node tests/profile_browser_test.js",
+    "test:wizard": "node tests/wizard_browser_test.js"
   },
   "devDependencies": {
     "peer": "^1.0.2"
