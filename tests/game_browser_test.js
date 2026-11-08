@@ -61,6 +61,7 @@ await page.goto(url,{waitUntil:'load'});
       const chunk=new Chunk(0,0,data,heights);Game.manager.chunks.set('0,0',chunk);Game.manager.buildMesh(chunk);Railways.create({x:2,y:61,z:3});Boats.list.push({id:'testBoat',dim:'flat',pos:[9.5,60.9,5.5],yaw:0,speed:0});
       Player.pos=[8,62,14];Player.yaw=0;Player.pitch=-.25;
       renderScene(0);
+      const oldLive=Net.live;AdminCloud.active=true;Net.live=true;AdminCloud.records=new Map([['test-a',{name:'Admin A',x:6,y:61,z:5,yaw:0,dim:'flat',hp:20}],['test-b',{name:'Admin B',x:7,y:61,z:5,yaw:1,dim:'flat',hp:20}]]);renderScene(0);AdminCloud.active=false;AdminCloud.records.clear();Net.live=oldLive;
       return {solid:chunk.meshCount,water:chunk.waterCount,error:gl.getError(),newBlocks:EXTRA_BLOCKS.length};
     });
     assert(rendering.solid>0&&rendering.water>0&&rendering.error===0);

@@ -1374,7 +1374,7 @@
 #inventory .mcPanel[data-view="blocks"] #creativeBottom{display:grid}
 @media(max-width:650px){#creativeBottom{gap:4px}}
 
-.profilePanel{width:min(560px,94vw);padding:30px;background:#132326;border:2px solid #689966;border-radius:14px;max-height:94dvh;overflow:auto}.profileEyebrow{font-size:11px;letter-spacing:.18em;color:#a6d88c}.profilePanel h2{font-size:clamp(24px,6vw,34px);margin:10px 0}.profilePanel>p{line-height:1.6;color:#c0cecb}.profileChoices{display:flex;gap:12px;margin:20px 0}.profileChoices button{flex:1;white-space:normal}.profileChoices b{font-size:21px}.profileChoices small{display:block;font-size:11px;margin-top:8px;line-height:1.5}#creatorPinForm label{display:block;margin-bottom:10px}#creatorPin{width:100%;font:32px monospace;text-align:center;letter-spacing:.3em;padding:16px;background:#081314;color:#fff;border:2px solid #83ad73;border-radius:8px}#profileError{min-height:24px;color:#ffb2a1}.profileLocal{display:block;color:#9caaa5;line-height:1.6}
+.profilePanel{width:min(560px,94vw);padding:30px;background:#132326;border:2px solid #689966;border-radius:14px;max-height:94dvh;overflow:auto}.profileEyebrow{font-size:11px;letter-spacing:.18em;color:#a6d88c}.profilePanel h2{font-size:clamp(24px,6vw,34px);margin:10px 0}.profilePanel>p{line-height:1.6;color:#c0cecb}.profileChoices{display:flex;gap:12px;margin:20px 0}.profileChoices button{flex:1;white-space:normal}.profileChoices b{font-size:21px}.profileChoices small{display:block;font-size:11px;margin-top:8px;line-height:1.5}#creatorPinForm label{display:block;margin-bottom:10px}#creatorPin{width:100%;font:20px system-ui;text-align:left;letter-spacing:.02em;padding:16px;background:#081314;color:#fff;border:2px solid #83ad73;border-radius:8px}#profileError{min-height:24px;color:#ffb2a1}.profileLocal{display:block;color:#9caaa5;line-height:1.6}
 
 #craftCats,#creativeCats,#creativeBottom{display:none!important}
 #trollButton{position:fixed;z-index:12;right:18px;top:84px;font-size:13px}.trollPanel{width:min(720px,96vw);max-height:92dvh;overflow:auto;background:#182a2b}.trollPanel p{font-size:12px;color:#b7c9c5}#trollSearch{width:100%;padding:12px;margin:10px 0;background:#0d1b1d;color:white;border:1px solid #7ca76b}#trollChoices{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;max-height:55dvh;overflow:auto;margin:12px 0}.trollChoice{background:#2d4440;color:#eef5eb;border:1px solid #72916c;padding:10px;cursor:pointer}.trollChoice canvas{width:48px;height:48px;image-rendering:pixelated}.trollChoice span{display:block;font-size:11px}
@@ -1535,9 +1535,9 @@
     <section class="panel profilePanel" aria-labelledby="profileTitle">
       <p class="profileEyebrow">BIENVENUE DANS BLOCRAFT</p><h2 id="profileTitle">Comment veux-tu jouer ?</h2>
       <p id="profileIntro">Choisis ton profil sur cet appareil.</p><div id="profileProgress" class="wizardProgress" role="progressbar" aria-label="Choix du profil" aria-valuemin="0" aria-valuemax="2" aria-valuenow="1"><i style="width:50%"></i></div>
-      <div id="profileRoleChoices" class="profileChoices"><button id="chooseCreator" class="btn"><b>Admin</b><small>Administration · code requis</small></button><button id="choosePlayer" class="btn primary"><b>Joueur</b><small>Jouer comme d’habitude</small></button></div>
-      <form id="creatorPinForm" class="hidden"><label for="creatorPin">Ton code Admin à 6 chiffres</label><input id="creatorPin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required aria-describedby="profileError"><div class="profileChoices"><button type="button" id="creatorPinBack" class="btn">Retour</button><button id="creatorPinSubmit" class="btn primary" type="submit">Déverrouiller</button></div></form>
-      <p id="profileError" role="status" aria-live="polite"></p><small class="profileLocal">Profil enregistré sur ce navigateur, sans compte en ligne. Le code Admin est différent du code d’une partie à deux.</small>
+      <div id="profileRoleChoices" class="profileChoices"><button id="chooseCreator" class="btn"><b>Admin</b><small>Un pseudo suffit</small></button><button id="choosePlayer" class="btn primary"><b>Joueur</b><small>Jouer comme d’habitude</small></button></div>
+      <form id="creatorPinForm" class="hidden"><label for="creatorPin">Ton pseudo Admin</label><input id="creatorPin" type="text" maxlength="24" autocomplete="nickname" required aria-describedby="profileError"><div class="profileChoices"><button type="button" id="creatorPinBack" class="btn">Retour</button><button id="creatorPinSubmit" class="btn primary" type="submit">Continuer</button></div></form>
+      <p id="profileError" role="status" aria-live="polite"></p><small class="profileLocal">Ton pseudo et ton profil sont mémorisés dans ce navigateur. Aucun mot de passe ni compte en ligne.</small>
     </section>
   </div>
   <div id="pause" class="overlay hidden">
@@ -1772,7 +1772,7 @@
   <div id="nameTags"></div>
   <button id="chatToggle" type="button" aria-label="Ouvrir le chat">☵ <span>Chat</span></button>
   <button id="powerButton" class="hidden" type="button">Capacité · G<small id="powerHint"></small></button>
-<div id="realm" class="overlay hidden"><section class="panel"><h2 class="title">Monde Admin</h2><p>Ton accès Admin est mémorisé sur cet appareil. QA reste désactivé à chaque rechargement.</p><button id="realmPlay" class="btn primary">Entrer dans mon monde Admin</button><button id="realmPublish" class="btn">Ouvrir ce monde aux admins invités</button><p id="realmStatus" role="status"></p><label>Invitation privée (à transmettre uniquement à un Admin)<input id="realmToken" readonly aria-label="Invitation Admin" style="width:100%"></label><button id="realmCopy" class="btn">Copier l’invitation privée</button><label>Invitation reçue<input id="realmJoinToken" maxlength="80" placeholder="Code du monde : invitation privée" style="width:100%"></label><button id="realmJoin" class="btn">Rejoindre le monde Admin invité</button><p><small>Salon privé hébergé par le navigateur, 2 joueurs. L’hôte doit rester connecté. Ce n’est pas une authentification serveur : le profil local est modifiable.</small></p><button id="realmQA" class="btn">Activer QA pour cette session</button><button id="realmClose" class="btn">Retour au menu</button></section></div>
+<div id="realm" class="overlay hidden"><section class="panel" style="max-width:520px"><p class="profileEyebrow">ESPACE ADMIN</p><h2 class="title">Bonjour <span id="realmNickname"></span></h2><p>Un monde commun par type. Choisis-le : la connexion aux autres Admins est automatique.</p><button id="realmPlay" class="btn primary">Rejoindre le monde Admin</button><div id="realmTypes" class="hidden"><button class="btn" data-realm-type="overworld">Monde normal</button><button class="btn" data-realm-type="flat">Monde tout plat</button><button class="btn" data-realm-type="oneblock">Monobloc</button></div><p id="realmStatus" role="status" aria-live="polite"></p><p><small>Monde commun sauvegardé dans Firebase. Un navigateur Admin simule la partie et doit rester ouvert pendant le jeu. Aucun code ni invitation. Le pseudo ne constitue pas une identité vérifiée. QA reste désactivé au rechargement ; /qa en jeu.</small></p><button id="realmClose" class="btn">Retour au menu</button></section></div>
 
 <canvas id="weatherCanvas" aria-hidden="true"></canvas><div id="worldCoordinates" class="hidden"><div class="compassRose"><span>N</span><span>E</span><span>S</span><span>O</span><i id="compassNeedle">▲</i></div><div><div id="coordinateText"></div><small id="compassDegrees"></small></div></div><button id="vehicleExit" class="hidden" type="button">Descendre · X</button>
 <div id="victory" class="overlay hidden"><section class="panel"><h2 class="title">Le dragon est vaincu !</h2><p id="victoryLocation"></p><p>Une tête du dragon, son cœur unique et un équipement rare t’attendent. Le cœur te permet de rentrer dans ton monde.</p><button id="victoryLoot" class="btn primary">Aller au coffre de victoire</button><button id="victoryHome" class="btn">Retourner dans l’Overworld</button></section></div>
@@ -5830,7 +5830,8 @@ const Players = {
 
   /* blesse le joueur le plus proche d'une position */
   hurtNearest(pos, amount, cause) {
-    if (typeof Net !== 'undefined' && Net.live && Net.role === 'host'&&Net.remote) {
+    if(typeof AdminCloud!=='undefined'&&AdminCloud.active&&Net.role==='host'){const r=AdminCloud.nearest(pos);if(r&&Math.hypot(r.x-pos[0],r.y-pos[1],r.z-pos[2])<Math.hypot(Player.pos[0]-pos[0],Player.pos[1]-pos[1],Player.pos[2]-pos[2])){Net.send(['H',Math.round(amount),cause],r.id);return;}}
+    if (typeof Net !== 'undefined' && Net.live && Net.role === 'host'&&Net.remote&&!(typeof AdminCloud!=='undefined'&&AdminCloud.active)) {
       const r = Net.remotePos();
       const dHost = Math.hypot(Player.pos[0] - pos[0], Player.pos[1] - pos[1], Player.pos[2] - pos[2]);
       const dRem = Math.hypot(r[0] - pos[0], r[1] - pos[1], r[2] - pos[2]);
@@ -6119,6 +6120,7 @@ function finishBreak(t) {
   lastBrokenY = t.y;
   const def = BLOCKS[t.block] || {};
   if (!canBreakBlock(t.block) || !Game.manager || Game.manager.getBlock(t.x, t.y, t.z) !== t.block) return;
+  if(typeof AdminCloud!=='undefined'&&AdminCloud.active&&Net.role==='guest'&&Game.manager.dim==='oneblock'&&OneBlock.isCore(t.x,t.y,t.z)){Net.send(['oneblock-break',t.block]);return;}
   if (typeof Fx !== 'undefined') Fx.burstBlock(t.x, t.y, t.z, t.block, 18);
   const held = heldItemId();
   const tool = itemTool(held);
@@ -6870,14 +6872,14 @@ function saveGame(opts) {
       yaw: Player.yaw, pitch: Player.pitch,
       flying: Player.flying,
       time: Game.time,
-      mode: Game.mode, troll:!!Game.troll, morph:Troll.morph, hardcore:!!Game.hardcore, hardcoreDead:!!Game.hardcoreDead, adminRealm:!!Game.adminRealm,
+      mode: Game.mode, troll:!!Game.troll, morph:Troll.morph, hardcore:!!Game.hardcore, hardcoreDead:!!Game.hardcoreDead, adminRealm:!!Game.adminRealm,adminRealmType:Game.adminRealmType||null,
       name: Saves.currentName || '',
       inv: Game.inv.serialize(),
       stats: Survival.serialize(),
       armor: Armor.serialize(),
       furnaces: Furnace.serialize(),
       xp: Xp.serialize(),
-      drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
+      oneblock:{count:OneBlock.count},drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
       slot: Game.slot,
       twoPlayers: !!(Game.twoPlayers && !isTouch),
       players: Players.count > 1 ? Players.list.map(p => ({
@@ -7305,7 +7307,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     Dimensions.managers.oneblock = Game.manager;
     Dimensions.current = 'oneblock';
     OneBlock.castles.clear();
-    OneBlock.count = 0;
+    OneBlock.count=savedData&&savedData.oneblock&&Number.isSafeInteger(savedData.oneblock.count)?Math.max(0,savedData.oneblock.count):0;
     Saplings.reset();
   } else if (startDim === 'flat') {
     Dimensions.managers.flat = Game.manager;
@@ -7342,7 +7344,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     if (typeof savedData.flying === 'boolean') Player.flying = savedData.flying;
     if (typeof savedData.time === 'number') Game.time = savedData.time;
     if (typeof savedData.slot === 'number') Game.slot = savedData.slot;
-    Game.hardcore=!!savedData.hardcore;Game.hardcoreDead=!!savedData.hardcoreDead;Game.adminRealm=!!savedData.adminRealm;if(Game.hardcore){Net.reset();QA.lock();Admin.god=false;CommandHub.speed=1;CommandHub.reach=7;if(Vision.on)Vision.toggle(false);}
+    Game.hardcore=!!savedData.hardcore;Game.hardcoreDead=!!savedData.hardcoreDead;Game.adminRealm=!!savedData.adminRealm;Game.adminRealmType=savedData.adminRealmType||(Game.adminRealm?(savedData.dim||'flat'):null);if(Game.hardcore){Net.reset();QA.lock();Admin.god=false;CommandHub.speed=1;CommandHub.reach=7;if(Vision.on)Vision.toggle(false);}
     Game.troll=!!savedData.troll;Troll.morph=Troll.valid(savedData.morph)?savedData.morph:null;
     if (savedData.mode === 'survival' || savedData.mode === 'creative') Game.mode = savedData.mode;
     if (!Game.inv) Game.inv = new Inventory();
@@ -8564,6 +8566,7 @@ function checkContainerRange(dt) {
 function frame(now) {
   requestAnimationFrame(frame);
   GameChat.tick();
+  if(AdminCloud.active&&Net.role==='host'&&Date.now()>=AdminCloud.leaseUntil)AdminCloud.fail(Error('Le bail du monde commun a expiré. Rejoins-le pour continuer sans créer de copie séparée.'));
   Coordinates.update();EndVictory.tick();Weather.draw();
   const dt = Math.min((now - lastFrame) / 1000, 0.1);
   lastFrame = now;
@@ -11999,7 +12002,7 @@ const Railways = {
   release(c){if(c.mob){const m=Mobs.byId.get(c.mob);if(m){m.vehicle=null;const options=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dz])=>[c.pos[0]+dx,c.pos[1]+.3,c.pos[2]+dz]);m.pos=options.find(p=>!Mobs.collidesAt(p,m.def))||[c.pos[0],c.pos[1]+1,c.pos[2]];m.vel=[0,0,0];}c.mob=null;}},
   carrier(m){return this.carts.find(c=>c.mob===m.id&&c.dim===Game.manager.dim)||(typeof Boats!=='undefined'?Boats.list.find(c=>c.mob===m.id&&c.dim===Game.manager.dim):null);},
   push(dt){
-    const pushers=[{pos:Player.pos,moving:Math.hypot(Player.vel[0],Player.vel[2])>.4}];if(typeof Net!=='undefined'&&Net.live&&Net.role==='host'&&Net.remote&&Net.remote.dim===Game.manager.dim){const r=Net.remote;pushers.push({pos:[r.x,r.y,r.z],moving:performance.now()-r.t<250&&Math.hypot(r.x-r.px,r.z-r.pz)>.015});}for(const m of Mobs.list){if(m.def.boss||m.hp<=0||m.vehicle)continue;for(const actor of pushers){const dx=m.pos[0]-actor.pos[0],dz=m.pos[2]-actor.pos[2],r=Math.hypot(dx,dz);if(r>.01&&r<.9&&Math.abs(m.pos[1]-actor.pos[1])<1.4&&actor.moving){const p=[m.pos[0]+dx/r*dt*2.8,m.pos[1],m.pos[2]+dz/r*dt*2.8];if(!Mobs.collidesAt(p,m.def))m.pos=p;}}
+    const pushers=[{pos:Player.pos,moving:Math.hypot(Player.vel[0],Player.vel[2])>.4}];if(typeof AdminCloud!=='undefined'&&AdminCloud.active&&Net.role==='host'){for(const r of AdminCloud.records.values())if(r.dim===Game.manager.dim)pushers.push({pos:[r.x,r.y,r.z],moving:performance.now()-r.t<250&&Math.hypot(r.x-r.px,r.z-r.pz)>.015});}else if(typeof Net!=='undefined'&&Net.live&&Net.role==='host'&&Net.remote&&Net.remote.dim===Game.manager.dim){const r=Net.remote;pushers.push({pos:[r.x,r.y,r.z],moving:performance.now()-r.t<250&&Math.hypot(r.x-r.px,r.z-r.pz)>.015});}for(const m of Mobs.list){if(m.def.boss||m.hp<=0||m.vehicle)continue;for(const actor of pushers){const dx=m.pos[0]-actor.pos[0],dz=m.pos[2]-actor.pos[2],r=Math.hypot(dx,dz);if(r>.01&&r<.9&&Math.abs(m.pos[1]-actor.pos[1])<1.4&&actor.moving){const p=[m.pos[0]+dx/r*dt*2.8,m.pos[1],m.pos[2]+dz/r*dt*2.8];if(!Mobs.collidesAt(p,m.def))m.pos=p;}}
       for(const c of this.carts){if(c.dim!==Game.manager.dim||c.mob||c.driver||this.riding===c)continue;if(Math.hypot(m.pos[0]-c.pos[0],m.pos[2]-c.pos[2])<.62&&Math.abs(m.pos[1]-c.pos[1])<1.1){c.mob=m.id;m.vehicle=c.id;m.vel=[0,0,0];break;}}
     }
   },
@@ -12007,7 +12010,7 @@ const Railways = {
     if(typeof Net!=='undefined'&&Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.3,this.riding.pos[2]];Player.vel=[0,0,0];}return;}
     for(const c of this.carts){if(c.dim!==Game.manager.dim)continue;
       if(!c.cell){const x=Math.floor(c.pos[0]),y=Math.floor(c.pos[1]),z=Math.floor(c.pos[2]),pair=this.path(x,y,z);c.cell=[x,y,z];c.entry=pair[0];c.exit=pair[1];c.t=.5;c.id=c.id||'cart'+(++this.serial);}
-      let [x,y,z]=c.cell,rail=this.rail(x,y,z);if(!rail){c.speed=0;this.release(c);if(this.riding===c)this.exit();if(c.driver==='guest')c.driver=null;continue;}
+      let [x,y,z]=c.cell,rail=this.rail(x,y,z);if(!rail){c.speed=0;this.release(c);if(this.riding===c)this.exit();if(c.driver&&c.driver!=='player')c.driver=null;continue;}
       if(rail===B.POWERED_RAIL)c.speed=this.power(x,y,z)?Math.min(12,c.speed+8*dt):Math.max(0,c.speed-8*dt);else c.speed=Math.max(2,c.speed-.2*dt);
       let remaining=c.speed*dt;let guard=0;while(remaining>0&&guard++<30){const step=Math.min(1-c.t,remaining);c.t+=step;remaining-=step;if(c.t<1-1e-8)break;const d=this.D[c.exit],nx=x+d[0],nz=z+d[1];if(!this.rail(nx,y,nz)){const old=c.entry;c.entry=c.exit;c.exit=old;c.t=0;remaining=0;break;}
         c.entry=(c.exit+2)%4;c.cell=[x=nx,y,z=nz];const pair=this.path(x,y,z),a=this.links(x,y,z);c.exit=pair.includes(c.entry)?pair.find(i=>i!==c.entry):pair[0];if(c.exit===undefined)c.exit=a.find(i=>i!==c.entry)??c.entry;c.t=0;}
@@ -12338,7 +12341,7 @@ const Mobs = {
         const d = Math.hypot(pos[0] - alt[0], pos[1] - alt[1], pos[2] - alt[2]);
         if (d < bd) { bd = d; best = alt; }
       } else if (typeof Net !== 'undefined' && Net.live && Net.role === 'host' && Net.remote) {
-        const alt = Net.remotePos();
+        const cloudRemote=typeof AdminCloud!=='undefined'&&AdminCloud.active?AdminCloud.nearest(pos):null;const alt=cloudRemote?[cloudRemote.x,cloudRemote.y,cloudRemote.z]:Net.remotePos();
         const d = Math.hypot(pos[0] - alt[0], pos[1] - alt[1], pos[2] - alt[2]);
         if (d < bd) { bd = d; best = alt; }
       }
@@ -12780,7 +12783,7 @@ const Mobs = {
     /* tué par l'autre joueur : c'est lui qui reçoit butin et XP */
     const byRemote = (typeof Net !== 'undefined' && Net.live && Net.role === 'host' && mob.lastHitter === 'guest');
     if (byRemote) {
-      Net.send(['d', mob.id, mob.pos[0], mob.pos[1], mob.pos[2], mob.type]);
+      Net.send(['d',mob.id,mob.pos[0],mob.pos[1],mob.pos[2],mob.type],typeof AdminCloud!=='undefined'&&AdminCloud.active?mob.lastPeer:null);
     } else {
       this.giveLoot(mob.type);
     }
@@ -12818,12 +12821,13 @@ const Mobs = {
 
   /* -------------------------- rendu ---------------------------- */
   render(VP) {
-    const extra = (typeof Net !== 'undefined' && Net.live && Net.avatarMob) ? Net.avatarMob() : null;
+    const extras=typeof AdminCloud!=='undefined'&&AdminCloud.active?AdminCloud.avatars():[];const extra=extras.length?null:(typeof Net!=='undefined'&&Net.live&&Net.avatarMob)?Net.avatarMob():null;
     const local=Troll.local();
-    if (!this.list.length && !extra && !local) return;
+    if (!this.list.length && !extra && !extras.length && !local) return;
     if (!this.builder) this.builder = new GeoBuilder(8);
     const b = this.builder;
     b.reset();
+    for(const avatar of extras)this.buildModel(avatar,b,1);
     if (extra) this.buildModel(extra, b, 1);
     if (local) this.buildModel(local,b,1);
     for (const m of this.list) {
@@ -15003,7 +15007,7 @@ const OneBlock = {
     if (!Game.manager || !Game.manager.setBlock(t.x, t.y, t.z, nb, true)) return false;
     if (typeof Fx !== 'undefined') Fx.puff(t.x + 0.5, t.y + 0.5, t.z + 0.5, 8, BLOCKS[nb].tex ? BLOCKS[nb].tex[1] : 3);
     Sfx.play('place', 0.8);
-    HUD.toast(nb, '∞ ' + itemName(nb));
+    HUD.toast(nb,'∞ '+itemName(nb));if(typeof AdminCloud!=='undefined'&&AdminCloud.active&&Net.role==='host')Net.send(['cloud-oneblock-count',this.count]);
     return true;
   },
 
@@ -16604,7 +16608,7 @@ async function newWorld(seedStr, thenPlay, extra) {
   if (Saves.currentId) saveGame({ silent: true });
 }
 
-async function continueGame(entry) {
+async function continueGame(entry, keepNetwork=false) {
   if (!entry) entry = Saves.get(Saves.currentId) || Saves.list.find(e => e && e.data) || Saves.list[0];
   if (!entry || !entry.data) {
     HUD.toastText('Aucune partie à reprendre : lance une nouvelle partie et donne-lui un nom.', 3.6);
@@ -16613,7 +16617,8 @@ async function continueGame(entry) {
   Saves.currentId = entry.id;
   Saves.currentName = entry.name || Saves.suggestName();
   const data = entry.data;
-  Net.reset();
+  if(data.adminRealm&&!keepNetwork){if(RoleGate.role!=='creator'){HUD.toastText('Profil Admin requis.',3);return;}AdminRealm.open();return AdminRealm.connect(data.adminRealmType||data.dim||'flat');}
+  if(!keepNetwork)Net.reset();
   if(data.adminRealm&&RoleGate.role!=='creator'){HUD.toastText('Monde réservé au profil Admin.',3);return;}
   if (busyLoading) return;
   busyLoading = true;
@@ -16706,6 +16711,7 @@ const RoomNames = {
     });
   },
   async rename(){
+    if(typeof AdminCloud!=='undefined'&&AdminCloud.active){$('partyNameStatus').textContent='Le monde Admin est commun : son type reste son nom.';return;}
     const name=$('partyName').value.trim();if(!this.valid(name)){$('partyNameStatus').textContent='Entre un nom de 3 à 28 caractères.';return;}
     if(Net.live&&Net.role==='guest'){$('partyNameStatus').textContent='Seul l’hôte peut renommer cette partie.';return;}
     $('renameParty').disabled=true;
@@ -16748,16 +16754,17 @@ const ShortRooms = {
   },
   fail(message, epoch) {
     if (epoch !== this.epoch) return;
+    const auto=AdminRealm.autoType||AdminRealm.connecting;
     const wasLive = Net.live;
     Net.reset();
     if (wasLive) HUD.toastText('Connexion interrompue : tu continues en solo.', 4);
     $('mpCodeOut').value = '';
-    Net.status(message, true);
+    Net.status(message, true);if(auto){AdminRealm.setBusy(false);AdminRealm.status(message);showOverlay('realm');Game.state='menu';}
   },
   async host() {
     if(Game.hardcore){Net.status('Hardcore se joue en solo : une seule vie.',true);return;}
     if (this.busy) return;
-    if(Game.adminRealm){if(RoleGate.role!=='creator'){Net.status('Profil Admin requis.',true);return;}AdminRealm.token=AdminRealm.random();}
+    if(Game.adminRealm){return AdminRealm.connect(Game.adminRealmType||'flat');}
     const name=$('mpHostName').value.trim();if(!RoomNames.valid(name)){Net.status('Choisis d’abord un nom de partie de 3 à 28 caractères.',true);$('mpHostName').focus();return;}
     this.requestedName=name;
     Net.reset(); Net.role = 'host'; this.busy = true; this.retries = 0;
@@ -16863,11 +16870,13 @@ var Net = {
     const e = $('mpStatus');
     if (!e) return;
     e.textContent = msg;
+    if(typeof AdminRealm!=='undefined'&&AdminRealm.connecting)AdminRealm.status(msg);
     e.classList.toggle('err', !!err);
   },
 
   /* ----------------------------- connexion ----------------------------- */
   reset() {
+    if(typeof AdminCloud!=='undefined'&&AdminCloud.active){if(Net.role==='host'&&AdminCloud.ready&&Game.manager&&Game.inv)saveGame({silent:true});AdminCloud.shutdown();}
     this.live = false;if(typeof AdminRealm!=='undefined')AdminRealm.reset(); ShortRooms.close();
     try { if (this.dc) this.dc.close(); } catch (e) { }
     this.dc = null; this.live = false; this.applying = false;
@@ -16881,6 +16890,11 @@ var Net = {
 
   disconnected() {
     if (!this.live) return;
+    if(AdminRealm.autoType&&this.role==='host'){
+      this.live=false;this.remote=null;this.dc=null;ShortRooms.connection=null;clearTimeout(ShortRooms.timer);AdminRealm.admitted=false;Transport.disconnect();
+      if(this.tagsEl)this.tagsEl.innerHTML='';HUD.toastText('L’autre Admin est parti. Le monde reste ouvert.',3);return;
+    }
+    const autoGuest=AdminRealm.autoType&&this.role==='guest';
     this.live = false;
     if(typeof Transport!=='undefined')Transport.disconnect();
     this.role = null;
@@ -16888,16 +16902,17 @@ var Net = {
     ShortRooms.close(); if ($('mpCodeOut')) $('mpCodeOut').value = '';
     if (this.tagsEl) this.tagsEl.innerHTML = '';
     HUD.toastText('🔌 L\'autre joueur s\'est déconnecté — tu continues en solo.', 4);
-    Net.status('Déconnecté.', true);
+    Net.status('Déconnecté.', true);if(autoGuest){AdminRealm.setBusy(false);AdminRealm.status('L’hôte a quitté le monde. Rejoins-le à nouveau pour continuer ensemble.');Game.state='menu';showOverlay('realm');}
   },
 
-  send(obj) {
+  send(obj,target=null) {
+    if(typeof AdminCloud!=='undefined'&&AdminCloud.active){AdminCloud.send(obj,target);return;}
     if (!this.dc || this.dc.readyState !== 'open') return;
     try { this.dc.send(JSON.stringify(obj)); } catch (e) { }
   },
 
   /* ----------------------------- démarrage ----------------------------- */
-  async hostStart() {
+  async hostStart(target=null) {
     const epoch = ShortRooms.epoch;
     const active = () => epoch === ShortRooms.epoch && Net.live && Net.role === 'host';
     Net.status('Connecté ! Préparation du monde…');
@@ -16907,17 +16922,17 @@ var Net = {
       await newWorld($('seedInput').value || null, false);
     }
     if (!active()) return;
-    Net.sendHello();
+    Net.sendHello(target);
     startPlaying();
     HUD.toastText('🌐 Partie partagée — ton ami arrive…', 4);
   },
 
-  sendHello() {
+  sendHello(target=null) {
     Admin.syncAdmins();
     const edits = [];
     for (const arr of Game.manager.editLog.values()) for (const e of arr) edits.push(e);
     this.send(['h', Game.seed, Game.mode, Game.time, Dimensions.current, edits,
-      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm,{victory:EndVictory.serialize(),weather:{kind:Weather.kind,remaining:Weather.remaining},circuits:[...Circuits.meta]}]);
+      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm,{oneblock:{count:OneBlock.count},adminRealmType:Game.adminRealmType||null,victory:EndVictory.serialize(),weather:{kind:Weather.kind,remaining:Weather.remaining},circuits:[...Circuits.meta]}],target);
   },
 
   async onHello(m) {
@@ -16939,6 +16954,7 @@ var Net = {
     if (dim && dim !== Dimensions.current) {
       Dimensions.go(dim, { x: px, y: py, z: pz, remember: false });
     }
+    if(Game.adminRealm){AdminRealm.setBusy(false);if(AdminCloud.active){AdminCloud.ready=true;clearTimeout(ShortRooms.timer);ShortRooms.busy=false;}}
     Net.send(['r']);
     HUD.toastText('🌐 Tu joues chez ' + 'l\'hôte — bon jeu !', 3.5);
   },
@@ -16948,7 +16964,7 @@ var Net = {
     let m;
     try { m = JSON.parse(raw); } catch (e) { return; }
     if (!Array.isArray(m)) return;
-    if(typeof AdminRealm!=='undefined'&&Game.adminRealm&&this.role==='host'&&!AdminRealm.admitted&&!['realm-proof'].includes(m[0]))return;
+    if(typeof AdminRealm!=='undefined'&&Game.adminRealm&&this.role==='host'&&!AdminRealm.admitted&&m[0]!=='realm-denied')return;
     this.applying = true;
     try {
       if(typeof AdminRealm!=='undefined'&&AdminRealm.message(m))return;
@@ -16971,7 +16987,7 @@ var Net = {
           if (this.role !== 'host') break;
           const mob = Mobs.byId.get(m[1]);
           if (!mob) break;
-          mob.lastHitter = 'guest';
+          mob.lastHitter = 'guest';if(AdminCloud.active)mob.lastPeer=AdminCloud.sender;
           const r = this.remotePos();
           const dx = r ? mob.pos[0] - r[0] : 0, dz = r ? mob.pos[2] - r[2] : 0;
           const dl = Math.hypot(dx, dz) || 1;
@@ -16998,7 +17014,7 @@ var Net = {
         case 'vehicle-use':Transport.applyUse(m);break;
         case 'machines':Transport.receive(m[1]);break;
         case 'vehicle-consumed':if(this.role==='guest'&&Game.mode!=='creative'&&[I.MINECART,I.BOAT].includes(m[1])){Game.inv.remove(m[1],1);HUD.refreshAll();}break;
-        case 'boat-input':if(this.role==='host')Transport.remoteBoat={f:m[1]?1:0,b:m[2]?1:0};break;
+        case 'boat-input':if(this.role==='host'){const control={f:m[1]?1:0,b:m[2]?1:0};if(AdminCloud.active)AdminCloud.controls.set(AdminCloud.sender,control);else Transport.remoteBoat=control;}break;
         case 'ignite-tnt':if(this.role==='host'&&this.remote&&m.slice(1,4).every(Number.isInteger)&&Math.hypot(m[1]-this.remote.x,m[2]-this.remote.y,m[3]-this.remote.z)<8)TNT.ignite(m[1],m[2],m[3],3);break;
         case 'circuit-meta':if(this.role==='host'&&this.remote&&Array.isArray(m[1])&&m[1].every(Number.isInteger)&&Math.hypot(m[1][0]-this.remote.x,m[1][1]-this.remote.y,m[1][2]-this.remote.z)<8){const st=Circuits.state(...m[1]),v=m[2]||{};if(Number.isInteger(v.dir)&&v.dir>=0&&v.dir<4)st.dir=v.dir;if([.2,.4,.6,.8].some(n=>Math.abs(n-v.delay)<.01))st.delay=v.delay;st.subtract=!!v.subtract;}break;
         case 'weather':if(this.role==='guest'&&Weather.set(m[1],false))Weather.remaining=Number(m[2])||180;break;
@@ -17163,6 +17179,7 @@ var Net = {
   },
 
   updateAvatar(dt) {
+    if(AdminCloud.active){AdminCloud.animate(dt);return;}
     const a = this._avatar, r = this.remote;
     if (!a || !r) return;
     const moving = r.px !== undefined && Math.hypot(a.pos[0] - r.x, a.pos[2] - r.z) > 0.04
@@ -17172,6 +17189,7 @@ var Net = {
 
   /* étiquette de nom au-dessus du joueur distant */
   drawTag(VP) {
+    if(AdminCloud.active){AdminCloud.tags(VP);return;}
     if (!this.tagsEl) this.tagsEl = $('nameTags');
     if (!this.tagsEl) return;
     const r = this.remote;
@@ -17477,19 +17495,21 @@ const GameChat = {
 /* Local profile gate, not server authentication: this project is a static site. */
 const RoleGate = {
   KEY:'blocraft.profile.v1',role:null,pending:false,epoch:0,
-  HASH:'19da7b9da3ca4ee0a91df4473843856fc37b83a50a2cd248ba6892abcb8ec2a2',
+  nickname:'',
+  validName(name){return typeof name==='string'&&name.trim().length>=2&&name.trim().length<=24&&!/[\u0000-\u001f\u007f<>]/.test(name);},
   init(){
-    try{const v=JSON.parse(localStorage.getItem(this.KEY)||'null');if(v&&['creator','player'].includes(v.role))this.role=v.role;}catch(e){}
+    try{const v=JSON.parse(localStorage.getItem(this.KEY)||'null');if(v&&['creator','player'].includes(v.role)){this.role=v.role;if(this.validName(v.nickname))this.nickname=v.nickname.trim();}}catch(e){}
     $('choosePlayer').onclick=()=>this.commit('player');
-    $('chooseCreator').onclick=()=>{this.question(true); $('creatorPinForm').classList.remove('hidden');$('creatorPin').focus();$('profileError').textContent=''; };
-    $('creatorPin').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);};
+    $('chooseCreator').onclick=()=>{this.question(true); $('creatorPinForm').classList.remove('hidden');$('creatorPin').value=this.nickname||'';$('creatorPin').focus();$('profileError').textContent=''; };
+    $('creatorPin').oninput=()=>{$('profileError').textContent='';};
     $('creatorPinForm').onsubmit=e=>{e.preventDefault();this.verify();};
     $('creatorPinBack').onclick=()=>{this.epoch++;this.question(false);$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';};
     $('btnProfile').onclick=()=>this.show();
     $('btnCreatorAdmin').onclick=()=>AdminRealm.open();$('btnAdminRealm').onclick=()=>AdminRealm.open();
+    if(this.role==='creator'&&this.nickname){Admin.me=this.nickname;Net.playerName=this.nickname;}
     this.apply();
   },
-  question(code){$('profileRoleChoices').classList.toggle('hidden',code);$('profileTitle').textContent=code?'Quel est ton code Admin ?':'Comment veux-tu jouer ?';$('profileIntro').textContent=code?'Ce code active les outils d’administration.':'Choisis ton profil sur cet appareil.';$('profileProgress').setAttribute('aria-valuenow',code?'2':'1');$('profileProgress').firstElementChild.style.width=code?'100%':'50%';},
+  question(code){$('profileRoleChoices').classList.toggle('hidden',code);$('profileTitle').textContent=code?'Quel est ton pseudo Admin ?':'Comment veux-tu jouer ?';$('profileIntro').textContent=code?'Il sera mémorisé sur ce navigateur.':'Choisis ton profil sur cet appareil.';$('profileProgress').setAttribute('aria-valuenow',code?'2':'1');$('profileProgress').firstElementChild.style.width=code?'100%':'50%';},
   show(){this.question(false);this.epoch++;resetTouchInput();clearKeys();Game.state='menu';showOverlay('profile');$('creatorPinForm').classList.add('hidden');$('creatorPin').value='';$('profileError').textContent='';},
   apply(){
     Admin.owner=this.role==='creator';
@@ -17501,25 +17521,12 @@ const RoleGate = {
   },
   commit(role){
     if(role==='player'&&(Net.live||ShortRooms.peer))Net.reset();
-    this.epoch++;this.role=role;try{localStorage.setItem(this.KEY,JSON.stringify({role}));}catch(e){}
+    this.epoch++;this.role=role;try{localStorage.setItem(this.KEY,JSON.stringify({role,nickname:this.nickname}));}catch(e){}
     $('creatorPin').value='';this.apply();openMenuScreen();
   },
   async verify(){
-    if(this.pending)return;
-    const pin=$('creatorPin').value;if(!/^\d{6}$/.test(pin)){$('profileError').textContent='Entre exactement 6 chiffres.';return;}
-    let attempts={n:0,until:0};try{attempts=JSON.parse(sessionStorage.getItem('blocraft.pin.attempts')||'null')||attempts;}catch(e){}
-    if(attempts.until>Date.now()){$('profileError').textContent='Trop d’essais. Attends 30 secondes avant de réessayer.';return;}
-    const epoch=this.epoch;this.pending=true;$('creatorPinSubmit').disabled=true;
-    try{
-      if(!crypto.subtle)throw new Error('Ouvre le jeu depuis le site HTTPS pour vérifier le code.');
-      const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
-      if(epoch!==this.epoch)return;
-      const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
-      if(hash!==this.HASH){attempts.n++;if(attempts.n>=5){attempts.n=0;attempts.until=Date.now()+30000;}try{sessionStorage.setItem('blocraft.pin.attempts',JSON.stringify(attempts));}catch(e){}$('profileError').textContent='Code incorrect. Réessaie ou choisis Joueur.';return;}
-      try{sessionStorage.removeItem('blocraft.pin.attempts');}catch(e){}
-      this.commit('creator');AdminRealm.open();
-    }catch(e){$('profileError').textContent=e.message||'Vérification indisponible. Réessaie.';}
-    finally{this.pending=false;$('creatorPinSubmit').disabled=false;}
+    const name=$('creatorPin').value.trim().normalize('NFKC');if(!this.validName(name)){$('profileError').textContent='Choisis un pseudo de 2 à 24 caractères, sans < ni >.';return;}
+    if(Net.live||ShortRooms.peer)Net.reset();this.nickname=name;Admin.me=name;Net.playerName=name;Admin.save();this.commit('creator');AdminRealm.open();
   },
 };
 
@@ -17699,7 +17706,7 @@ const Admin = {
       }
 
       case 'proprietaire': case 'owner':
-        if(RoleGate.role!=='creator'){this.say('Choisis le profil Admin et entre son code à 6 chiffres depuis le menu.','warn');break;}
+        if(RoleGate.role!=='creator'){this.say('Choisis le profil Admin et ton pseudo depuis le menu.','warn');break;}
         if (this.owner) { this.say('Tu es déjà propriétaire de ce navigateur.'); break; }
         this.owner = true;
         this.admins = [];
@@ -17710,7 +17717,10 @@ const Admin = {
 
       case 'pseudo': case 'name':
         if (!arg[0]) { this.say('Ton pseudo : ' + this.me, 'sys'); break; }
-        this.me = arg.join(' ').slice(0, 16);
+        if(AdminCloud.active){this.say('Pour changer de pseudo, quitte le monde puis utilise Profil → Admin.','warn');break;}
+        const nextName=arg.join(' ').trim().normalize('NFKC');if(RoleGate.role==='creator'&&!RoleGate.validName(nextName)){this.say('Pseudo Admin : 2 à 24 caractères sans < ni >.','warn');break;}
+        this.me=nextName.slice(0,RoleGate.role==='creator'?24:16);
+        if(RoleGate.role==='creator'){RoleGate.nickname=this.me;try{localStorage.setItem(RoleGate.KEY,JSON.stringify({role:'creator',nickname:this.me}));}catch(e){}}
         Net.playerName = this.me;
         this.save();
         this.syncAdmins();
@@ -18032,12 +18042,12 @@ const CommandHub = {
     if(e.key==='Tab'||(e.key==='Enter'&&this.index>=0)){e.preventDefault();this.choices[Math.max(0,this.index)].click();return true;}
     return false;
   },
-  players(){const list=[{name:GameChat.name(),pos:Player.pos.slice(),dim:Dimensions.current,self:true}];if(Net.live&&Net.remote){const r=Net.remote;list.push({name:GameChat.remoteName(),pos:[r.x,r.y,r.z],dim:r.dim||Dimensions.current});}if(Players.count>1)list.push({name:'Joueur 2',pos:Players.list[1].pos.slice(),dim:Dimensions.current});return list;},
+  players(){const list=[{name:GameChat.name(),pos:Player.pos.slice(),dim:Dimensions.current,self:true}];if(AdminCloud.active){for(const r of AdminCloud.records.values())list.push({name:r.name,pos:[r.x,r.y,r.z],dim:r.dim||Dimensions.current});}else if(Net.live&&Net.remote){const r=Net.remote;list.push({name:GameChat.remoteName(),pos:[r.x,r.y,r.z],dim:r.dim||Dimensions.current});}if(Players.count>1)list.push({name:'Joueur 2',pos:Players.list[1].pos.slice(),dim:Dimensions.current});return list;},
   guide(raw,submit=true){
     const line=raw.trim().replace(/^\//,''),parts=line.split(/\s+/),cmd=Admin.norm(parts[0]),arg=parts.slice(1).join(' ');
     const choose=(title,values)=>{this.list(title,values.map(([label,value])=>({label,action:()=>{this.fill('/'+value);this.hide();GameChat.submit();}})));return true;};
     if(cmd==='tp'&&!arg)return choose('Où veux-tu aller ?', [['Vers un joueur','tp joueur'],['Dans une dimension','tp dimension'],['Au point de départ','retour'],['À des coordonnées x y z','tp coordonnees']]);
-    if(['tp joueur','admin','retirer'].includes(line.toLowerCase()))return choose('Quel joueur ?',this.players().filter(p=>cmd==='tp'||!p.self).map(p=>[p.name,cmd==='tp'?'tp '+(p.self?'@moi':p.name==='Joueur 2'?'@local2':'@ami'):cmd+' '+p.name]));
+    if(['tp joueur','admin','retirer'].includes(line.toLowerCase()))return choose('Quel joueur ?',this.players().filter(p=>cmd==='tp'||!p.self).map(p=>[p.name,cmd==='tp'?'tp '+(p.self?'@moi':p.name==='Joueur 2'?'@local2':p.name):cmd+' '+p.name]));
     if(['dim','dimension','tp dimension'].includes(line.toLowerCase()))return choose('Quelle dimension ?', [['Monde normal','dim normal'],['Nether','dim nether'],['End','dim end']]);
     if(['donner','give'].includes(cmd)){const n=parts[1];if(parts.length===2&&/^\d+$/.test(n))return choose('Quelle quantité ?',[1,8,16,32,64].map(v=>[String(v),cmd+' '+n+' '+v]));if(parts.length<3&&(!n||!/^\d+$/.test(n))){const q=Admin.norm(arg);const ids=[...new Set([...Object.keys(ITEMS),...Object.keys(BLOCKS)])].map(Number).filter(id=>id>0&&(ITEMS[id]||BLOCKS[id])&&Admin.norm(itemName(id)).includes(q));return choose('Quel objet ? Écris son nom pour filtrer.',ids.map(id=>[itemName(id),cmd+' '+id]));}}
     if(['spawn','mob'].includes(cmd)&&parts.length<3){const type=Admin.mobType(arg);if(type)return choose('Combien de créatures ?',[1,2,5,10].map(v=>[String(v),'spawn '+type+' '+v]));return choose('Quelle créature ?',Object.entries(MOB_DEFS).filter(([k,d])=>k!=='player'&&!d.boss&&Admin.norm(d.name).includes(Admin.norm(arg))).map(([k,d])=>[d.name,'spawn '+k]));}
@@ -18183,47 +18193,35 @@ const Preview3D={
   },
 };
 
-/* Invitation possession is verified by the host before any world data is sent.
-   It is NOT an account service: local profile records are editable by their owner. */
+/* Nickname-only Admin profiles are a convenience, not authenticated staff accounts. */
 const AdminRealm={
-  token:'',joinToken:'',nonce:'',admitted:false,checking:false,remotePowerAt:0,
+  admitted:false,remotePowerAt:0,
+  autoType:null,connecting:false,
+  labels:{overworld:'Monde normal',flat:'Monde tout plat',oneblock:'Monobloc'},
   init(){
-    $('realmPlay').onclick=()=>this.enter().catch(e=>this.status(e.message));
-    $('realmPublish').onclick=()=>this.publish().catch(e=>this.status(e.message));
-    $('realmCopy').onclick=async()=>{const input=$('realmToken');if(!input.value){this.status('Ouvre d’abord ton monde aux admins invités.');return;}try{await navigator.clipboard.writeText(input.value);this.status('Invitation privée copiée.');}catch(e){input.select();document.execCommand('copy');this.status('Invitation sélectionnée : copie-la pour ton ami Admin.');}};
-    $('realmJoinToken').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();this.join();}};$('realmJoin').onclick=()=>this.join();$('realmQA').onclick=()=>{if(RoleGate.role==='creator')QA.unlock();};$('realmClose').onclick=()=>openMenuScreen();
+    $('realmPlay').onclick=()=>{$('realmTypes').classList.remove('hidden');$('realmPlay').classList.add('hidden');};
+    for(const btn of document.querySelectorAll('[data-realm-type]'))btn.onclick=()=>this.connect(btn.dataset.realmType);
+    $('realmClose').onclick=()=>{if(this.connecting||AdminCloud.active){if(Game.manager&&Game.inv)saveGame({silent:true});Net.reset();this.setBusy(false);}openMenuScreen();};
   },
+  setBusy(value){this.connecting=value;for(const btn of document.querySelectorAll('[data-realm-type]'))btn.disabled=value;},
   status(t){$('realmStatus').textContent=t;},
-  reset(){this.admitted=false;this.nonce='';this.checking=false;this.remotePowerAt=0;},
-  open(){if(RoleGate.role!=='creator'){HUD.toastText('Profil Admin requis.',3);return;}clearKeys();resetTouchInput();Game.state='menu';showOverlay('realm');this.status('Espace Admin · crée, invite ou rejoins un monde privé.');try{document.exitPointerLock();}catch(e){}},
-  async enter(){
-    if(RoleGate.role!=='creator')throw new Error('Profil Admin requis.');if(Game.adminRealm&&Game.manager&&!Game.hardcoreDead){startPlaying();return;}
-    Net.reset();Game.hardcore=false;Game.hardcoreDead=false;Game.adminRealm=true;Game.troll=false;Game.mode='creative';Game.startWorld='flat';Troll.morph=null;
-    const entry=Saves.list.find(e=>e.data&&e.data.adminRealm);if(entry){Saves.currentId=entry.id;Saves.currentName=entry.name;await continueGame(entry);return;}else{Saves.begin('Monde Admin','flat','creative');await newWorld(null,false);}
-    MorphPowers.apply();startPlaying();saveGame();GameChat.add('Monde Admin · / pour les commandes · /admin pour nommer un invité. QA reste facultatif.','sys');
+  reset(){this.admitted=false;this.remotePowerAt=0;this.autoType=null;},
+  open(){if(RoleGate.role!=='creator'){HUD.toastText('Profil Admin requis.',3);return;}if(!RoleGate.nickname){RoleGate.show();$('chooseCreator').click();return;}clearKeys();resetTouchInput();Game.state='menu';showOverlay('realm');$('realmNickname').textContent=RoleGate.nickname;$('realmTypes').classList.add('hidden');$('realmPlay').classList.remove('hidden');this.status(this.connecting?'Connexion en cours…':'Choisis le même type de monde pour jouer ensemble.');try{document.exitPointerLock();}catch(e){}},
+  async enter(type='flat',keepNetwork=false){
+    if(!keepNetwork)return this.connect(type);
+    if(RoleGate.role!=='creator'||!this.labels[type])throw new Error('Profil Admin et type de monde valides requis.');
+    if(Game.adminRealm&&Game.adminRealmType===type&&Game.manager&&!Game.hardcoreDead&&!AdminCloud.active){startPlaying();return;}
+    if(!keepNetwork)Net.reset();Game.hardcore=false;Game.hardcoreDead=false;Game.adminRealm=true;Game.adminRealmType=type;Game.twoPlayers=false;Game.troll=false;Game.mode='creative';Game.startWorld=type;Troll.morph=null;
+    if(AdminCloud.active&&AdminCloud.snapshot){Saves.begin('Admin · '+this.labels[type],type,'creative');const entry=Saves.current();entry.data=AdminCloud.snapshot;await continueGame(entry,true);Game.adminRealmType=type;MorphPowers.apply();startPlaying();saveGame({silent:true});return;}
+    const entry=Saves.list.find(e=>e.data&&e.data.adminRealm&&(e.data.adminRealmType||e.data.dim||'flat')===type);
+    if(entry){Saves.currentId=entry.id;Saves.currentName=entry.name;await continueGame(entry,keepNetwork);}else{Saves.begin('Admin · '+this.labels[type],type,'creative');await newWorld('Blocraft Admin '+type,false);}
+    Game.adminRealmType=type;MorphPowers.apply();startPlaying();saveGame();
   },
-  random(){return Array.from(crypto.getRandomValues(new Uint8Array(24)),n=>n.toString(16).padStart(2,'0')).join('');},
-  async mac(token,nonce){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(token),{name:'HMAC',hash:'SHA-256'},false,['sign']);return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(nonce))),n=>n.toString(16).padStart(2,'0')).join('');},
-  async publish(){
-    await this.enter();this.open();this.token=this.random();$('mpHostName').value='Admin '+Admin.me.slice(0,12)+' '+Math.floor(Math.random()*10000);this.status('Ouverture du salon privé…');await Net.host();
-    const epoch=ShortRooms.epoch,start=Date.now();while(ShortRooms.busy&&ShortRooms.epoch===epoch&&Date.now()-start<25000)await new Promise(r=>setTimeout(r,100));
-    if(ShortRooms.epoch!==epoch||!ShortRooms.code){this.status('Ouverture impossible. Réessaie.');return;}$('realmToken').value=ShortRooms.code+':'+this.token;this.status('Invitation prête. Ne la partage qu’avec un Admin.');
-  },
-  join(){if(RoleGate.role!=='creator'){this.status('Profil Admin requis.');return;}const m=/^(\d{6}):([a-f0-9]{48})$/.exec($('realmJoinToken').value.trim());if(!m){this.status('Invitation invalide : colle le code complet reçu.');return;}this.joinToken=m[2];this.status('Connexion au monde Admin…');Net.join(m[1]);},
-  challenge(){this.nonce=this.random();this.admitted=false;Net.send(['realm-challenge',this.nonce]);const epoch=ShortRooms.epoch;setTimeout(()=>{if(epoch===ShortRooms.epoch&&Net.role==='host'&&!this.admitted&&Net.live)Net.disconnected();},12000);},
+  async connect(type){if(!RoleGate.validName(RoleGate.nickname)){this.open();return;}return AdminCloud.join(type);},
+  challenge(){Net.send(['realm-denied']);Net.disconnected();},
   message(m){
-    if(m[0]==='realm-challenge'){
-      if(Net.role!=='guest')return true;
-      if(RoleGate.role!=='creator'||!this.joinToken||typeof m[1]!=='string'||m[1].length!==48){Net.status('Ce monde exige un profil Admin et une invitation privée.',true);Net.send(['realm-proof','']);return true;}
-      const epoch=ShortRooms.epoch;this.mac(this.joinToken,m[1]).then(proof=>{if(epoch===ShortRooms.epoch&&Net.role==='guest')Net.send(['realm-proof',proof,Admin.me]);});return true;
-    }
-    if(m[0]==='realm-proof'){
-      if(Net.role!=='host'||!Game.adminRealm||this.checking||this.admitted)return true;this.checking=true;const epoch=ShortRooms.epoch;
-      this.mac(this.token,this.nonce).then(expected=>{if(epoch!==ShortRooms.epoch||Net.role!=='host')return;if(typeof m[1]!=='string'||m[1]!==expected){Net.send(['realm-denied']);Net.disconnected();return;}this.admitted=true;const name=GameChat.clean(m[2],32);if(name&&!Admin.admins.includes(name))Admin.admins.push(name);Net.hostStart().catch(e=>this.status(e.message));}).finally(()=>{if(epoch===ShortRooms.epoch)this.checking=false;});return true;
-    }
-    if(m[0]==='realm-denied'){if(Net.role==='guest'){Net.disconnected();Net.status('Accès Admin refusé : invitation privée incorrecte.',true);}return true;}
     if(m[0]==='profile-grant'){
-      if(Net.role==='guest'&&Net.live){RoleGate.role='creator';try{localStorage.setItem(RoleGate.KEY,JSON.stringify({role:'creator'}));}catch(e){}RoleGate.apply();Admin.say('L’hôte t’a nommé Admin. Ton profil est mémorisé sur cet appareil.','sys');}return true;
+      if(Net.role==='guest'&&Net.live){RoleGate.role='creator';RoleGate.nickname=Admin.me;try{localStorage.setItem(RoleGate.KEY,JSON.stringify({role:'creator',nickname:RoleGate.nickname||Admin.me}));}catch(e){}RoleGate.apply();Admin.say('L’hôte t’a nommé Admin. Ton profil est mémorisé sur cet appareil.','sys');}return true;
     }
     if(m[0]==='morph-power'){
       if(Net.role==='host'&&Net.live&&Net.remote&&performance.now()>this.remotePowerAt){const r=Net.remote,st=MorphPowers.stats(r.morph);if(Troll.valid(r.morph)&&st.explode&&r.dim===Dimensions.current){this.remotePowerAt=performance.now()+6000;Mobs.explode({pos:[r.x,r.y,r.z],type:'creeper',def:MOB_DEFS.creeper});}}return true;
@@ -18231,6 +18229,89 @@ const AdminRealm={
     return false;
   },
 };
+
+/* Firebase is the durable registry/checkpoint store; WebRTC carries frequent game packets.
+   Browser hosts simulate the world. A lease loss stops play rather than creating a private fork. */
+const AdminCloud={
+  active:false,ready:false,store:null,type:null,selfId:'',hostId:'',sender:null,peers:new Map(),records:new Map(),controls:new Map(),timers:[],closing:null,saving:null,loader:null,
+  async sdk(){if(window.BlocraftCloud)return window.BlocraftCloud;if(!this.loader)this.loader=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('assets/vendor/blocraft-cloud.min.js',document.baseURI);script.onload=()=>resolve(window.BlocraftCloud);script.onerror=()=>{this.loader=null;reject(Error('Impossible de charger Firebase. Vérifie ta connexion.'));};document.head.appendChild(script);});return this.loader;},
+  deadline(promise,ms=20000){return new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(Error('Firebase ne répond pas. Vérifie son activation et ta connexion.')),ms);promise.then(v=>{clearTimeout(t);resolve(v);},e=>{clearTimeout(t);reject(e);});});},
+  errorText(e){const code=String(e.code||'');if(code.includes('operation-not-allowed')||code.includes('configuration-not-found'))return 'Firebase : active Authentication → Connexion anonyme dans la console du projet blocraft.';if(code.includes('permission-denied'))return 'Firebase : crée Firestore et publie les règles du fichier firebase/firestore.rules.';return e.message||'Connexion au monde Admin impossible.';},
+  async join(type){
+    if(AdminRealm.connecting||!AdminRealm.labels[type]||RoleGate.role!=='creator')return;
+    if(this.active&&this.type===type&&this.ready){startPlaying();return;}
+    if(Game.manager&&Game.inv)saveGame({silent:true});await this.shutdown();Net.reset();
+    AdminRealm.autoType=type;AdminRealm.setBusy(true);AdminRealm.status('Connexion au monde commun…');ShortRooms.busy=true;const epoch=ShortRooms.epoch;
+    const session=crypto.randomUUID(),peerId='blocraft-cloud-'+session;this.type=type;this.selfId=peerId;
+    try{
+      const sdk=await this.sdk(),store=await this.deadline(sdk.connect({session,peerId,nickname:RoleGate.nickname}));if(epoch!==ShortRooms.epoch)return;this.store=store;
+      const opening=store.open(type);opening.then(room=>{if(epoch!==ShortRooms.epoch&&room.host)store.release(type).catch(()=>{});},()=>{});const room=await this.deadline(opening);if(epoch!==ShortRooms.epoch){if(room.host)store.release(type).catch(()=>{});return;}
+      this.active=true;this.leaseUntil=room.leaseUntil;this.hostId=room.peerId;this.hostName=room.nickname;this.selfId=peerId;Net.role=room.host?'host':'guest';Net.live=true;AdminRealm.admitted=true;
+      Net.dc={readyState:'open',send:text=>this.send(JSON.parse(text)),close(){}};
+      await ShortRooms.load();if(epoch!==ShortRooms.epoch)return;
+      const peer=new window.Peer(peerId,{config:ICE_SERVERS,debug:0});ShortRooms.peer=peer;
+      ShortRooms.timer=setTimeout(()=>this.fail(Error('Le navigateur hôte est inaccessible. Réessaie : aucun monde séparé ne sera créé.')),20000);
+      peer.on('open',async()=>{if(epoch!==ShortRooms.epoch)return;try{
+        if(room.host){this.timers.push(setInterval(()=>this.store.renew(type).then(until=>{this.leaseUntil=until;}).catch(e=>this.fail(e)),12000));
+          const data=await this.store.load(type);if(epoch!==ShortRooms.epoch)return;this.snapshot=data;
+          await AdminRealm.enter(type,true);if(epoch!==ShortRooms.epoch)return;this.ready=true;clearTimeout(ShortRooms.timer);ShortRooms.busy=false;AdminRealm.setBusy(false);
+          await this.flush();this.timers.push(setInterval(()=>{if(Game.manager&&this.ready){saveGame({silent:true});this.flush().catch(e=>this.fail(e));}},30000));
+          for(const record of this.peers.values())if(record.admitted)this.welcome(record.id);
+        }else this.dial(peer,room.peerId,epoch,0);
+      }catch(e){this.fail(e);}});
+      peer.on('connection',connection=>{if(!this.active||Net.role!=='host'||epoch!==ShortRooms.epoch){connection.close();return;}this.attach(connection,true);});
+      peer.on('error',error=>{if(epoch!==ShortRooms.epoch)return;if(error.type==='peer-unavailable'&&!room.host&&!this.ready)return;if(Net.live&&this.ready&&['network','socket-error','server-error'].includes(error.type))return;this.fail(error);});
+      this.unwatch=this.store.watch(type,state=>{if(!this.active||epoch!==ShortRooms.epoch)return;if(state&&state.peerId!==this.hostId)this.fail(Error('L’hôte du monde commun a changé. Rejoins le monde pour charger sa dernière sauvegarde.'));},e=>this.fail(e));
+    }catch(e){if(epoch===ShortRooms.epoch)this.fail(e);}
+  },
+  dial(peer,id,epoch,attempt){if(!this.active||epoch!==ShortRooms.epoch||this.ready)return;if(attempt>6){this.fail(Error('L’hôte est absent. Son bail expirera sous 45 secondes ; réessaie ensuite.'));return;}const connection=peer.connect(id,{reliable:true,serialization:'binary'});this.attach(connection,false);this.timers.push(setTimeout(()=>{if(!this.ready){connection.close();this.dial(peer,id,epoch,attempt+1);}},2000));},
+  attach(connection,host){const id=connection.peer,record={id,connection,admitted:!host};this.peers.set(id,record);
+    connection.on('open',()=>{if(!this.active){connection.close();return;}if(host)connection.send(JSON.stringify(['cloud-challenge',this.type]));});
+    connection.on('data',raw=>{if(this.active&&this.peers.get(id)===record)this.receive(id,raw);});
+    connection.on('close',()=>{if(!this.active||this.peers.get(id)!==record)return;this.peers.delete(id);this.records.delete(id);if(Net.role==='host'){
+      for(const c of Railways.carts.concat(Boats.list))if(c.driver===id)c.driver=null;this.controls.delete(id);this.send(['cloud-left',id]);Net.remote=this.records.values().next().value||null;
+    }else if(this.ready)this.fail(Error('L’hôte a fermé le monde. La dernière sauvegarde reste dans Firebase. Réessaie sous 45 secondes.'));});
+    connection.on('error',()=>{if(this.ready&&this.active){if(host)connection.close();else this.fail(Error('Connexion à l’hôte interrompue.'));}});
+  },
+  welcome(id){if(!this.ready)return;this.send(['cloud-self',id,this.hostId,[...this.records].map(([key,r])=>[key,{...r,_avatar:undefined}])],id);Net.hostStart(id).catch(e=>this.fail(e));},
+  receive(id,raw){
+    if(typeof raw!=='string'||raw.length>12000000)return;let m;try{m=JSON.parse(raw);}catch(e){return;}if(!Array.isArray(m))return;
+    if(Net.role==='guest'){
+      if(id!==this.hostId)return;
+      if(m[0]==='cloud-challenge'){if(RoleGate.role==='creator'&&m[1]===this.type)this.send(['cloud-proof',RoleGate.nickname,this.type]);return;}
+      if(m[0]==='cloud-error'){this.fail(Error(m[1]));return;}
+      if(m[0]==='cloud-self'){this.selfId=m[1];for(const [key,r]of m[3]||[])if(key!==this.selfId)this.records.set(key,r);return;}
+      if(m[0]==='cloud-left'){this.records.delete(m[1]);return;}
+      if(m[0]==='cloud-oneblock-count'){if(Number.isSafeInteger(m[1]))OneBlock.count=Math.max(0,m[1]);return;}
+      if(m[0]==='cloud-core-done'){for(const [item,n]of m[1]||[])Game.inv.add(item,n);wearHeld(1);HUD.refreshAll();return;}
+      if(m[0]==='cloud-peer'){if(m[1]!==this.selfId)this.position(m[1],m[2]);return;}
+      if(m[0]==='p'){this.position(this.hostId,m);return;}
+      if(m[0]==='h'&&!this.records.has(this.hostId))this.records.set(this.hostId,{id:this.hostId,name:this.hostName,x:m[6],y:m[7],z:m[8],yaw:0,dim:m[4]});
+      this.rawMessage(raw);return;
+    }
+    const peer=this.peers.get(id);if(!peer)return;
+    if(m[0]==='cloud-proof'){
+      if(peer.admitted||m[2]!==this.type||!RoleGate.validName(m[1]))return;
+      const name=m[1].trim();if(name===Admin.me||[...this.records.values()].some(r=>r.name===name)){this.send(['cloud-error','Ce pseudo est déjà présent dans ce monde. Choisis un autre pseudo.'],id,true);return;}
+      peer.admitted=true;this.records.set(id,{id,name,x:Player.pos[0],y:Player.pos[1],z:Player.pos[2],yaw:0,dim:Dimensions.current});if(!Admin.admins.includes(name))Admin.admins.push(name);this.welcome(id);return;
+    }
+    if(!peer.admitted||!['p','r','b','k','S','sleep','bow-shot','qa-kill','circuit-meta','vehicle-use','boat-input','ignite-tnt','chat','player-death','morph-power','g','oneblock-break'].includes(m[0]))return;
+    if(m[0]==='p'){if(!this.position(id,m))return;this.send(['cloud-peer',id,m],null,false,id);return;}
+    if(m[0]==='oneblock-break'){const r=this.records.get(id),s=OneBlock.SPAWN;if(Game.manager.dim!=='oneblock'||!r||Math.hypot(r.x-s[0],r.y-s[1],r.z-s[2])>8||m[1]!==Game.manager.getBlock(...s))return;const loot=Game.mode==='survival'?blockDrops(m[1]):[];OneBlock.onBreak({x:s[0],y:s[1],z:s[2]});this.send(['cloud-core-done',loot],id);return;}
+    const old=Net.remote;this.sender=id;Net.remote=this.records.get(id);
+    try{this.rawMessage(JSON.stringify(m));if(['b','chat','player-death','g'].includes(m[0]))this.send(m,null,false,id);}finally{this.sender=null;Net.remote=this.records.values().next().value||old;}
+  },
+  position(id,m){if(!Array.isArray(m)||m[0]!=='p'||!m.slice(1,7).every(Number.isFinite)||Math.abs(m[1])>30000000||Math.abs(m[3])>30000000)return false;const r=this.records.get(id)||{id,name:m[7]||'Admin'};r.px=r.x;r.py=r.y;r.pz=r.z;[r.x,r.y,r.z,r.yaw,r.pitch,r.hp]=m.slice(1,7);r.dim=m[8]||'overworld';r.morph=Troll.valid(m[9])?m[9]:null;r.t=performance.now();this.records.set(id,r);Net.remote=this.records.values().next().value||null;return true;},
+  send(m,target=null,force=false,except=null){if(!this.active)return;if(Net.role==='host'&&this.sender&&!target&&['H','x','vehicle-consumed','profile-grant'].includes(m[0]))target=this.sender;const raw=JSON.stringify(m);for(const [id,r]of this.peers)if(id!==except&&(!target||id===target)&&(r.admitted||force)&&r.connection.open)try{r.connection.send(raw);}catch(e){}},
+  async flush(){if(!this.active||Net.role!=='host'||!this.ready)return;const data=Saves.current()?.data;if(!data||data.adminRealmType!==this.type)return;if(this.saving)return this.saving;const promise=this.store.save(this.type,JSON.parse(JSON.stringify(data)));this.saving=promise;try{await promise;}finally{if(this.saving===promise)this.saving=null;}},
+  shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
+  fail(e){const text=this.errorText(e);this.shutdown();Net.reset();AdminRealm.setBusy(false);AdminRealm.status(text);Game.state='menu';showOverlay('realm');},
+  avatars(){const old=Net.remote,oldAvatar=Net._avatar,out=[];for(const r of this.records.values()){Net.remote=r;Net._avatar=r._avatar||null;const avatar=Net.avatarMob();if(avatar){r._avatar=avatar;out.push(avatar);}}Net.remote=old;Net._avatar=oldAvatar;return out;},
+  animate(dt){for(const r of this.records.values())if(r._avatar)r._avatar.walkPhase+=dt*(Math.hypot(r.x-(r.px??r.x),r.z-(r.pz??r.z))>.02?9:2);},
+  tags(VP){const box=$('nameTags');if(!box||!VP)return;box.innerHTML='';for(const r of this.records.values()){if(r.dim!==Dimensions.current)continue;const x=r.x,y=r.y+2.15,z=r.z,cw=VP[3]*x+VP[7]*y+VP[11]*z+VP[15];if(cw<=.05)continue;const el=document.createElement('div');el.className='tag';el.textContent=r.name;el.style.left=((VP[0]*x+VP[4]*y+VP[8]*z+VP[12])/cw*.5+.5)*canvas.clientWidth+'px';el.style.top=(.5-(VP[1]*x+VP[5]*y+VP[9]*z+VP[13])/cw*.5)*canvas.clientHeight+'px';box.appendChild(el);}},
+  nearest(pos){return [...this.records.values()].filter(r=>r.dim===Dimensions.current).sort((a,b)=>Math.hypot(a.x-pos[0],a.y-pos[1],a.z-pos[2])-Math.hypot(b.x-pos[0],b.y-pos[1],b.z-pos[2]))[0];},
+};
+AdminCloud.rawMessage=Net.onMessage.bind(Net);
 
 /* Discrete circuit simulation. Signals attenuate to zero after 15 dust blocks. */
 const Circuits={
@@ -18281,7 +18362,7 @@ const Boats={
     const c=this.list.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.3));if(!c)return false;if(c.driver){HUD.toastText('Ce bateau est occupé.',2);return true;}this.riding=c;c.driver='player';HUD.toastText('Bateau : avancer/reculer, regarder pour diriger · X pour descendre.',3);return true;},
   update(dt){if(Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.15,this.riding.pos[2]];Player.vel=[0,0,0];}return;}for(const c of this.list){if(c.dim!==Game.manager.dim)continue;let water=null;for(let y=Math.floor(c.pos[1])+1;y>=Math.floor(c.pos[1])-3;y--)if((BLOCKS[Game.manager.getBlock(Math.floor(c.pos[0]),y,Math.floor(c.pos[2]))]||{}).water){water=y;break;}
       if(water!==null)c.pos[1]+=(water+.9-c.pos[1])*Math.min(1,dt*6);
-      if(this.riding===c||c.driver==='guest'){const guest=c.driver==='guest';c.yaw=guest&&Net.remote?Net.remote.yaw||0:Player.yaw;const control=guest?Transport.remoteBoat:Input;c.speed+=((control.f-control.b)*5-c.speed)*Math.min(1,dt*3);const p=[c.pos[0]-Math.sin(c.yaw)*c.speed*dt,c.pos[1],c.pos[2]-Math.cos(c.yaw)*c.speed*dt];const block=Game.manager.getBlock(Math.floor(p[0]),Math.floor(p[1]),Math.floor(p[2]));if(water!==null&&!(BLOCKS[block]||{}).solid)c.pos=p;else c.speed=0;if(this.riding===c){Player.pos=[c.pos[0],c.pos[1]+.15,c.pos[2]];Player.vel=[0,0,0];Player.fallDist=0;}}}
+      if(this.riding===c||(c.driver&&c.driver!=='player')){const guest=c.driver&&c.driver!=='player',remote=AdminCloud.active?AdminCloud.records.get(c.driver):Net.remote;c.yaw=guest&&remote?remote.yaw||0:Player.yaw;const control=guest?(AdminCloud.active?AdminCloud.controls.get(c.driver)||{f:0,b:0}:Transport.remoteBoat):Input;c.speed+=((control.f-control.b)*5-c.speed)*Math.min(1,dt*3);const p=[c.pos[0]-Math.sin(c.yaw)*c.speed*dt,c.pos[1],c.pos[2]-Math.cos(c.yaw)*c.speed*dt];const block=Game.manager.getBlock(Math.floor(p[0]),Math.floor(p[1]),Math.floor(p[2]));if(water!==null&&!(BLOCKS[block]||{}).solid)c.pos=p;else c.speed=0;if(this.riding===c){Player.pos=[c.pos[0],c.pos[1]+.15,c.pos[2]];Player.vel=[0,0,0];Player.fallDist=0;}}}
   },
   visuals(){return this.list.flatMap(c=>[[0,0,0,3.8,.3,5],[-.55,.12,0,.3,1.2,5],[.55,.12,0,.3,1.2,5],[0,.12,-.7,3.8,1.2,.3],[0,.12,.7,3.8,1.2,.3]].map(([x,y,z,w,h,d])=>({id:B.PLANKS,pos:[c.pos[0]+x*Math.cos(c.yaw)-z*Math.sin(c.yaw),c.pos[1]+y,c.pos[2]-x*Math.sin(c.yaw)-z*Math.cos(c.yaw)],yaw:c.yaw,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
   serialize(){return this.list.map(c=>({...c,driver:null}));},
@@ -18291,9 +18372,9 @@ const Boats={
 const Archery={
   list:[],cooldown:0,
   shoot(){const now=performance.now();if(now<this.cooldown)return true;if(Game.mode!=='creative'&&Game.inv.count(I.ARROW)<1){HUD.toastText('Il te faut des flèches.',2);return true;}this.cooldown=now+650;if(Game.mode!=='creative')Game.inv.remove(I.ARROW,1);wearHeld(1);HUD.refreshAll();const pos=eyePos(),d=lookDir();if(Net.live&&Net.role==='guest')Net.send(['bow-shot',d]);else this.launch(pos,d);Sfx.play('throw',.8);return true;},
-  launch(pos,d,remote=false,visualOnly=false){if(!Array.isArray(d)||d.length!==3||!d.every(Number.isFinite))return;const len=Math.hypot(...d);if(len<.9||len>1.1)return;this.list.push({pos:pos.map((v,i)=>v+d[i]*.6),vel:d.map(v=>v*29),dim:Game.manager.dim,age:0,remote,visualOnly});if(Net.live&&Net.role==='host')Net.send(['arrow-flight',pos,d]);},
+  launch(pos,d,remote=false,visualOnly=false){if(!Array.isArray(d)||d.length!==3||!d.every(Number.isFinite))return;const len=Math.hypot(...d);if(len<.9||len>1.1)return;this.list.push({pos:pos.map((v,i)=>v+d[i]*.6),vel:d.map(v=>v*29),dim:Game.manager.dim,age:0,remote,visualOnly,owner:remote&&AdminCloud.active?AdminCloud.sender:null});if(Net.live&&Net.role==='host')Net.send(['arrow-flight',pos,d]);},
   update(dt){for(let i=this.list.length-1;i>=0;i--){const a=this.list[i];if(a.dim!==Game.manager.dim||a.age>7){this.list.splice(i,1);continue;}a.age+=dt;let hit=false;const steps=Math.max(1,Math.ceil(Math.hypot(...a.vel)*dt/.15));for(let k=0;k<steps&&!hit;k++){a.vel[1]-=7*dt/steps;const prev=a.pos.slice();a.pos=a.pos.map((v,j)=>v+a.vel[j]*dt/steps);const block=Game.manager.getBlock(...a.pos.map(Math.floor));if((BLOCKS[block]||{}).solid){hit=true;if(!a.visualOnly&&Game.mode!=='creative')Drops.add(I.ARROW,1,...prev,0,0,0);break;}
-        const mob=Mobs.list.find(m=>m.hp>0&&Math.hypot(a.pos[0]-m.pos[0],a.pos[2]-m.pos[2])<m.def.w/2+.15&&a.pos[1]>m.pos[1]&&a.pos[1]<m.pos[1]+m.def.h);if(mob&&!a.visualOnly){if(a.remote)mob.lastHitter='guest';Mobs.hurt(mob,7,[a.vel[0]/29,0,a.vel[2]/29],true);Fx.puff(...a.pos,5);hit=true;}}
+        const mob=Mobs.list.find(m=>m.hp>0&&Math.hypot(a.pos[0]-m.pos[0],a.pos[2]-m.pos[2])<m.def.w/2+.15&&a.pos[1]>m.pos[1]&&a.pos[1]<m.pos[1]+m.def.h);if(mob&&!a.visualOnly){if(a.remote){mob.lastHitter='guest';if(AdminCloud.active)mob.lastPeer=a.owner;}Mobs.hurt(mob,7,[a.vel[0]/29,0,a.vel[2]/29],true);Fx.puff(...a.pos,5);hit=true;}}
       if(hit)this.list.splice(i,1);else if(Fx.list)Fx.list.push({x:a.pos[0],y:a.pos[1],z:a.pos[2],vx:0,vy:0,vz:0,size:.055,tile:TEX.planks,life:.08,max:.08});}
   },
 };
@@ -18331,13 +18412,13 @@ const EndVictory={
 const Transport={
   timer:0,lastRequest:0,remoteBoat:{f:0,b:0},
   request(kind,t){const now=performance.now();if(now-this.lastRequest<200)return true;this.lastRequest=now;Net.send(['vehicle-use',kind,t?{x:t.x,y:t.y,z:t.z,block:t.block}:null,heldItemId(),!!Input.down]);return true;},
-  applyUse(m){if(Net.role!=='host'||!Net.remote||(Net.remote.dim&&Net.remote.dim!==Dimensions.current))return;const pos=Net.remotePos(),t=m[2];if(t&&(![t.x,t.y,t.z].every(Number.isInteger)||Math.hypot(t.x+.5-pos[0],t.y-pos[1],t.z+.5-pos[2])>8))return;
-    if(m[1]==='exit'){for(const c of Railways.carts.concat(Boats.list))if(c.driver==='guest')c.driver=null;this.broadcast();return;}
+  applyUse(m){const driver=AdminCloud.active?AdminCloud.sender:'guest';if(Net.role!=='host'||!Net.remote||(Net.remote.dim&&Net.remote.dim!==Dimensions.current))return;const pos=Net.remotePos(),t=m[2];if(t&&(![t.x,t.y,t.z].every(Number.isInteger)||Math.hypot(t.x+.5-pos[0],t.y-pos[1],t.z+.5-pos[2])>8))return;
+    if(m[1]==='exit'){for(const c of Railways.carts.concat(Boats.list))if(c.driver===driver)c.driver=null;this.broadcast();return;}
     const system=m[1]==='cart'?Railways:m[1]==='boat'?Boats:null;if(!system)return;
-    const active=Railways.carts.concat(Boats.list).find(c=>c.driver==='guest');if(active){active.driver=null;this.broadcast();return;}
+    const active=Railways.carts.concat(Boats.list).find(c=>c.driver===driver);if(active){active.driver=null;this.broadcast();return;}
     const old={pos:Player.pos,yaw:Player.yaw,vel:Player.vel,inv:Game.inv,slot:Game.slot,cart:Railways.riding,boat:Boats.riding,down:Input.down};
     const count=system===Railways?Railways.carts.length:Boats.list.length;
-    try{Player.pos=pos.slice();Player.yaw=Net.remote.yaw||0;Player.vel=[0,0,0];Game.inv=new Inventory();Game.slot=0;const id=Number(m[3]);if([I.MINECART,I.BOAT].includes(id))Game.inv.slots[0]={id,n:1};Input.down=!!m[4];Railways.riding=null;Boats.riding=null;system.use(t);const seat=system.riding;if(seat)seat.driver='guest';const after=system===Railways?Railways.carts.length:Boats.list.length;if(after>count)Net.send(['vehicle-consumed',system===Railways?I.MINECART:I.BOAT]);}
+    try{Player.pos=pos.slice();Player.yaw=Net.remote.yaw||0;Player.vel=[0,0,0];Game.inv=new Inventory();Game.slot=0;const id=Number(m[3]);if([I.MINECART,I.BOAT].includes(id))Game.inv.slots[0]={id,n:1};Input.down=!!m[4];Railways.riding=null;Boats.riding=null;system.use(t);const seat=system.riding;if(seat)seat.driver=driver;const after=system===Railways?Railways.carts.length:Boats.list.length;if(after>count)Net.send(['vehicle-consumed',system===Railways?I.MINECART:I.BOAT]);}
     finally{Player.pos=old.pos;Player.yaw=old.yaw;Player.vel=old.vel;Game.inv=old.inv;Game.slot=old.slot;Input.down=old.down;Railways.riding=old.cart;Boats.riding=old.boat;HUD.refreshAll();}
     this.broadcast();
   },
@@ -18345,7 +18426,7 @@ const Transport={
   receive(data){if(Net.role!=='guest'||!data||!Array.isArray(data.carts)||!Array.isArray(data.boats))return;
     const oldSeat=Railways.riding||Boats.riding;
     Railways.carts=data.carts.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100);Boats.list=data.boats.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50);
-    Railways.riding=Railways.carts.find(c=>c.driver==='guest')||null;Boats.riding=Boats.list.find(c=>c.driver==='guest')||null;
+    Railways.riding=Railways.carts.find(c=>c.driver===(AdminCloud.active?AdminCloud.selfId:'guest'))||null;Boats.riding=Boats.list.find(c=>c.driver===(AdminCloud.active?AdminCloud.selfId:'guest'))||null;
     Circuits.meta=new Map(data.meta||[]);Circuits.levels=new Map(data.levels||[]);if(oldSeat&&!Railways.riding&&!Boats.riding)Railways.safeExit(oldSeat.pos);
   },
   tick(dt){this.timer+=dt;if(this.timer<.15||!Net.live)return;this.timer=0;if(Net.role==='host')this.broadcast();else Net.send(['boat-input',Input.f,Input.b]);},

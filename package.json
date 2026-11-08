@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "playwright": "^1.47.2"
+    "firebase": "^12.19.0",
+    "playwright": "^1.65.0"
   },
   "scripts": {
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
@@ -13,9 +14,15 @@
     "test:wizard": "node tests/wizard_browser_test.js",
     "test:commands": "node tests/commands_browser_test.js",
     "test:adminrealm": "node tests/adminrealm_browser_test.js",
-    "test:mechanics": "node tests/mechanics_browser_test.js"
+    "test:mechanics": "node tests/mechanics_browser_test.js",
+    "build:cloud": "esbuild src/firebase-cloud.js --bundle --format=iife --global-name=BlocraftCloud --minify --outfile=assets/vendor/blocraft-cloud.min.js",
+    "test:cloud": "node tests/cloud_store_test.js"
   },
   "devDependencies": {
+    "esbuild": "^0.25.12",
     "peer": "^1.0.2"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7"
   }
 }

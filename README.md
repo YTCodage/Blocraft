@@ -548,23 +548,22 @@ avec des plafonds même dans les structures difficiles.
 ## 7. Mode administrateur
 
 Au premier lancement, choisis **Joueur** (fonctionnement habituel) ou **Admin**.
-Le profil Admin demande un **code à 6 chiffres**, communiqué au propriétaire
-par message, puis ouvre l’espace **Monde Admin**, distinct du jeu normal. Le choix est mémorisé sur
-ce navigateur. **Profil** dans le menu permet de changer de choix ; un Admin
-retrouve **Monde Admin** depuis le menu. Ce code n’est pas le code temporaire
-d’une partie à deux.
+Le profil Admin demande maintenant **uniquement un pseudo** (2 à 24 caractères),
+mémorisé avec le profil dans le navigateur. Aucun PIN, code de salon ou invitation
+à saisir. **Profil** permet de changer de profil/pseudo. **Monde Admin** ouvre un
+écran réduit à « Rejoindre le monde Admin » et « Retour », puis trois types :
+**normal**, **tout plat**, **monobloc**.
 
-Il s’agit d’un **profil local**, sans compte ni serveur d’authentification. Un
-verrou côté navigateur et un code de six chiffres ne protègent pas contre une
-personne qui modifie le JavaScript ou le stockage local. Seul le vérificateur
-SHA-256 du code est distribué, pas le code en clair ; cela ne rend pas un PIN
-court résistant à la recherche exhaustive. Une véritable sécurité multijoueur
-nécessiterait un backend authentifié. Après cinq mauvais essais, le formulaire
-attend 30 secondes dans l’onglet courant.
+Ces trois mondes sont communs aux Admins : Firebase arbitre un hôte par type et
+conserve son checkpoint ; les navigateurs jouent ensemble par WebRTC. L'accès
+par simple pseudo est un choix de facilité, **pas une authentification Admin sûre**.
+Les personnes modifiant leur client peuvent également choisir ce profil.
+Voir [l'activation Firebase](firebase/SETUP.md) pour la configuration nécessaire,
+les règles, la persistance, les limites et les coûts.
 
 | Commande | Qui | Effet |
 |---|---|---|
-| `proprietaire` | Admin déjà déverrouillé | commande de compatibilité ; ne contourne plus le code |
+| `proprietaire` | Profil Admin | commande de compatibilité ; ne change pas le profil |
 | `pseudo Alex` | tout le monde | changer son nom (affiché au-dessus de l'avatar en ligne) |
 | `admin Alex` | Admin hôte | nommer le joueur connecté Admin et mémoriser son profil sur son navigateur |
 | `retirer Alex` | Admin hôte | retirer ses droits dans cette partie (son profil local Admin reste mémorisé) |
@@ -992,29 +991,34 @@ sont désactivés ; les commandes d’information et d’interface restent dispo
 pour cette partie. Le stockage local demeure modifiable : aucun système de classement
 ou de preuve anti-triche n’est annoncé.
 
-### Monde Admin et QA temporaire
+### Monde Admin commun et QA temporaire
 
-Le code de profil ouvre un écran **Monde Admin** avec un monde plat distinct,
-sauvegardé séparément. L’Admin peut l’utiliser seul ou l’ouvrir à **un autre Admin**
-(la limite réseau reste **2 joueurs**). L’hôte copie une invitation privée composée
-du code du salon et d’un secret aléatoire de 192 bits. L’invité ouvre Monde Admin,
-colle cette invitation et rejoint. Le client normal exige un profil Admin ; une
-preuve HMAC-SHA-256 avec un défi neuf est vérifiée par l’hôte **avant l’envoi du monde**.
-Le code à six chiffres du salon seul ne suffit pas. Une nouvelle publication renouvelle
-l’invitation ; l’hôte doit garder sa page ouverte. Il n’existe pas de serveur permanent.
+L'écran Admin n'a plus les options d'hébergement/invitation/copie de code. Après
+**Rejoindre le monde Admin**, choisir **normal**, **tout plat** ou **monobloc**.
+Un document canonique Firestore par type élit un navigateur hôte par transaction,
+avec un bail de 45 secondes renouvelé toutes les 12 secondes. Les autres Admins
+rejoignent automatiquement cet hôte. Le transport Admin accepte plusieurs membres
+(test avec trois), sans changer la limite des parties ordinaires à deux.
 
-Un Admin hôte peut nommer le joueur connecté avec `/admin` : ce joueur obtient
-un profil Admin local mémorisé, sans activation automatique de QA. `/retirer` retire
-les droits sur la partie courante, pas ce profil indépendant. Un invité ne peut
-pas envoyer sa propre liste de droits à l’hôte. Les droits réseau restent basés
-sur les pseudos et ne constituent pas des comptes authentifiés.
+Les checkpoints du monde hôte sont publiés atomiquement toutes les 30 secondes,
+en segments et avec une limite de 8 Mio. Ils permettent de reprendre sur un autre
+navigateur. Après une fermeture brutale, attendre l'expiration du bail et rejoindre
+à nouveau ; il peut manquer les changements du dernier intervalle. Le navigateur
+hôte doit rester ouvert/actif : Firestore n'est pas un serveur de jeu permanent.
+Le choix Admin/Joueur, les sauvegardes ordinaires et QA restent locaux ; seuls les mondes Admin
+et le pseudo technique associé à la session Firebase sont envoyés au cloud.
 
-**Le profil Admin persiste ; QA ne persiste jamais au rechargement**, même si
-une ancienne préférence QA était enregistrée. `/qa` ou le bouton de l’espace Admin
-l’active explicitement pour la session. Ce site statique ne peut garantir l’identité
-d’une personne ayant modifié son client : protège l’invitation comme un mot de passe.
-Pour des comptes révocables et un vrai serveur Admin public sécurisé, un backend
-d’authentification et un serveur de jeu autoritaire restent nécessaires.
+**Le profil et le pseudo persistent ; QA ne persiste jamais au rechargement.**
+`/qa` l'active explicitement pendant la session. Le jeu conserve les droits hôte
+pour les listes Admin ; le profil choisi par pseudo n'est pas une preuve d'identité.
+La connexion Firebase anonyme et les règles ne créent pas de comptes du personnel.
+
+**Activation requise dans le projet Firebase réel :** Authentication anonyme,
+Firestore `(default)`, publication des règles fournies. Le SDK web ne donne pas
+les droits de modifier ces réglages. Aucun test dans ce dépôt n'affirme avoir
+validé leur activation en production. [Procédure complète](firebase/SETUP.md).
+En cas de refus Firebase ou de réseau indisponible, un message explique le problème :
+le jeu ne crée pas silencieusement un monde privé différent du monde commun.
 
 ### Personnage 3D dans l’inventaire
 
@@ -1026,8 +1030,8 @@ préférence de réduction des mouvements supprime la respiration automatique.
 
 Tests complémentaires : `npm run test:commands` (palette, choix guidés, capacités,
 aperçu 3D, sauvegarde de la mort Hardcore, profil/QA) et `npm run test:adminrealm`
-(vrai PeerJS/WebRTC local, profil requis même avec invitation, preuve incorrecte
-refusée sans fuite du monde, invitation valide, droits hôte et nomination Admin).
+(vrai PeerJS/WebRTC local avec base cloud simulée : trois Admins,
+3 types, relayage/ciblage, reprise persistante et erreurs Firebase sans fork local).
 
 ### Rails, véhicules et circuits
 
@@ -1107,3 +1111,16 @@ coordonnées, météo et victoire déclenchée depuis la pause. `test:rooms` vé
 le wagonnet invité et son siège exclusif, le décompte, la météo et le tir via un
 vrai canal PeerJS/WebRTC local. `test:game` maillage/rendu WebGL inclut les nouveaux
 blocs, rails courbes, wagonnets et bateaux.
+
+
+### Développement Firebase
+
+Le SDK est chargé à la demande et bundlé localement (pas de script CDN à l'exécution) :
+`npm run build:cloud`. La configuration publique du projet `blocraft` est dans
+`src/firebase-cloud.js` ; aucune clé de compte de service ni Analytics n'est ajouté.
+`npm run test:cloud` teste le stockage transactionnel et les baux en mémoire ;
+`npm run test:adminrealm` teste la coordination cloud simulée avec de vrais canaux
+WebRTC. Les règles Firestore restent à déployer par le propriétaire :
+[firebase/SETUP.md](firebase/SETUP.md). `npm audit` ne signale aucune vulnérabilité
+après la mise à jour de Playwright et du transport gRPC indirect (non inclus dans
+le bundle web).

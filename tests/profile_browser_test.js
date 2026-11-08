@@ -1,22 +1,14 @@
-// Local profile/PIN UI test. Uses a test-only PIN verifier, never a production secret.
-const fs=require('fs'),path=require('path'),assert=require('assert'),crypto=require('crypto'),{chromium}=require('playwright');
-(async()=>{
-const browser=await chromium.launch({...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-try{
- const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- let html=fs.readFileSync(path.join(__dirname,'..','blocraft.html'),'utf8').replace('  initGL();','').replace('  initSelection();','').replace("  try { Fx.init(); } catch (e) { console.error('Fx', e); }",'').replace('  newWorld(null, false);','  Game.state="menu";showOverlay("menu");').replace('  requestAnimationFrame(frame);\n}','}');
- await page.route('**/blocraft.html',r=>r.fulfill({contentType:'text/html',body:html}));
- const url=new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href;
- await page.goto(url);assert(await page.locator('#profile').isVisible());assert(!await page.locator('#menu').isVisible());
- await page.locator('#chooseCreator').click();assert(!await page.locator('#profileRoleChoices').isVisible());assert.equal(await page.locator('#profileProgress').getAttribute('aria-valuenow'),'2');await page.locator('#creatorPin').fill('000000');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>document.querySelector('#profileError').textContent.includes('incorrect'));assert(!await page.evaluate(()=>Admin.owner));
- await page.locator('#creatorPinBack').click();await page.locator('#choosePlayer').click();assert(await page.locator('#menu').isVisible());assert.equal(await page.evaluate(()=>RoleGate.role),'player');assert(!await page.evaluate(()=>Admin.owner));
- await page.evaluate(()=>Admin.run('proprietaire'));assert(!await page.evaluate(()=>Admin.owner));
- await page.reload();assert(await page.locator('#menu').isVisible());assert(!await page.locator('#profile').isVisible());
- await page.locator('#btnProfile').click();await page.locator('#chooseCreator').click();
- const testHash=crypto.createHash('sha256').update('123456').digest('hex');await page.evaluate(h=>RoleGate.HASH=h,testHash);
- await page.locator('#creatorPin').fill('123456');await page.locator('#creatorPinSubmit').click();await page.waitForFunction(()=>RoleGate.role==='creator');assert(await page.evaluate(()=>Admin.owner&&Admin.isAdmin()));assert.equal(await page.locator('#creatorPin').inputValue(),'');assert(!await page.locator('#btnCreatorAdmin').evaluate(e=>e.classList.contains('hidden')));assert(await page.locator('#realm').isVisible());assert(!await page.evaluate(()=>QA.on));
- await page.reload();assert(await page.evaluate(()=>RoleGate.role==='creator'&&Admin.owner));
- await page.locator('#btnProfile').click();await page.locator('#choosePlayer').click();assert(!await page.evaluate(()=>Admin.owner));
- assert.deepEqual(errors,[]);console.log('OK : premier choix Admin/Joueur, code incorrect refusé, Joueur inchangé, ancien owner non contournant, code correct, droits Admin, espace Admin, QA désactivé, persistance et changement de profil sur mobile.');
-}finally{await browser.close();}
-})().catch(e=>{console.error(e);process.exitCode=1;});
+// Admin login asks only for a nickname and remembers it in this browser.
+const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=require('playwright');
+(async()=>{const browser=await chromium.launch({...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+try{const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+const html=fs.readFileSync(path.join(__dirname,'..','blocraft.html'),'utf8').replace('  initGL();','').replace('  initSelection();','').replace("  try { Fx.init(); } catch (e) { console.error('Fx', e); }",'').replace('  newWorld(null, false);','  Game.state="menu";showOverlay("menu");').replace('  requestAnimationFrame(frame);\n}','}');
+await page.route('**/blocraft.html',r=>r.fulfill({contentType:'text/html',body:html}));await page.goto(new URL('blocraft.html',process.env.SITE_URL||'http://127.0.0.1:8000/').href);
+assert(await page.locator('#profile').isVisible());await page.locator('#chooseCreator').click();assert.equal(await page.locator('#creatorPin').getAttribute('type'),'text');assert.equal(await page.locator('#profile input').count(),1);
+await page.locator('#creatorPin').fill('<script>');await page.locator('#creatorPinSubmit').click();assert(!await page.evaluate(()=>Admin.owner));assert((await page.locator('#profileError').textContent()).includes('pseudo'));
+await page.locator('#creatorPin').fill('Élo Admin');await page.locator('#creatorPinSubmit').click();assert(await page.locator('#realm').isVisible());assert.equal(await page.locator('#realmNickname').textContent(),'Élo Admin');assert(await page.evaluate(()=>Admin.isAdmin()&&Net.playerName==='Élo Admin'&&!QA.on));
+assert.equal(await page.locator('#realm button:visible').count(),2);assert.equal(await page.locator('#realm input').count(),0);await page.locator('#realmPlay').click();assert.equal(await page.locator('[data-realm-type]:visible').count(),3);assert.equal(await page.locator('#realm button:visible').count(),4);
+await page.reload();assert(await page.evaluate(()=>RoleGate.role==='creator'&&RoleGate.nickname==='Élo Admin'&&Admin.me==='Élo Admin'&&!QA.on));assert(!await page.locator('#profile').isVisible());await page.locator('#btnAdminRealm').click();assert.equal(await page.locator('#realmNickname').textContent(),'Élo Admin');
+await page.locator('#realmClose').click();await page.locator('#btnProfile').click();await page.locator('#chooseCreator').click();assert.equal(await page.locator('#creatorPin').inputValue(),'Élo Admin');await page.locator('#creatorPinBack').click();await page.locator('#choosePlayer').click();assert(!await page.evaluate(()=>Admin.owner));await page.reload();assert.equal(await page.evaluate(()=>RoleGate.role),'player');
+assert.deepEqual(errors,[]);console.log('OK : Admin avec pseudo uniquement, validation, stockage/rechargement du pseudo et du profil, QA temporaire, espace simplifié à 2 boutons puis 3 types, profil Joueur inchangé.');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
