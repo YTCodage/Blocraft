@@ -807,6 +807,7 @@
     display:flex;align-items:center;gap:10px;padding:10px 12px 8px;
     background:#b3b3b3;border-bottom:2px solid #8b8b8b;
   }
+  .mcDrop{font:inherit;font-size:11px;flex-shrink:0;padding:6px;border:2px solid #555;background:#c6c6c6;color:#222;min-height:40px;cursor:pointer}
   .mcTitle{
     font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#5c5c5c;
     margin-left:auto;margin-right:6px
@@ -1848,7 +1849,7 @@
       <header class="mcHead">
         <nav class="mcTabs" aria-label="Interfaces">
           <button class="mcTab active" data-tab="inv">Inventaire</button><button class="mcTab" data-tab="craft">Établi</button><button class="mcTab" data-tab="blocks">Créatif</button><button class="mcTab hidden" data-tab="chest" id="tabChestBtn">Coffre</button>
-        </nav><span id="invTitle" class="mcTitle">Inventaire</span><button id="btnInvClose" class="mcX" aria-label="Fermer">×</button>
+        </nav><button id="btnInvDrop" class="mcDrop" title="Sélectionne un objet puis jette-le au sol (G, Maj+G : pile)">Jeter ↓</button><span id="invTitle" class="mcTitle">Inventaire</span><button id="btnInvClose" class="mcX" aria-label="Fermer">×</button>
       </header>
       <div class="pixelLayout">
         <aside id="recipeBook" class="hidden" aria-label="Livre de recettes">
@@ -2163,7 +2164,7 @@ const TEXTURES = [
   /* --- créatures du Nether --- */
   'blaze', 'blaze_face', 'piglin', 'piglin_face',
   /* --- fêlures de minage (4 étapes) --- */
-  'crack0', 'crack1', 'crack2', 'crack3', 'player_skin', 'player_hair'
+  'crack0', 'crack1', 'crack2', 'crack3', 'player_skin', 'player_hair', 'herobrine_face', 'flame_fx', 'smoke_fx'
 ];
 const TEX = {};
 TEXTURES.forEach((n, i) => TEX[n] = i);
@@ -3486,7 +3487,7 @@ function generateTextureAtlas() {
     noisy('#8a8a8d', 10);
     g.fillStyle = '#2a2a2e'; g.fillRect(3, 5, 10, 8);
     g.fillStyle = '#4a4a4e'; g.fillRect(4, 6, 8, 6);
-    speck('#ff9a2a', 8, 1); speck('#ffd86a', 5, 1); speck('#111', 6, 1);
+    g.fillStyle='#17171c';g.fillRect(5,7,6,4);g.fillStyle='#b2b2b9';g.fillRect(2,3,12,1); // Fire is animated only while fuel burns.
   };
   drawers.furnace_side = function () { noisy('#8a8a8d', 10); speck('#6f6f74', 22, 2); };
   drawers.furnace_top = function () { noisy('#7b7b80', 9); speck('#5f5f64', 18, 2); };
@@ -3864,6 +3865,13 @@ function generateTextureAtlas() {
     g.fillRect(3, 0, 2, 16); g.fillRect(11, 0, 2, 16);
     if (name === 'powered_rail') { g.fillStyle = '#ee3322'; g.fillRect(7, 0, 2, 16); }
   };
+  drawers.herobrine_face = () => { drawers.player_face(); g.fillStyle='#fff';g.fillRect(3,6,3,2);g.fillRect(10,6,3,2); };
+  drawers.flame_fx = () => { g.clearRect(0,0,16,16);g.fillStyle='#ec6b16';g.fillRect(4,6,8,9);g.fillRect(6,2,3,7);g.fillStyle='#ffd34c';g.fillRect(6,8,5,7);g.fillStyle='#fff1a2';g.fillRect(7,11,2,4); };
+  drawers.smoke_fx = () => { g.clearRect(0,0,16,16);g.fillStyle='#777981aa';g.fillRect(3,5,10,7);g.fillRect(5,3,6,11); };
+  // Bevels on metal blocks remain part of the cached atlas, not per-frame filters.
+  for(const name of ['iron_block','gold_block','diamond_block','emerald_block']){
+    const old=drawers[name];if(!old)continue;drawers[name]=()=>{old();g.fillStyle='#ffffff66';g.fillRect(1,1,14,1);g.fillRect(1,2,1,12);g.fillStyle='#00000044';g.fillRect(2,14,13,1);g.fillRect(14,2,1,12);g.fillStyle='#ffffff33';g.fillRect(3,3,4,1);};
+  }
   TEXTURES.forEach((name, idx) => {
     g.save();
     g.translate(idx * S, 0);
@@ -4494,6 +4502,7 @@ uniform vec3 uFogColor;
 uniform float uFogStart;
 uniform float uFogEnd;
 uniform vec3 uSunTint;
+uniform vec4 uPointLights[4];
 uniform vec3 uSunDir;
 uniform float uUnderwater;
 in vec3 vUVL;
@@ -4507,6 +4516,13 @@ void main(){
   if (dot(normal, uCamPos - vWorld) < 0.0) normal = -normal;
   float sunlight = max(dot(normal, normalize(uSunDir)), 0.0);
   vec3 col = tex.rgb * vLight * uSunTint * (0.86 + 0.14 * sunlight);
+  float glow = 0.0;
+  for (int i=0;i<4;i++) {
+    float radius=uPointLights[i].w;
+    float falloff=max(0.0,1.0-distance(vWorld,uPointLights[i].xyz)/max(radius,0.01));
+    glow=max(glow,falloff*falloff*1.5);
+  }
+  col=max(col,tex.rgb*vec3(1.0,0.72,0.42)*glow);
   col = pow(max(col, vec3(0.0)), vec3(0.96));
   float dist = length(vWorld - uCamPos);
   col = mix(col, uFogColor, smoothstep(uFogStart, uFogEnd, dist));
@@ -4767,7 +4783,7 @@ function initGL() {
   window.GAME_ATLAS = atlasCanvas;
 
   progMesh = makeProgram(MESH_VS, MESH_FS);
-  um = uniforms(progMesh, ['uVP', 'uChunkOffset', 'uTex', 'uCamPos', 'uFogColor', 'uFogStart', 'uFogEnd', 'uSunTint', 'uSunDir', 'uUnderwater']);
+  um = uniforms(progMesh, ['uVP', 'uChunkOffset', 'uTex', 'uCamPos', 'uFogColor', 'uFogStart', 'uFogEnd', 'uSunTint', 'uPointLights[0]', 'uSunDir', 'uUnderwater']);
 
   progWater = makeProgram(WATER_VS, WATER_FS);
   uw = uniforms(progWater, ['uVP', 'uChunkOffset', 'uTex', 'uTime', 'uCamPos', 'uFogColor', 'uFogStart', 'uFogEnd', 'uSunTint', 'uUnderwater']);
@@ -5401,6 +5417,7 @@ class ChunkManager {
     if (lx === 15) this.markDirty(cx + 1, cz);
     if (lz === 0) this.markDirty(cx, cz - 1);
     if (lz === 15) this.markDirty(cx, cz + 1);
+    if(oldT!==t && typeof Herobrine!=='undefined')Herobrine.changed(this,x,y,z,t);
     return true;
   }
 
@@ -5416,6 +5433,7 @@ class ChunkManager {
     /* mode QA « X-ray » : on ne garde que les blocs intéressants */
     const XRAY = ((typeof QA !== 'undefined') && QA.on && QA.xray)
       || (typeof Vision !== 'undefined' && Vision.on);
+    chunk.lightSources = [];
     const solid = new GeoBuilder(8);
     const water = new GeoBuilder(6);
 
@@ -5484,6 +5502,7 @@ class ChunkManager {
           if (t === B.AIR) continue;
           if (XRAY && !xrayVisible(t)) continue;
           const def = BLOCKS[t];
+          if (t===B.TORCH || t===B.REDTORCH_ON) chunk.lightSources.push([ox+x+.5,y+.75,oz+z+.5,t===B.TORCH?9:5]);
 
           /* plantes croisées */
           if(def.rail){Railways.mesh(solid,x,y,z,cx*16+x,cz*16+z,this,lightAt(x,y,z));continue;}
@@ -6877,7 +6896,7 @@ function saveGame(opts) {
       inv: Game.inv.serialize(),
       stats: Survival.serialize(),
       armor: Armor.serialize(),
-      furnaces: Furnace.serialize(),
+      furnaces: Furnace.serialize(),herobrine:Herobrine.serialize(),
       xp: Xp.serialize(),
       oneblock:{count:OneBlock.count},drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
       slot: Game.slot,
@@ -7351,7 +7370,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     if (savedData.inv) Game.inv.deserialize(savedData.inv);
     MorphPowers.apply();Survival.deserialize(savedData.stats);
     Armor.deserialize(savedData.armor);
-    Furnace.deserialize(savedData.furnaces);
+    Furnace.deserialize(savedData.furnaces);Herobrine.load(savedData.herobrine);
     Drops.list=savedData.drops||[];Railways.load(savedData.carts);
     Xp.deserialize(savedData.xp);
   }
@@ -7795,6 +7814,7 @@ function renderScene(dt, view) {
   gl.uniform3f(um.uSunTint, sunTint[0], sunTint[1], sunTint[2]);
   gl.uniform3f(um.uSunDir, sun[0], sun[1], sun[2]);
   gl.uniform1f(um.uUnderwater, underwater ? 1 : 0);
+  gl.uniform4fv(um['uPointLights[0]'], WorldVfx.lights);
 
   const mgr = Game.manager;
   const planes = frustumPlanes(VP);
@@ -8559,6 +8579,7 @@ function frame(now) {
   const dt = Math.min((now - lastFrame) / 1000, 0.1);
   lastFrame = now;
   Furnace.tick(dt);
+  if(Game.manager && ['playing','inventory'].includes(Game.state)){WorldVfx.tick(dt);GroundItems.tick(dt);if(Game.state==='inventory')Fx.tick(dt);}
 
   // fps
   frames++; fpsTime += dt;
@@ -10705,6 +10726,7 @@ function drawItemIcon(id, size, skipOutline) {
     g.fillStyle = col; g.beginPath();
     pts.forEach((pt, i) => { if (i) g.lineTo(pt[0] * u, pt[1] * u); else g.moveTo(pt[0] * u, pt[1] * u); });
     g.closePath(); g.fill();
+    g.strokeStyle='#161c26';g.lineWidth=Math.max(.5,u*.5);g.lineJoin='miter';g.stroke();
   };
   /* outillage : une seule géométrie, déclinée par matière */
   const drawTool = (kind, pal) => {
@@ -10735,6 +10757,7 @@ function drawItemIcon(id, size, skipOutline) {
       poly([[2.7, 9.2], [6.0, 7.3], [7.6, 8.9], [4.3, 10.8]], '#7a5528');
       poly([[3.6, 11.4], [5.6, 10.0], [6.5, 11.2], [4.5, 12.6]], '#5e4020');
       poly([[2.2, 12.4], [4.0, 11.0], [4.8, 12.0], [3.0, 13.4]], '#3f2a14');
+      line(6.3,9.4,11.5,4.1,hi,.65);line(3.3,12.2,4.8,11.2,'#d6b268',.6);
       poly([[11.4, 2.6], [13.2, 4.4], [12.7, 4.9], [10.9, 3.1]], '#ffffffaa');
     }
   };
@@ -10803,6 +10826,10 @@ function drawItemIcon(id, size, skipOutline) {
       R(3.4, 11.4, 4, 2.2, dark); R(8.6, 11.4, 4, 2.2, dark);
       R(3.4, 8.4, 4, 1.2, mid); R(8.6, 8.4, 4, 1.2, mid);
     }
+    // Riveted edges, seams and specular pixels distinguish plate from flat silhouettes.
+    if(shape==='chest'){R(4.2,8.8,.7,3.4,dark);R(11.1,8.8,.7,3.4,dark);R(4.2,9.1,.6,.6,'#fff3cf');R(11.1,9.1,.6,.6,'#fff3cf');R(7.6,9.1,.7,2.4,mid);}
+    if(shape==='helm'){R(4.3,5.6,7.4,.6,'#ffffff99');R(7.7,6.2,.6,2.8,mid);}
+    if(shape==='legs'||shape==='boots'){R(4.1,9.3,2.4,.6,'#ffffff66');R(9.3,9.3,2.4,.6,'#ffffff66');}
   } else if(ic==='bow'){poly([[5,2],[9,4],[11,8],[9,12],[5,14],[7,11],[8,8],[7,5]],'#bb8043');poly([[5,2],[6,2],[6,14],[5,14]],'#ecdfbf');}else if(ic==='arrow'){poly([[3,13],[12,4],[13,5],[4,14]],'#b89253');poly([[10,2],[14,2],[14,6]],'#e3e7ec');poly([[2,10],[6,14],[2,14]],'#ededdf');}else if(ic==='boat'){poly([[1,7],[15,7],[12,13],[4,13]],'#a77943');R(4,6,8,3,'#57412a');}else if(ic==='dragon_heart'){poly([[8,14],[2,8],[2,4],[5,2],[8,5],[11,2],[14,4],[14,8]],'#b260ed');R(6,5,3,4,'#f8dfff');}else if(ic==='feather'){poly([[3,14],[5,5],[12,2],[14,4],[9,11]],'#ece9de');}else if(ic==='shard'){poly([[3,12],[5,4],[11,2],[13,9],[9,14]],'#626773');}else if (ic === 'flint') {
     R(3.4, 4.6, 5.4, 5.4, '#6e6e78'); R(4, 5.2, 4.2, 3.4, '#9a9aa6');
     R(9, 7.6, 3.6, 3.6, '#c9c9d4'); R(9.6, 8.2, 2.2, 2.2, '#efeff6');
@@ -11734,7 +11761,7 @@ function invClick(index, half, chestSlot) {
     if (!slot) return;
     if (half) {
       const take = Math.ceil(slot.n / 2);
-      cursorStack = { id: slot.id, n: take };
+      cursorStack = { ...slot, n: take };
       slot.n -= take;
       if (slot.n <= 0) inv.slots[index] = null;
     } else {
@@ -11976,11 +12003,12 @@ const Railways = {
   },
   create(t){const pair=this.path(t.x,t.y,t.z),d=typeof lookDir==='function'?lookDir():[1,0,0];const exit=pair.slice().sort((a,b)=>this.D[b][0]*d[0]+this.D[b][1]*d[2]-this.D[a][0]*d[0]-this.D[a][1]*d[2])[0],entry=pair.find(i=>i!==exit);const c={id:'cart'+(++this.serial),cell:[t.x,t.y,t.z],entry,exit,t:.5,pos:this.point(t.x,t.y,t.z,entry,exit,.5),dim:Game.manager.dim,speed:2,dir:1,driver:null};this.carts.push(c);return c;},
   use(t){
-    if(typeof Transport!=='undefined'&&Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.MINECART||this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.1));return relevant?Transport.request('cart',t):false;}
+    if(typeof Transport!=='undefined'&&Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.MINECART||this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&Math.abs(c.pos[1]-Player.pos[1])<2);return relevant?Transport.request('cart',t):false;}
     if(this.riding){this.exit();return true;}
     const held=heldItemId();
-    if(held===I.MINECART){if(!t||!this.rail(t.x,t.y,t.z)){HUD.toastText('Pose le wagonnet sur un rail.',2);return true;}if(this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7)){const c=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7);if(!c.mob&&!c.driver){this.riding=c;c.driver='player';HUD.toastText('Dans le wagonnet · X pour descendre.',2);}else HUD.toastText('Ce wagonnet est occupé.',2);return true;}this.create(t);if(Game.mode!=='creative')Game.inv.remove(I.MINECART,1);HUD.refreshAll();return true;}
-    const near=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.1));
+    const adjacent=this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(...c.pos.map((v,i)=>v-Player.pos[i]))<3);
+    if(held===I.MINECART&&(!adjacent||(t&&this.rail(t.x,t.y,t.z)))){if(!t||!this.rail(t.x,t.y,t.z)){HUD.toastText('Pose le wagonnet sur un rail.',2);return true;}if(this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7)){const c=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<.7);if(!c.mob&&!c.driver){this.riding=c;c.driver='player';HUD.toastText('Dans le wagonnet · X pour descendre.',2);}else HUD.toastText('Ce wagonnet est occupé.',2);return true;}this.create(t);if(Game.mode!=='creative')Game.inv.remove(I.MINECART,1);HUD.refreshAll();return true;}
+    const near=this.carts.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&Math.abs(c.pos[1]-Player.pos[1])<2);
     if(!near)return false;if(near.driver){HUD.toastText('Ce wagonnet est occupé.',2);return true;}if(near.mob){if(typeof Input!=='undefined'&&Input.down)this.release(near);else HUD.toastText('Un passager est installé. Accroupis-toi + utilise pour le faire descendre.',3);return true;}
     this.riding=near;near.driver='player';HUD.toastText('Dans le wagonnet · X ou Utiliser pour descendre.',3);return true;
   },
@@ -12044,14 +12072,21 @@ const Drops = {
     for (let i = this.list.length - 1; i >= 0; i--) {
       const d = this.list[i];
       if (d.dim && d.dim !== mgr.dim) continue;
+      if(d.shared && Net.live && Net.role==='guest'){d.yaw+=dt*d.spin;continue;}
       d.t += dt;
       if (d.t > 300 || d.pos[1] < -24) { this.list.splice(i, 1); continue; }
 
       /* --- physique : gravité, sol, rebond --- */
       d.vel[1] -= 21 * dt;
-      const nx = d.pos[0] + d.vel[0] * dt;
-      const ny = d.pos[1] + d.vel[1] * dt;
-      const nz = d.pos[2] + d.vel[2] * dt;
+      let nx = d.pos[0] + d.vel[0] * dt;
+      let ny = d.pos[1] + d.vel[1] * dt;
+      let nz = d.pos[2] + d.vel[2] * dt;
+      if(d.thrown){
+        const wall=(x,y,z)=>{const b=BLOCKS[mgr.getBlock(x,y,z)];return b&&b.solid&&!b.cross;};
+        if(wall(nx,d.pos[1],d.pos[2])){nx=d.pos[0];d.vel[0]*=-.2;}
+        if(wall(nx,d.pos[1],nz)){nz=d.pos[2];d.vel[2]*=-.2;}
+        if(d.vel[1]>0&&wall(nx,ny+.12,nz)){ny=d.pos[1];d.vel[1]=0;}
+      }
       const bx = Math.floor(nx), bz = Math.floor(nz);
       const gy = Math.floor(ny - 0.12);
       const below = mgr.getBlock(bx, gy, bz);
@@ -12077,7 +12112,7 @@ const Drops = {
       d.yaw += dt * d.spin;
 
       /* --- ramassage --- */
-      if (!canPick || d.t < (d.death ? 2 : 0.3)) continue;
+      if (!canPick || d.t < (d.thrown ? 1.5 : d.death ? 2 : 0.3)) continue;
       const px = Player.pos[0], py = Player.pos[1] + 0.8, pz = Player.pos[2];
       const dx = d.pos[0] - px, dy = d.pos[1] - py, dz = d.pos[2] - pz;
       const dist = Math.hypot(dx, dy, dz);
@@ -12092,7 +12127,7 @@ const Drops = {
           if (left > 0) { d.n = left; }
           else { this.list.splice(i, 1); continue; }
         }
-      } else if (dist < 5.5 && d.t > 0.6) {
+      } else if (!d.thrown && dist < 5.5 && d.t > 0.6) {
         /* aimanté vers le joueur, comme dans Minecraft */
         const k = (1 - dist / 5.5) * 7 * dt;
         d.pos[0] -= (dx / dist) * k;
@@ -12163,6 +12198,7 @@ const Drops = {
    CRÉATURES — modèles voxel, IA, combat, spawn
    ========================================================================= */
 const MOB_DEFS = {
+  herobrine: {name:'Herobrine',hp:80,dmg:6,speed:3.4,hostile:true,solarImmune:true,w:.62,h:1.9,skin:TEX.player,face:TEX.herobrine_face,model:'player',drops:[],xp:30},
   zombie: {
     name: 'Zombie', hp: 20, dmg: 3, speed: 2.5, hostile: true, undead: true, w: 0.62, h: 1.85,
     skin: TEX.zombie, face: TEX.zombie_face, model: 'humanoid',
@@ -12346,8 +12382,8 @@ const Mobs = {
       m.attackCd = Math.max(0, m.attackCd - dt);
 
       /* ---- morts-vivants : le soleil les brûle (sauf à l'ombre ou dans l'eau) ---- */
-      if (def.undead) {
-        const day = sunDirection(Game.time)[1] > 0.12;
+      if (def.hostile && !def.fire && !def.boss && !def.solarImmune) {
+        const day = !['nether','end'].includes(Game.manager.dim) && sunDirection(Game.time)[1] > 0.12;
         const exposed = day && this.skyExposed(m.pos) && !this.inWaterAt(m.pos);
         m.burning = exposed ? (m.burning || 0) + dt : 0;
         if (exposed) {
@@ -12363,7 +12399,7 @@ const Mobs = {
       const dist = Math.hypot(distXZ, dy);
 
       /* désabonnement si trop loin */
-      if (dist > 95) { this.list.splice(i, 1); continue; }
+      if (dist > 95) { if(m.type==='herobrine')continue;this.byId.delete(m.id);this.list.splice(i, 1); continue; }
 
       /* ---- comportement ---- */
       const aggro = def.aggro || 17;
@@ -12651,11 +12687,12 @@ const Mobs = {
     const hostiles = this.list.filter(m => m.def.hostile).length;
     const passives = this.list.filter(m => ['sheep','cow','pig','chicken'].includes(m.type)).length;
     const night = Game.time < 0.25 || Game.time > 0.75;
-    if (hostiles < 8 && (night || Math.random() < 0.35)) this.trySpawnHostile();
+    if (hostiles < 8 && night) this.trySpawnHostile();
     if (passives < 7 && !night) this.trySpawnPassive();
   },
 
   trySpawnHostile() {
+    if (Game.time >= .25 && Game.time <= .75) return;
     const p = this.huntPos();
     for (let attempt = 0; attempt < 8; attempt++) {
       const ang = Math.random() * Math.PI * 2;
@@ -12670,7 +12707,7 @@ const Mobs = {
         for (let k = h + 1; k <= h + 4; k++) if (BLOCKS[Game.manager.getBlock(x, k, z)].solid) { clear = false; break; }
         if (clear && BLOCKS[Game.manager.getBlock(x, h, z)].solid) y = h + 1;
       }
-      /* grottes, de jour comme de nuit */
+      /* grottes la nuit uniquement */
       if (y === null && Math.random() < 0.75) {
         for (let t = 0; t < 12; t++) {
           const cy = 12 + Math.floor(Math.random() * Math.max(8, h - 14));
@@ -12910,7 +12947,7 @@ const Mobs = {
       A(-0.375, 0.66 + sw2 * 0.05, -sw2 * 0.1, 0.19, 0.1, 0.19, TEX.glow);
       A(0.375, 0.66 + sw * 0.05, -sw * 0.1, 0.19, 0.1, 0.19, TEX.glow);
       /* tête */
-      A(0, 1.34, 0, 0.5, 0.5, 0.5, TEX.player_skin, TEX.player_face);
+      A(0, 1.34, 0, 0.5, 0.5, 0.5, TEX.player_skin, def.face || TEX.player_face);
       /* cheveux */
       A(0, 1.82, 0, 0.53, 0.12, 0.53, TEX.player_hair);
       A(0,1.42,-.24,.5,.35,.05,TEX.player_hair);
@@ -16717,7 +16754,7 @@ const RoomNames = {
    always retain the reliable transport's ordering. A slow peer cannot queue old poses forever. */
 const NetFlow={
   pending:new WeakMap(),highWater:128*1024,
-  key(m){if(m[0]==='machines'&&(Array.isArray(m[1]?.meta)||Array.isArray(m[1]?.levels)))return null;return ['p','m','machines','boat-input','t','cloud-peer'].includes(m[0])?m[0]+(m[0]==='cloud-peer'?':'+m[1]:''):null;},
+  key(m){if(m[0]==='machines'&&(Array.isArray(m[1]?.meta)||Array.isArray(m[1]?.levels)))return null;return ['p','m','machines','boat-input','t','cloud-peer','ground-state','world-fire'].includes(m[0])?m[0]+(m[0]==='cloud-peer'?':'+m[1]:''):null;},
   bytes(connection){return connection.dataChannel?.bufferedAmount||0;},
   send(connection,m,raw=JSON.stringify(m)){
     if(!connection.open)return;const key=this.key(m);let pending=this.pending.get(connection);if(m[0]==='machines'&&!key&&pending)pending.delete('machines');
@@ -17017,6 +17054,8 @@ var Net = {
           if(this.role==='guest'){EndVictory.load(m[1]);EndVictory.pending=true;Dragon.defeated=true;Dragon.active=null;$('bossBar').classList.add('hidden');setTimeout(()=>EndVictory.tick(),0);}
           break;
         case 'vehicle-use':Transport.applyUse(m);break;
+        case 'world-fire':if(this.role==='guest'&&Array.isArray(m[1]))WorldVfx.remoteFires=m[1].filter(k=>typeof k==='string'&&k.length<100).slice(0,400);break;
+        case 'ground-throw':case 'ground-pick':case 'ground-state':case 'ground-grant':GroundItems.receive(m);break;
         case 'machines':Transport.receive(m[1]);break;
         case 'vehicle-consumed':if(this.role==='guest'&&Game.mode!=='creative'&&[I.MINECART,I.BOAT].includes(m[1])){Game.inv.remove(m[1],1);HUD.refreshAll();}break;
         case 'boat-input':if(this.role==='host'){const control={f:m[1]?1:0,b:m[2]?1:0};if(AdminCloud.active)AdminCloud.controls.set(AdminCloud.sender,control);else Transport.remoteBoat=control;}break;
@@ -17344,11 +17383,11 @@ const Fx = {
       const p = this.list[i];
       p.life -= dt;
       if (p.life <= 0) { this.list.splice(i, 1); continue; }
-      p.vy -= 17 * dt;
+      p.vy -= (p.effect ? -.15 : 17) * dt;
       const nx = p.x + p.vx * dt, ny = p.y + p.vy * dt, nz = p.z + p.vz * dt;
       if (mgr) {
         const bt = mgr.getBlock(nx, ny, nz);
-        if (bt !== B.AIR && BLOCKS[bt] && BLOCKS[bt].solid) {
+        if (!p.effect && bt !== B.AIR && BLOCKS[bt] && BLOCKS[bt].solid) {
           /* on rebondit sur le sol et on s'arrête sur les murs */
           p.vy = Math.abs(p.vy) * 0.22;
           p.vx *= 0.55; p.vz *= 0.55;
@@ -18303,7 +18342,7 @@ const AdminCloud={
       const name=m[1].trim();if(name===Admin.me||[...this.records.values()].some(r=>r.name===name)){this.send(['cloud-error','Ce pseudo est déjà présent dans ce monde. Choisis un autre pseudo.'],id,true);return;}
       peer.admitted=true;this.records.set(id,{id,name,x:Player.pos[0],y:Player.pos[1],z:Player.pos[2],yaw:0,dim:Dimensions.current});if(!Admin.admins.includes(name))Admin.admins.push(name);this.welcome(id);return;
     }
-    if(!peer.admitted||!['p','r','b','k','S','sleep','bow-shot','qa-kill','circuit-meta','vehicle-use','boat-input','ignite-tnt','chat','player-death','morph-power','g','oneblock-break'].includes(m[0]))return;
+    if(!peer.admitted||!['p','r','b','k','S','sleep','bow-shot','qa-kill','circuit-meta','vehicle-use','boat-input','ignite-tnt','chat','player-death','morph-power','g','oneblock-break','ground-throw','ground-pick'].includes(m[0]))return;
     if(m[0]==='p'){if(!this.position(id,m))return;this.send(['cloud-peer',id,m],null,false,id);return;}
     if(m[0]==='oneblock-break'){const r=this.records.get(id),s=OneBlock.SPAWN;if(Game.manager.dim!=='oneblock'||!r||Math.hypot(r.x-s[0],r.y-s[1],r.z-s[2])>8||m[1]!==Game.manager.getBlock(...s))return;const loot=Game.mode==='survival'?blockDrops(m[1]):[];OneBlock.onBreak({x:s[0],y:s[1],z:s[2]});this.send(['cloud-core-done',loot],id);return;}
     const old=Net.remote;this.sender=id;Net.remote=this.records.get(id);
@@ -18421,6 +18460,132 @@ const EndVictory={
   tick(){if(!this.pending||Cinematics.active||!['playing','paused','inventory'].includes(Game.state))return;this.pending=false;Admin.closeBar();if(Game.state==='inventory')closeInventory();hideOverlays();Game.state='playing';Cinematics.play('ending').then(()=>{this.seen=true;saveGame({silent:true});this.show();});},
   show(){if(!this.won||Game.state==='dead')return;Game.state='paused';showOverlay('victory');$('victoryLocation').textContent='Coffre de victoire · '+Coordinates.xyz(...this.reward.pos);try{document.exitPointerLock();}catch(e){}},
   returnHome(){if(Game.state==='inventory')closeInventory();hideOverlays();Game.state='playing';const dim=Game.homeDim==='flat'?'flat':'overworld',p=Dimensions.pos[dim]||Game.spawn;Dimensions.go(dim,{x:p[0],y:p[1]+.2,z:p[2]});},
+};
+
+/* Inventory throws reuse physical drops; only the host owns shared item claims.
+   Inventories retain the game's existing client ownership, not an anti-cheat ledger. */
+const GroundItems = {
+  timer:0,serial:0,lastState:'',
+  stack(s){if(!s||!Number.isInteger(s.id)||!(BLOCKS[s.id]||ITEMS[s.id])||!Number.isInteger(s.n)||s.n<1)return null;return {id:s.id,n:Math.min(s.n,itemStackSize(s.id)),...(Number.isFinite(s.d)&&s.d>=0?{d:s.d}:{})};},
+  spawn(stack,pos,dir,dim){
+    const s=this.stack(stack);if(!s||Drops.list.length>=Drops.MAX)return false;
+    const len=Math.hypot(...dir)||1,d=dir.map(v=>v/len);
+    Drops.add(s.id,s.n,pos[0],pos[1]+1.1,pos[2],d[0]*3,2+d[1]*1.5,d[2]*3);
+    Object.assign(Drops.list[Drops.list.length-1],s,{thrown:true,shared:true,uid:'drop-'+Date.now().toString(36)+'-'+(++this.serial),dim});return true;
+  },
+  toss(all=false,cursor=false){
+    if(!Game.manager||!Game.inv||Survival.dead)return false;
+    const slot=cursor?cursorStack:Game.inv.slots[Game.slot],s=this.stack(slot);if(!s)return false;
+    s.n=slot.inf?1:all?s.n:1;
+    if(Drops.list.length>=Drops.MAX){HUD.toastText('Trop d’objets au sol : ramasse-en quelques-uns.',2);return false;}
+    if(Net.live&&Net.role==='guest')Net.send(['ground-throw',s,lookDir()]);
+    else if(!this.spawn(s,Player.pos,lookDir(),Game.manager.dim))return false;
+    if(slot.inf){if(cursor)cursorStack=null;}else{slot.n-=s.n;if(slot.n<=0){if(cursor)cursorStack=null;else Game.inv.slots[Game.slot]=null;}}
+    renderCursor();buildInventoryUI();HUD.refreshAll();return true;
+  },
+  grant(s){const before=new Set(Game.inv.slots.filter(Boolean)),left=Game.inv.add(s.id,s.n);if(s.d!==undefined)for(const slot of Game.inv.slots)if(slot&&slot.id===s.id&&!before.has(slot)){slot.d=s.d;break;}HUD.refreshAll();if(left){if(Net.live&&Net.role==='guest')Net.send(['ground-throw',{...s,n:left},[0,0,0]]);else this.spawn({...s,n:left},Player.pos,[0,0,0],Game.manager.dim);}},
+  receive(m){
+    if(Net.role==='host'){
+      const r=Net.remote;if(!r||r.dim&&r.dim!==Game.manager.dim)return;
+      if(m[0]==='ground-throw'){
+        const dir=m[2];if(!Array.isArray(dir)||dir.length!==3||!dir.every(Number.isFinite))return;
+        const s=this.stack(m[1]);if(s&&!this.spawn(s,[r.x,r.y,r.z],dir,r.dim||Game.manager.dim))Net.send(['ground-grant',s],AdminCloud.active?AdminCloud.sender:null);
+      }else if(m[0]==='ground-pick'){
+        const d=Drops.list.find(d=>d.shared&&d.uid===m[1]);
+        if(!d||d.dim!==Game.manager.dim||d.t<1.5||Math.hypot(d.pos[0]-r.x,d.pos[1]-r.y-.8,d.pos[2]-r.z)>2.3)return;
+        Drops.list.splice(Drops.list.indexOf(d),1);
+        Net.send(['ground-grant',this.stack(d)],AdminCloud.active?AdminCloud.sender:null);
+      }
+    }else if(Net.role==='guest'){
+      if(m[0]==='ground-state'&&Array.isArray(m[1])){
+        const old=new Map(Drops.list.filter(d=>d.shared).map(d=>[d.uid,d]));
+        const list=m[1].filter(d=>this.stack(d)&&Array.isArray(d.pos)&&d.pos.length===3&&d.pos.every(Number.isFinite)).slice(0,Drops.MAX);
+        Drops.list=Drops.list.filter(d=>!d.shared).concat(list.map(d=>({...d,vel:[0,0,0],spin:2,bob:0,yaw:(old.get(d.uid)||{}).yaw||0}))).slice(-Drops.MAX);
+      }else if(m[0]==='ground-grant'){const s=this.stack(m[1]);if(s)this.grant(s);}
+    }
+  },
+  tick(dt){
+    this.timer+=dt;if(this.timer<.2||!Net.live)return;this.timer=0;
+    if(Net.role==='host'){
+      const data=Drops.list.filter(d=>d.shared).map(d=>({id:d.id,n:d.n,d:d.d,uid:d.uid,dim:d.dim,pos:d.pos.map(v=>Math.round(v*100)/100),t:Math.round(d.t*5)/5,thrown:true,shared:true}));
+      // Age only matters for pickup delay; grounded snapshots stop sending afterwards.
+      const sig=JSON.stringify(data.map(d=>({...d,t:Math.min(d.t,1.6)})));
+      if(sig!==this.lastState||performance.now()>(this.heartbeat||0)){Net.send(['ground-state',data]);this.lastState=sig;this.heartbeat=performance.now()+1500;}
+    }else if(Game.state==='playing'&&!Survival.dead){
+      for(const d of Drops.list)if(d.shared&&d.dim===Game.manager.dim&&d.t>=1.5&&Math.hypot(d.pos[0]-Player.pos[0],d.pos[1]-Player.pos[1]-.8,d.pos[2]-Player.pos[2])<1.9){
+        const room=Game.inv.slots.reduce((n,s)=>n+(!s?itemStackSize(d.id):s.id===d.id?Math.max(0,itemStackSize(d.id)-s.n):0),0);
+        // Claim only when the entire stack fits; a host removes each uid at most once.
+        if(room>=d.n)Net.send(['ground-pick',d.uid]);
+      }
+    }
+  }
+};
+
+const Herobrine = {
+  busy:false,
+  serialize(){return Mobs.list.filter(m=>m.type==='herobrine'&&m.hp>0).map(m=>({pos:m.pos.slice(),hp:m.hp}));},
+  load(list){for(const m of Array.isArray(list)?list.slice(0,16):[])if(Array.isArray(m.pos)&&m.pos.length===3&&m.pos.every(Number.isFinite)&&m.hp>0){const mob=Mobs.add('herobrine',...m.pos);mob.hp=Math.min(80,m.hp);}},
+  changed(mgr,x,y,z,t){
+    if(this.busy||['nether','end'].includes(mgr.dim)||(Net.live&&Net.role==='guest')||![B.GOLD_BLOCK,B.STONE,B.REDTORCH_ON,B.REDTORCH_OFF].includes(t))return;
+    // Finish after a guest block packet has been applied/relayed, so the consumed
+    // stone is a later reliable edit rather than being overwritten by that packet.
+    if(Net.applying){queueMicrotask(()=>{if(Game.manager===mgr)this.changed(mgr,x,y,z,t);});return;}
+    // A component can belong to any of the nine base cells, on either level.
+    for(let cy=y-1;cy<=y;cy++)for(let cx=x-1;cx<=x+1;cx++)for(let cz=z-1;cz<=z+1;cz++){
+      if(mgr.getBlock(cx,cy+1,cz)!==B.STONE)continue;
+      let valid=true;
+      for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){
+        if(mgr.getBlock(cx+dx,cy,cz+dz)!==B.GOLD_BLOCK)valid=false;
+        if(Math.abs(dx)===1&&Math.abs(dz)===1&&![B.REDTORCH_ON,B.REDTORCH_OFF].includes(mgr.getBlock(cx+dx,cy+1,cz+dz)))valid=false;
+      }
+      if(!valid||mgr.getBlock(cx,cy+2,cz)!==B.AIR||mgr.getBlock(cx,cy+3,cz)!==B.AIR)continue;
+      this.busy=true;
+      try{mgr.setBlock(cx,cy+1,cz,B.AIR,true);Mobs.add('herobrine',cx+.5,cy+1,cz+.5);Flash.trigger(.7);HUD.toastText('Herobrine a été invoqué…',4);Sfx.explosion(.3,.7);}finally{this.busy=false;}
+      return true;
+    }
+    return false;
+  }
+};
+
+/* Four point lights, source collection piggybacked on chunk meshing; no world
+   scans each frame. Effects are cosmetic and never sent over the network. */
+const WorldVfx = {
+  timer:0,lights:new Float32Array(16),remoteFires:[],fireSignature:null,fireAt:0,
+  particle(pos,tile,smoke=false){
+    if(Fx.list.length>=Math.min(Fx.max,isTouch?100:220))return;
+    const life=smoke?1.2:.45;
+    Fx.list.push({x:pos[0]+(Math.random()-.5)*.2,y:pos[1],z:pos[2]+(Math.random()-.5)*.2,vx:0,vy:smoke?.6:.45,vz:0,life,max:life,size:smoke?.23:.22,tile,effect:true});
+  },
+  tick(dt){
+    this.timer+=dt;if(this.timer<.2)return;this.timer=0;
+    const mgr=Game.manager;if(!mgr)return;
+    const sources=[];
+    for(const c of mgr.chunks.values())for(const p of c.lightSources||[])if(Math.hypot(p[0]-Player.pos[0],p[1]-Player.pos[1]-1,p[2]-Player.pos[2])<14)sources.push(p);
+    let fires=0;
+    const active=new Map([...Furnace.stations].filter(([key,state])=>state.burn>0));
+    if(Net.live&&Net.role==='host'){
+      const data=[...active.keys()],sig=JSON.stringify(data);
+      if(sig!==this.fireSignature||performance.now()>this.fireAt){Net.send(['world-fire',data]);this.fireSignature=sig;this.fireAt=performance.now()+1500;}
+    }else if(Net.live&&Net.role==='guest')for(const key of this.remoteFires)if(!active.has(key))active.set(key,{burn:1});
+    for(const [key,state]of active){
+      if(state.burn<=0)continue;
+      const [dim,xs,ys,zs]=key.split('|'),x=+xs,y=+ys,z=+zs;
+      if(dim!==mgr.dim||Math.hypot(x-Player.pos[0],y-Player.pos[1],z-Player.pos[2])>20||mgr.getBlock(x,y,z)!==B.FURNACE)continue;
+      if(++fires> (isTouch?4:8))break;
+      sources.push([x+.5,y+.5,z+.5,6]);
+      this.particle([x+.5,y+1.1,z+.5],TEX.smoke_fx,true);
+      // All four faces: furnaces currently do not persist a facing direction.
+      for(const [dx,dz]of [[-.52,0],[.52,0],[0,-.52],[0,.52]])this.particle([x+.5+dx,y+.35,z+.5+dz],TEX.flame_fx);
+    }
+    sources.sort((a,b)=>Math.hypot(a[0]-Player.pos[0],a[1]-Player.pos[1],a[2]-Player.pos[2])-Math.hypot(b[0]-Player.pos[0],b[1]-Player.pos[1],b[2]-Player.pos[2]));
+    this.lights.fill(0);sources.slice(0,4).forEach((p,i)=>this.lights.set(p,i*4));
+    let burning=0;
+    for(const m of Mobs.list){
+      const def=m.def;
+      const exposed=def.hostile&&!def.fire&&!def.boss&&!def.solarImmune&&!['nether','end'].includes(mgr.dim)&&sunDirection(Game.time)[1]>.12&&Math.hypot(m.pos[0]-Player.pos[0],m.pos[2]-Player.pos[2])<24&&Mobs.skyExposed(m.pos)&&!Mobs.inWaterAt(m.pos);
+      if(exposed&&++burning<=(isTouch?6:12))for(const dx of [-.2,.2])this.particle([m.pos[0]+dx,m.pos[1]+.3+Math.random()*.7,m.pos[2]],TEX.flame_fx);
+    }
+  }
 };
 
 /* The host owns vehicle movement and mob seats. Guests request use and send boat controls. */
@@ -18803,10 +18968,11 @@ function boot() {
     el.style.left = e.clientX + 'px';
     el.style.top = e.clientY + 'px';
   });
+  $('btnInvDrop').addEventListener('click',()=>GroundItems.toss(true,!!cursorStack));
+  window.addEventListener('keydown',e=>{if(e.code==='KeyG'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!/INPUT|TEXTAREA/.test(e.target.tagName)&&['playing','inventory'].includes(Game.state)&&!Admin.barOpen()){e.preventDefault();GroundItems.toss(e.shiftKey,!!cursorStack);}});
   $('inventory').addEventListener('mousedown', (e) => {
     if (e.target === $('inventory')) {
-      // clic à côté : on jette l'objet porté dans le sac
-      if (cursorStack) { Game.inv.add(cursorStack.id, cursorStack.n); cursorStack = null; HUD.refreshAll(); }
+      if (cursorStack) GroundItems.toss(true,true);
     }
   });
 

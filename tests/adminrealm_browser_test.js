@@ -30,6 +30,20 @@ const {spawn}=require('child_process'),{chromium}=require('playwright'),fs=requi
  await a.locator('#realmPlay').click();await a.locator('[data-realm-type="flat"]').click();await a.waitForFunction(()=>AdminCloud.ready&&Net.role==='guest',null,{timeout:20000});
  assert(await a.evaluate(()=>loadedWorld.options.adminRealm&&loadedWorld.options.adminRealmType==='flat'&&loadedWorld.options.edits.some(e=>e[0]===2)&&Admin.isAdmin()));
  await b.evaluate(()=>AdminRealm.connect('flat'));await b.waitForFunction(()=>AdminCloud.ready&&Net.role==='guest',null,{timeout:20000});assert.equal(await host.evaluate(()=>AdminCloud.records.size),2);assert.equal(await a.evaluate(()=>starts),1,'joining a third Admin must not reload the first guest');
+ // Shared inventory throws travel over real WebRTC, with one targeted winner.
+ await a.evaluate(()=>{Game.inv.slots[4]={id:I.DIAMOND_SWORD,n:1,d:17};Game.slot=4;GroundItems.toss(true);Game.slot=0;});
+ await host.waitForFunction(()=>Drops.list.some(d=>d.shared&&d.d===17));
+ await host.evaluate(()=>{const d=Drops.list.find(d=>d.shared);d.t=2;d.pos=[.5,61.8,.5];GroundItems.tick(.3);});
+ await b.waitForFunction(()=>Drops.list.some(d=>d.shared&&d.d===17));
+ await b.evaluate(()=>{const d=Drops.list.find(d=>d.shared);Net.send(['ground-pick',d.uid]);Net.send(['ground-pick',d.uid]);});
+ await b.waitForFunction(()=>Game.inv.slots.some(s=>s&&s.id===I.DIAMOND_SWORD&&s.d===17));
+ assert.equal(await b.evaluate(()=>Game.inv.count(I.DIAMOND_SWORD)),1);assert.equal(await a.evaluate(()=>Game.inv.count(I.DIAMOND_SWORD)),0);
+ await host.evaluate(()=>GroundItems.tick(.3));await b.waitForFunction(()=>!Drops.list.some(d=>d.shared));
+ // Cosmetic furnace activity follows the host without sending individual particles.
+ await host.evaluate(()=>{Game.manager.setBlock(0,61,0,B.FURNACE,true);Furnace.stations.set('flat|0|61|0',{burn:3,slots:[null,null,null]});WorldVfx.tick(.3);});
+ await b.waitForFunction(()=>WorldVfx.remoteFires.includes('flat|0|61|0'));
+ await host.evaluate(()=>{Furnace.stations.get('flat|0|61|0').burn=0;WorldVfx.tick(.3);});
+ await b.waitForFunction(()=>WorldVfx.remoteFires.length===0);
  // Both guests appear to each other and have unique vehicle ownership/targeted deductions.
  await a.evaluate(()=>Net.send(['p',1,61,3,0,0,20,Admin.me,'flat',null,false]));await b.evaluate(()=>Net.send(['p',4,61,5,0,0,20,Admin.me,'flat',null,false]));await b.waitForFunction(()=>[...AdminCloud.records.values()].some(r=>r.name==='Admin A'&&r.x===1));await a.waitForFunction(()=>[...AdminCloud.records.values()].some(r=>r.name==='Admin B'&&r.x===4));
  // Rendering interpolation does not alter authoritative coordinates, and tag nodes are reused.

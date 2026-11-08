@@ -17,7 +17,8 @@
     "test:mechanics": "node tests/mechanics_browser_test.js",
     "build:cloud": "esbuild src/firebase-cloud.js --bundle --format=iife --global-name=BlocraftCloud --minify --outfile=assets/vendor/blocraft-cloud.min.js",
     "test:cloud": "node tests/cloud_store_test.js",
-    "test:performance": "node tests/performance_test.js"
+    "test:performance": "node tests/performance_test.js",
+    "test:world-features": "node tests/world_features_browser_test.js"
   },
   "devDependencies": {
     "esbuild": "^0.25.12",
