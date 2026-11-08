@@ -7570,31 +7570,25 @@ function prepareSpawnPad(manager, x, z) {
 /* SETTINGS.dist = 0 → portée « infinie » : plus de brouillard, le rayon de
    chargement grandit tant que la machine suit, et se recale si ça rame. */
 const View = {
-  radius: 10,
-  min: 8,
-  max: 18,
-  growAt: 0,
-  /* résolution de rendu : baissée automatiquement sur mobile si ça rame */
-  dprCap: (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) ? 1.25 : 2,
-
-  get infinite() { return !(SETTINGS.dist > 0); },
-  get draw() { return this.infinite ? this.radius : SETTINGS.dist; },
-
-  /* appelé une fois par demi-seconde environ, avec le framerate mesuré */
-  adapt(fps) {
-    /* téléphone : on privilégie la fluidité, la résolution s'adapte toute seule */
-    if (isTouch) {
-      if (fps > 0 && fps < 26 && this.dprCap > 0.85) this.dprCap = Math.max(0.85, +(this.dprCap - 0.2).toFixed(2));
-      else if (fps > 52 && this.dprCap < 1.6) this.dprCap = Math.min(1.6, +(this.dprCap + 0.1).toFixed(2));
+  radius:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?4:10,
+  min:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?3:8,
+  max:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?8:18,
+  growAt:0,slowSamples:0,fastSamples:0,
+  dprCap:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?1:2,
+  get infinite(){return !(SETTINGS.dist>0);},
+  get draw(){const requested=this.infinite?this.radius:SETTINGS.dist;return isTouch?Math.min(requested,this.radius):requested;},
+  adapt(fps){
+    if(!(fps>0))return;const now=performance.now();
+    this.slowSamples=fps<38?this.slowSamples+1:0;this.fastSamples=fps>55?this.fastSamples+1:0;
+    if(isTouch){
+      if(this.slowSamples>=2){this.dprCap=Math.max(.75,+(this.dprCap-.1).toFixed(2));this.radius=Math.max(this.min,this.radius-1);this.growAt=now+6000;this.slowSamples=0;}
+      else if(this.fastSamples>=12&&now>=this.growAt){if(this.dprCap<1.25)this.dprCap=Math.min(1.25,+(this.dprCap+.05).toFixed(2));else if(this.infinite||this.radius<SETTINGS.dist)this.radius=Math.min(this.max,this.radius+1);this.growAt=now+6000;this.fastSamples=0;}
+      return;
     }
-    if (!this.infinite) return;
-    const now = performance.now();
-    if (fps < 26) { this.radius = Math.max(this.min, this.radius - 2); this.growAt = now + 2500; return; }
-    if (fps < 40) { this.growAt = now + 1800; return; }
-    if (this.radius < this.max && now >= this.growAt) {
-      this.radius += 1;
-      this.growAt = now + 1400;
-    }
+    if(!this.infinite)return;
+    if(fps<26){this.radius=Math.max(this.min,this.radius-2);this.growAt=now+2500;return;}
+    if(fps<40){this.growAt=now+1800;return;}
+    if(this.radius<this.max&&now>=this.growAt){this.radius++;this.growAt=now+1400;}
   },
 };
 
@@ -7604,43 +7598,35 @@ function streamChunks(budgetGen, budgetMesh) {
   const R = View.draw + 1;
   let t0 = performance.now();
 
-  /* ---- 1) MAILLAGE D'ABORD : un chunk sans maillage = un trou dans le monde.
-     On y consacre un budget plus large quand la file s'allonge (déplacement rapide). */
-  const backlog = mgr.meshQueue.size;
-  const meshBudget = backlog > 30 ? Math.max(budgetMesh, 11) : (backlog > 10 ? Math.max(budgetMesh, 7) : budgetMesh);
-  if (backlog) {
-    t0 = performance.now();
-    const entries = [...mgr.meshQueue.keys()].map((k) => {
-      const [a, b] = k.split(',').map(Number);
-      return { k, d: (a - pcx) * (a - pcx) + (b - pcz) * (b - pcz) };
-    }).sort((x, y) => x.d - y.d);
-    for (const e of entries) {
-      if (performance.now() - t0 > meshBudget) break;
-      const c = mgr.chunks.get(e.k);
-      if (c) mgr.buildMesh(c);
-      mgr.meshQueue.delete(e.k);
-    }
+  /* Mesh nearby chunks first, with a bounded number of jobs even under backlog. */
+  const backlog=mgr.meshQueue.size;
+  const meshBudget=isTouch?Math.min(budgetMesh,2.5):(backlog>30?Math.max(budgetMesh,8):budgetMesh);
+  t0=performance.now();let jobs=0;
+  while(mgr.meshQueue.size&&jobs<(isTouch?1:3)&&performance.now()-t0<meshBudget){
+    let nearest=null,best=Infinity;
+    for(const k of mgr.meshQueue.keys()){const c=mgr.chunks.get(k);if(!c){mgr.meshQueue.delete(k);continue;}const d=(c.cx-pcx)**2+(c.cz-pcz)**2;if(d<best){best=d;nearest=k;}}
+    if(nearest===null)break;mgr.buildMesh(mgr.chunks.get(nearest));mgr.meshQueue.delete(nearest);jobs++;
   }
 
   /* ---- 2) génération : on ralentit si le maillage a du retard ---- */
   if (mgr.meshQueue.size < 26) {
-    const genBudget = mgr.meshQueue.size > 10 ? budgetGen * 0.5 : budgetGen;
+    const genBudget=Math.min(isTouch?1.5:budgetGen,mgr.meshQueue.size>10?budgetGen*.5:budgetGen);let generated=0;
     t0 = performance.now();
-    for (let r = 0; r <= R; r++) {
+    generation:for (let r = 0; r <= R; r++) {
       if (performance.now() - t0 > genBudget) break;
       for (let dz = -r; dz <= r; dz++) {
         for (let dx = -r; dx <= r; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
           const cx = pcx + dx, cz = pcz + dz;
           if (!mgr.hasChunk(cx, cz)) {
-            mgr.ensureChunk(cx, cz);
-            /* le chunk qui vient d'apparaître est maillé tout de suite
-               s'il est tout près : jamais de trou sous les pieds */
-            if (Math.max(Math.abs(dx), Math.abs(dz)) <= 2) {
+            mgr.ensureChunk(cx, cz);generated++;
+            /* Desktop can mesh a nearby chunk immediately; mobile leaves it for the next frame. */
+            if (!isTouch&&Math.max(Math.abs(dx), Math.abs(dz)) <= 2) {
               const c = mgr.getChunk(cx, cz);
               if (c) { mgr.buildMesh(c); mgr.meshQueue.delete(cx + ',' + cz); }
             }
-            if (performance.now() - t0 > genBudget) break;
+            if(isTouch&&generated>=1)break generation;
+            if(performance.now()-t0>genBudget)break generation;
           }
         }
       }
@@ -7648,6 +7634,8 @@ function streamChunks(budgetGen, budgetMesh) {
   }
 
   // déchargement des chunks trop lointains
+  const pruneKey=pcx+','+pcz+','+View.draw,pruneNow=performance.now();
+  if(mgr._pruneKey===pruneKey&&pruneNow-(mgr._pruneAt||0)<250)return;mgr._pruneKey=pruneKey;mgr._pruneAt=pruneNow;
   const limit = (View.draw + 4) * (View.draw + 4);
   for (const [k, c] of mgr.chunks) {
     const dx = c.cx - pcx, dz = c.cz - pcz;
@@ -8547,8 +8535,8 @@ function tick(dt) {
   if (nPlayers > 1) Players.with(1, () => HUD.drawStats('statsCanvas2'));
 
   // budgets adaptatifs : on réduit le travail de streaming si le framerate est bas
-  const budgetGen = fpsAvg > 50 ? 4 : (fpsAvg > 30 ? 3 : 1.8);
-  const budgetMesh = fpsAvg > 50 ? 6 : (fpsAvg > 30 ? 4 : 2.2);
+  const budgetGen=isTouch?1.5:fpsAvg>50?4:fpsAvg>30?3:1.8;
+  const budgetMesh=isTouch?2.5:fpsAvg>50?6:fpsAvg>30?4:2.2;
   streamChunks(budgetGen, budgetMesh);
 }
 
@@ -9476,9 +9464,8 @@ const Mobile = {
 
   applyDefaults() {
     if (!isTouch) return;
-    /* 1,25 px par point suffit très largement sur un écran de téléphone :
-       l'image reste nette et on gagne ~50 % de pixels à dessiner */
-    View.dprCap = 1.25;
+    /* Start at one rendered pixel per CSS point; adapt gradually under load. */
+    View.dprCap=1;
     /* machine modeste : on part en portée basse, l'utilisateur peut remonter */
     if (localStorage.getItem('blocraft.dist') === null) {
       SETTINGS.dist = 4;
@@ -12007,7 +11994,7 @@ const Railways = {
     }
   },
   update(dt){
-    if(typeof Net!=='undefined'&&Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.3,this.riding.pos[2]];Player.vel=[0,0,0];}return;}
+    if(typeof Net!=='undefined'&&Net.live&&Net.role==='guest'){for(const c of this.carts)Transport.visual(c,dt);if(this.riding){const p=this.riding.visualPos;Player.pos=[p[0],p[1]+.3,p[2]];Player.vel=[0,0,0];}return;}
     for(const c of this.carts){if(c.dim!==Game.manager.dim)continue;
       if(!c.cell){const x=Math.floor(c.pos[0]),y=Math.floor(c.pos[1]),z=Math.floor(c.pos[2]),pair=this.path(x,y,z);c.cell=[x,y,z];c.entry=pair[0];c.exit=pair[1];c.t=.5;c.id=c.id||'cart'+(++this.serial);}
       let [x,y,z]=c.cell,rail=this.rail(x,y,z);if(!rail){c.speed=0;this.release(c);if(this.riding===c)this.exit();if(c.driver&&c.driver!=='player')c.driver=null;continue;}
@@ -12021,9 +12008,9 @@ const Railways = {
     }
     if(typeof Mobs!=='undefined')this.push(dt);
   },
-  visuals(){return this.carts.flatMap(c=>[[0,0,0,3,.35,3],[-.4,.1,0,.35,1.5,3],[.4,.1,0,.35,1.5,3],[0,.1,-.4,3,1.5,.35],[0,.1,.4,3,1.5,.35]].map(([x,y,z,w,h,d])=>({id:B.IRON_BLOCK,pos:[c.pos[0]+x,c.pos[1]+y,c.pos[2]+z],yaw:c.yaw||0,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
-  serialize(){return this.carts.map(c=>({...c,driver:null,mob:null,passenger:c.mob&&Mobs.byId.has(c.mob)?{type:Mobs.byId.get(c.mob).type,hp:Mobs.byId.get(c.mob).hp}:null}));},
-  load(list){this.riding=null;this.carts=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100):[];this.serial=this.carts.length;for(const c of this.carts){c.id='cart'+(++this.serial);c.driver=null;c.mob=null;if(c.passenger&&MOB_DEFS[c.passenger.type]&&!MOB_DEFS[c.passenger.type].boss){const m=Mobs.add(c.passenger.type,...c.pos);if(m){m.hp=Math.min(m.hp,c.passenger.hp||m.hp);m.vehicle=c.id;c.mob=m.id;}}}},
+  visuals(){return this.carts.flatMap(c=>[[0,0,0,3,.35,3],[-.4,.1,0,.35,1.5,3],[.4,.1,0,.35,1.5,3],[0,.1,-.4,3,1.5,.35],[0,.1,.4,3,1.5,.35]].map(([x,y,z,w,h,d])=>({id:B.IRON_BLOCK,pos:[(c.visualPos||c.pos)[0]+x,(c.visualPos||c.pos)[1]+y,(c.visualPos||c.pos)[2]+z],yaw:c.yaw||0,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
+  serialize(){return this.carts.map(c=>({...c,visualPos:undefined,driver:null,mob:null,passenger:c.mob&&Mobs.byId.has(c.mob)?{type:Mobs.byId.get(c.mob).type,hp:Mobs.byId.get(c.mob).hp}:null}));},
+  load(list){this.riding=null;this.carts=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100):[];this.serial=this.carts.length;for(const c of this.carts){c.id='cart'+(++this.serial);c.visualPos=undefined;c.driver=null;c.mob=null;if(c.passenger&&MOB_DEFS[c.passenger.type]&&!MOB_DEFS[c.passenger.type].boss){const m=Mobs.add(c.passenger.type,...c.pos);if(m){m.hp=Math.min(m.hp,c.passenger.hp||m.hp);m.vehicle=c.id;c.mob=m.id;}}}},
 };
 
 const Drops = {
@@ -12830,7 +12817,9 @@ const Mobs = {
     for(const avatar of extras)this.buildModel(avatar,b,1);
     if (extra) this.buildModel(extra, b, 1);
     if (local) this.buildModel(local,b,1);
+    const maxDraw=(View.draw*16+16)**2;
     for (const m of this.list) {
+      if((m.pos[0]-Player.pos[0])**2+(m.pos[2]-Player.pos[2])**2>maxDraw)continue;
       const light = (m.light !== undefined ? m.light : 1);
       this.buildModel(m, b, light);
     }
@@ -16724,6 +16713,21 @@ const RoomNames = {
   },
 };
 
+/* Only replaceable snapshots may be coalesced. Blocks, chat, loot and handshakes
+   always retain the reliable transport's ordering. A slow peer cannot queue old poses forever. */
+const NetFlow={
+  pending:new WeakMap(),highWater:128*1024,
+  key(m){if(m[0]==='machines'&&(Array.isArray(m[1]?.meta)||Array.isArray(m[1]?.levels)))return null;return ['p','m','machines','boat-input','t','cloud-peer'].includes(m[0])?m[0]+(m[0]==='cloud-peer'?':'+m[1]:''):null;},
+  bytes(connection){return connection.dataChannel?.bufferedAmount||0;},
+  send(connection,m,raw=JSON.stringify(m)){
+    if(!connection.open)return;const key=this.key(m);let pending=this.pending.get(connection);if(m[0]==='machines'&&!key&&pending)pending.delete('machines');
+    if(key&&this.bytes(connection)>this.highWater){if(!pending){pending=new Map();this.pending.set(connection,pending);}pending.set(key,raw);return;}
+    if(key&&pending)pending.delete(key);connection.send(raw);
+  },
+  flush(connection){const pending=this.pending.get(connection);if(!pending||!connection.open||this.bytes(connection)>this.highWater/2)return;for(const [key,raw]of pending){if(this.bytes(connection)>this.highWater)break;connection.send(raw);pending.delete(key);}},
+  smooth(record,dt){if(!record)return;const target=[record.x,record.y,record.z];if(!record.renderPos||Math.hypot(...target.map((v,i)=>v-record.renderPos[i]))>8){record.renderPos=target;record.renderYaw=record.yaw||0;return;}const t=1-Math.exp(-Math.min(dt,.1)*16);for(let i=0;i<3;i++)record.renderPos[i]+=(target[i]-record.renderPos[i])*t;const yaw=record.yaw||0;record.renderYaw+=Math.atan2(Math.sin(yaw-record.renderYaw),Math.cos(yaw-record.renderYaw))*t;},
+};
+
 const ShortRooms = {
   peer: null, connection: null, epoch: 0, code: '', busy: false,
   loader: null, timer: null, retries: 0,
@@ -16880,6 +16884,7 @@ var Net = {
     this.live = false;if(typeof AdminRealm!=='undefined')AdminRealm.reset(); ShortRooms.close();
     try { if (this.dc) this.dc.close(); } catch (e) { }
     this.dc = null; this.live = false; this.applying = false;
+    this._lastPose=null;this._mobSignature=null;this._poseAt=this._mobAt=0;
     this.outBlocks = []; this.remote = null; this._avatar = null;
     this.remoteAdmins = [];
     if (this.tagsEl) this.tagsEl.innerHTML = '';
@@ -16908,7 +16913,7 @@ var Net = {
   send(obj,target=null) {
     if(typeof AdminCloud!=='undefined'&&AdminCloud.active){AdminCloud.send(obj,target);return;}
     if (!this.dc || this.dc.readyState !== 'open') return;
-    try { this.dc.send(JSON.stringify(obj)); } catch (e) { }
+    try { if(ShortRooms.connection?.open)NetFlow.send(ShortRooms.connection,obj);else this.dc.send(JSON.stringify(obj)); } catch (e) { }
   },
 
   /* ----------------------------- démarrage ----------------------------- */
@@ -16922,7 +16927,7 @@ var Net = {
       await newWorld($('seedInput').value || null, false);
     }
     if (!active()) return;
-    Net.sendHello(target);
+    Net.sendHello(target);Transport.broadcast(true,target);
     startPlaying();
     HUD.toastText('🌐 Partie partagée — ton ami arrive…', 4);
   },
@@ -16970,7 +16975,7 @@ var Net = {
       if(typeof AdminRealm!=='undefined'&&AdminRealm.message(m))return;
       switch (m[0]) {
         case 'h': if(this.role==='guest')this.onHello(m); break;
-        case 'r': if (this.role === 'host') HUD.toastText('🌐 L\'autre joueur est là !', 3); break;
+        case 'r':if(this.role==='host'){HUD.toastText('🌐 L’autre joueur est là !',3);Transport.broadcast(true,AdminCloud.active?AdminCloud.sender:null);}break;
         case 'p': {
           const r = this.remote || (this.remote = { x: 0, y: 0, z: 0 });
           r.px = r.x; r.py = r.y; r.pz = r.z;
@@ -17111,6 +17116,7 @@ var Net = {
   /* ----------------------------- boucle ----------------------------- */
   tick(dt) {
     if (!this.live) return;
+    if(AdminCloud.active){for(const peer of AdminCloud.peers.values())NetFlow.flush(peer.connection);}else if(ShortRooms.connection)NetFlow.flush(ShortRooms.connection);
     const now = performance.now();
     if (now - this.lastSpawn > 3200) {
       this.lastSpawn = now;
@@ -17118,12 +17124,13 @@ var Net = {
     }
     /* position du joueur local ~18 fois par seconde */
     this.stateT += dt;
-    if (this.stateT > 0.055) {
+    if(this.stateT>(isTouch||AdminCloud.active&&AdminCloud.peers.size>2?.08:.055)){
       this.stateT = 0;
-      this.send(['p',
+      const state=['p',
         Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,
         Math.round(Player.yaw * 100) / 100, Math.round(Player.pitch * 100) / 100,
-        Math.round(Survival.health), Net.playerName, Dimensions.current,Game.troll?Troll.morph:null,!!Game.troll]);
+        Math.round(Survival.health), Net.playerName, Dimensions.current,Game.troll?Troll.morph:null,!!Game.troll];
+      const signature=JSON.stringify(state);if(signature!==this._lastPose||now-(this._poseAt||0)>1000){this.send(state);this._lastPose=signature;this._poseAt=now;}
     }
     /* changements de blocs, en paquets */
     if (this.outBlocks.length) {
@@ -17136,7 +17143,7 @@ var Net = {
     }
     if (this.role === 'host') {
       this.mobT += dt;
-      if (this.mobT > 0.1) { this.mobT = 0; this.sendMobs(); }
+      if (this.mobT > .125) { this.mobT = 0; this.sendMobs(); }
       this.timeT += dt;
       if (this.timeT > 4) { this.timeT = 0; this.send(['t', Math.round(Game.time * 1000) / 1000]); }
     }
@@ -17150,7 +17157,8 @@ var Net = {
         Math.round(m.pos[0] * 100) / 100, Math.round(m.pos[1] * 100) / 100, Math.round(m.pos[2] * 100) / 100,
         Math.round(m.yaw * 100) / 100, Math.max(0, Math.round(m.hp)), Math.round((m.walkPhase % 6.28) * 100) / 100]);
     }
-    this.send(['m', arr]);
+    if(AdminCloud.active){const now=performance.now();for(const [id,peer]of AdminCloud.peers){const r=AdminCloud.records.get(id);if(!peer.admitted||!r)continue;const nearby=r.dim===Dimensions.current?arr.filter(m=>(m[2]-r.x)**2+(m[4]-r.z)**2<=320**2):[];const signature=JSON.stringify(nearby);if(signature!==peer.mobSignature||now-(peer.mobAt||0)>1000){this.send(['m',nearby],id);peer.mobSignature=signature;peer.mobAt=now;}}return;}
+    const now=performance.now(),signature=JSON.stringify(arr);if(signature!==this._mobSignature||now-(this._mobAt||0)>1000){this.send(['m',arr]);this._mobSignature=signature;this._mobAt=now;}
   },
 
   queueBlock(x, y, z, t) {
@@ -17171,9 +17179,9 @@ var Net = {
       this._avatar = { type: 'player', def: MOB_DEFS.player, pos: [r.x, r.y, r.z], yaw: r.yaw || 0, walkPhase: 0, hp: 20, light: 1 };
     }
     const a = this._avatar;
-    a.pos[0] = r.x; a.pos[1] = r.y; a.pos[2] = r.z;
+    const visual=r.renderPos||[r.x,r.y,r.z];a.pos[0]=visual[0];a.pos[1]=visual[1];a.pos[2]=visual[2];
     const disguise=Troll.avatar(r.morph,[r.x,r.y,r.z],r.yaw||0);a.type=disguise.type;a.def=disguise.def;
-    a.yaw = r.yaw || 0;
+    a.yaw=r.renderYaw??r.yaw??0;
     a.light = clamp(1 - (Game.manager.heightAt(r.x, r.z) - r.y) * 0.075, 0.4, 1);
     return a;
   },
@@ -17181,7 +17189,7 @@ var Net = {
   updateAvatar(dt) {
     if(AdminCloud.active){AdminCloud.animate(dt);return;}
     const a = this._avatar, r = this.remote;
-    if (!a || !r) return;
+    if(!r)return;NetFlow.smooth(r,dt);if(!a)return;
     const moving = r.px !== undefined && Math.hypot(a.pos[0] - r.x, a.pos[2] - r.z) > 0.04
       || (r.px !== undefined && Math.hypot(r.x - r.px, r.z - r.pz) > 0.02);
     a.walkPhase += dt * (moving ? 9 : 2);
@@ -18302,13 +18310,20 @@ const AdminCloud={
     try{this.rawMessage(JSON.stringify(m));if(['b','chat','player-death','g'].includes(m[0]))this.send(m,null,false,id);}finally{this.sender=null;Net.remote=this.records.values().next().value||old;}
   },
   position(id,m){if(!Array.isArray(m)||m[0]!=='p'||!m.slice(1,7).every(Number.isFinite)||Math.abs(m[1])>30000000||Math.abs(m[3])>30000000)return false;const r=this.records.get(id)||{id,name:m[7]||'Admin'};r.px=r.x;r.py=r.y;r.pz=r.z;[r.x,r.y,r.z,r.yaw,r.pitch,r.hp]=m.slice(1,7);r.dim=m[8]||'overworld';r.morph=Troll.valid(m[9])?m[9]:null;r.t=performance.now();this.records.set(id,r);Net.remote=this.records.values().next().value||null;return true;},
-  send(m,target=null,force=false,except=null){if(!this.active)return;if(Net.role==='host'&&this.sender&&!target&&['H','x','vehicle-consumed','profile-grant'].includes(m[0]))target=this.sender;const raw=JSON.stringify(m);for(const [id,r]of this.peers)if(id!==except&&(!target||id===target)&&(r.admitted||force)&&r.connection.open)try{r.connection.send(raw);}catch(e){}},
+  send(m,target=null,force=false,except=null){if(!this.active)return;if(Net.role==='host'&&this.sender&&!target&&['H','x','vehicle-consumed','profile-grant'].includes(m[0]))target=this.sender;const raw=JSON.stringify(m);for(const [id,r]of this.peers)if(id!==except&&(!target||id===target)&&(r.admitted||force)&&r.connection.open)try{NetFlow.send(r.connection,m,raw);}catch(e){}},
   async flush(){if(!this.active||Net.role!=='host'||!this.ready)return;const data=Saves.current()?.data;if(!data||data.adminRealmType!==this.type)return;if(this.saving)return this.saving;const promise=this.store.save(this.type,JSON.parse(JSON.stringify(data)));this.saving=promise;try{await promise;}finally{if(this.saving===promise)this.saving=null;}},
-  shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
+  shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();for(const node of this.tagNodes.values())node.remove();this.tagNodes.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
   fail(e){const text=this.errorText(e);this.shutdown();Net.reset();AdminRealm.setBusy(false);AdminRealm.status(text);Game.state='menu';showOverlay('realm');},
-  avatars(){const old=Net.remote,oldAvatar=Net._avatar,out=[];for(const r of this.records.values()){Net.remote=r;Net._avatar=r._avatar||null;const avatar=Net.avatarMob();if(avatar){r._avatar=avatar;out.push(avatar);}}Net.remote=old;Net._avatar=oldAvatar;return out;},
-  animate(dt){for(const r of this.records.values())if(r._avatar)r._avatar.walkPhase+=dt*(Math.hypot(r.x-(r.px??r.x),r.z-(r.pz??r.z))>.02?9:2);},
-  tags(VP){const box=$('nameTags');if(!box||!VP)return;box.innerHTML='';for(const r of this.records.values()){if(r.dim!==Dimensions.current)continue;const x=r.x,y=r.y+2.15,z=r.z,cw=VP[3]*x+VP[7]*y+VP[11]*z+VP[15];if(cw<=.05)continue;const el=document.createElement('div');el.className='tag';el.textContent=r.name;el.style.left=((VP[0]*x+VP[4]*y+VP[8]*z+VP[12])/cw*.5+.5)*canvas.clientWidth+'px';el.style.top=(.5-(VP[1]*x+VP[5]*y+VP[9]*z+VP[13])/cw*.5)*canvas.clientHeight+'px';box.appendChild(el);}},
+  avatars(){const old=Net.remote,oldAvatar=Net._avatar,out=[];for(const r of this.records.values()){if((r.x-Player.pos[0])**2+(r.z-Player.pos[2])**2>(View.draw*16+16)**2)continue;Net.remote=r;Net._avatar=r._avatar||null;const avatar=Net.avatarMob();if(avatar){r._avatar=avatar;out.push(avatar);}}Net.remote=old;Net._avatar=oldAvatar;return out;},
+  animate(dt){for(const r of this.records.values())NetFlow.smooth(r,dt);for(const r of this.records.values())if(r._avatar)r._avatar.walkPhase+=dt*(Math.hypot(r.x-(r.px??r.x),r.z-(r.pz??r.z))>.02?9:2);},
+  tagNodes:new Map(),tagAt:0,
+  tags(VP){const box=$('nameTags'),now=performance.now();if(!box||!VP||now-this.tagAt<50)return;this.tagAt=now;
+    for(const [id,node]of this.tagNodes)if(!this.records.has(id)||node.parentNode!==box){node.remove();this.tagNodes.delete(id);}
+    for(const [id,r]of this.records){let el=this.tagNodes.get(id);if(!el){el=document.createElement('div');el.className='tag';this.tagNodes.set(id,el);box.appendChild(el);}if(el.textContent!==r.name)el.textContent=r.name;
+      const [x,y0,z]=r.renderPos||[r.x,r.y,r.z],y=y0+2.15,cw=VP[3]*x+VP[7]*y+VP[11]*z+VP[15];const visible=r.dim===Dimensions.current&&cw>.05;el.hidden=!visible;if(!visible)continue;
+      el.style.left=((VP[0]*x+VP[4]*y+VP[8]*z+VP[12])/cw*.5+.5)*canvas.clientWidth+'px';el.style.top=(.5-(VP[1]*x+VP[5]*y+VP[9]*z+VP[13])/cw*.5)*canvas.clientHeight+'px';
+    }
+  },
   nearest(pos){return [...this.records.values()].filter(r=>r.dim===Dimensions.current).sort((a,b)=>Math.hypot(a.x-pos[0],a.y-pos[1],a.z-pos[2])-Math.hypot(b.x-pos[0],b.y-pos[1],b.z-pos[2]))[0];},
 };
 AdminCloud.rawMessage=Net.onMessage.bind(Net);
@@ -18360,13 +18375,13 @@ const Boats={
   list:[],riding:null,serial:0,
   use(t){if(Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.BOAT||this.list.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.3));return relevant?Transport.request('boat',t):false;}if(this.riding){const c=this.riding;this.riding=null;c.driver=null;Railways.safeExit(c.pos);return true;}if(heldItemId()===I.BOAT){const hit=t&&(BLOCKS[t.block]||{}).water?t:raycastVoxel(eyePos(),lookDir(),7,Game.manager,true);if(!hit||!(BLOCKS[Game.manager.getBlock(hit.x,hit.y,hit.z)]||{}).water){HUD.toastText('Vise de l’eau pour poser le bateau.',2);return true;}const existing=this.list.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-hit.x-.5,c.pos[2]-hit.z-.5)<.9);if(existing){if(!existing.driver){this.riding=existing;existing.driver='player';}else HUD.toastText('Ce bateau est occupé.',2);return true;}this.list.push({id:'boat'+(++this.serial),pos:[hit.x+.5,hit.y+.9,hit.z+.5],yaw:Player.yaw,speed:0,dim:Game.manager.dim});if(Game.mode!=='creative')Game.inv.remove(I.BOAT,1);HUD.refreshAll();return true;}
     const c=this.list.find(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3&&(!t||Math.hypot(c.pos[0]-t.x-.5,c.pos[2]-t.z-.5)<1.3));if(!c)return false;if(c.driver){HUD.toastText('Ce bateau est occupé.',2);return true;}this.riding=c;c.driver='player';HUD.toastText('Bateau : avancer/reculer, regarder pour diriger · X pour descendre.',3);return true;},
-  update(dt){if(Net.live&&Net.role==='guest'){if(this.riding){Player.pos=[this.riding.pos[0],this.riding.pos[1]+.15,this.riding.pos[2]];Player.vel=[0,0,0];}return;}for(const c of this.list){if(c.dim!==Game.manager.dim)continue;let water=null;for(let y=Math.floor(c.pos[1])+1;y>=Math.floor(c.pos[1])-3;y--)if((BLOCKS[Game.manager.getBlock(Math.floor(c.pos[0]),y,Math.floor(c.pos[2]))]||{}).water){water=y;break;}
+  update(dt){if(Net.live&&Net.role==='guest'){for(const c of this.list)Transport.visual(c,dt);if(this.riding){const p=this.riding.visualPos;Player.pos=[p[0],p[1]+.15,p[2]];Player.vel=[0,0,0];}return;}for(const c of this.list){if(c.dim!==Game.manager.dim)continue;let water=null;for(let y=Math.floor(c.pos[1])+1;y>=Math.floor(c.pos[1])-3;y--)if((BLOCKS[Game.manager.getBlock(Math.floor(c.pos[0]),y,Math.floor(c.pos[2]))]||{}).water){water=y;break;}
       if(water!==null)c.pos[1]+=(water+.9-c.pos[1])*Math.min(1,dt*6);
       if(this.riding===c||(c.driver&&c.driver!=='player')){const guest=c.driver&&c.driver!=='player',remote=AdminCloud.active?AdminCloud.records.get(c.driver):Net.remote;c.yaw=guest&&remote?remote.yaw||0:Player.yaw;const control=guest?(AdminCloud.active?AdminCloud.controls.get(c.driver)||{f:0,b:0}:Transport.remoteBoat):Input;c.speed+=((control.f-control.b)*5-c.speed)*Math.min(1,dt*3);const p=[c.pos[0]-Math.sin(c.yaw)*c.speed*dt,c.pos[1],c.pos[2]-Math.cos(c.yaw)*c.speed*dt];const block=Game.manager.getBlock(Math.floor(p[0]),Math.floor(p[1]),Math.floor(p[2]));if(water!==null&&!(BLOCKS[block]||{}).solid)c.pos=p;else c.speed=0;if(this.riding===c){Player.pos=[c.pos[0],c.pos[1]+.15,c.pos[2]];Player.vel=[0,0,0];Player.fallDist=0;}}}
   },
-  visuals(){return this.list.flatMap(c=>[[0,0,0,3.8,.3,5],[-.55,.12,0,.3,1.2,5],[.55,.12,0,.3,1.2,5],[0,.12,-.7,3.8,1.2,.3],[0,.12,.7,3.8,1.2,.3]].map(([x,y,z,w,h,d])=>({id:B.PLANKS,pos:[c.pos[0]+x*Math.cos(c.yaw)-z*Math.sin(c.yaw),c.pos[1]+y,c.pos[2]-x*Math.sin(c.yaw)-z*Math.cos(c.yaw)],yaw:c.yaw,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
-  serialize(){return this.list.map(c=>({...c,driver:null}));},
-  load(list){this.riding=null;this.list=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50).map(c=>({...c,driver:null})):[];this.serial=this.list.reduce((n,c)=>Math.max(n,parseInt(String(c.id).replace('boat',''))||0),0);},
+  visuals(){return this.list.flatMap(c=>[[0,0,0,3.8,.3,5],[-.55,.12,0,.3,1.2,5],[.55,.12,0,.3,1.2,5],[0,.12,-.7,3.8,1.2,.3],[0,.12,.7,3.8,1.2,.3]].map(([x,y,z,w,h,d])=>({id:B.PLANKS,pos:[(c.visualPos||c.pos)[0]+x*Math.cos(c.yaw)-z*Math.sin(c.yaw),(c.visualPos||c.pos)[1]+y,(c.visualPos||c.pos)[2]-x*Math.sin(c.yaw)-z*Math.cos(c.yaw)],yaw:c.yaw,t:0,bob:0,scale:[w,h,d],dim:c.dim})));},
+  serialize(){return this.list.map(c=>({...c,visualPos:undefined,driver:null}));},
+  load(list){this.riding=null;this.list=Array.isArray(list)?list.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50).map(c=>({...c,visualPos:undefined,driver:null})):[];this.serial=this.list.reduce((n,c)=>Math.max(n,parseInt(String(c.id).replace('boat',''))||0),0);},
 };
 
 const Archery={
@@ -18382,7 +18397,7 @@ const Archery={
 const Coordinates={
   xyz(x,y,z){return 'X : '+Number(x).toFixed(1)+' · Y : '+Number(y).toFixed(1)+' · Z : '+Number(z).toFixed(1);},
   bearing(){const degrees=((-Player.yaw*180/Math.PI)%360+360)%360;return {degrees,cardinal:['N','NE','E','SE','S','SO','O','NO'][Math.round(degrees/45)%8]};},
-  update(){const el=$('worldCoordinates');if(!el)return;el.classList.toggle('hidden',!['playing','paused','inventory'].includes(Game.state));const b=this.bearing();$('coordinateText').textContent=this.xyz(...Player.pos);$('compassDegrees').textContent=b.cardinal+' · '+Math.round(b.degrees)+'°';$('compassNeedle').style.transform='rotate('+b.degrees+'deg)';const ride=Railways.riding||Boats.riding;$('vehicleExit').classList.toggle('hidden',!ride);},
+  update(){const stamp=performance.now(),state=Game.state+'|'+!!(Railways.riding||Boats.riding);if(this._state===state&&stamp-(this._at||0)<100)return;this._state=state;this._at=stamp;const el=$('worldCoordinates');if(!el)return;el.classList.toggle('hidden',!['playing','paused','inventory'].includes(Game.state));const b=this.bearing();$('coordinateText').textContent=this.xyz(...Player.pos);$('compassDegrees').textContent=b.cardinal+' · '+Math.round(b.degrees)+'°';$('compassNeedle').style.transform='rotate('+b.degrees+'deg)';const ride=Railways.riding||Boats.riding;$('vehicleExit').classList.toggle('hidden',!ride);},
 };
 
 const Weather={
@@ -18391,8 +18406,8 @@ const Weather={
   set(kind,broadcast=true){const aliases={clear:'clair',rain:'pluie',snow:'neige',thunder:'orage',storm:'orage'};kind=aliases[kind]||kind;if(!['clair','pluie','neige','orage'].includes(kind))return false;this.kind=kind;this.remaining=180+Math.random()*180;this.lightning=8;if(broadcast&&Net.live&&Net.role==='host')Net.send(['weather',this.kind,this.remaining]);return true;},
   outdoors(){return Game.manager&&['overworld','flat'].includes(Game.manager.dim)&&Game.manager.heightAt(Player.pos[0],Player.pos[2])<Player.pos[1]+Player.height;},
   update(dt){if(Game.state!=='playing')return;this.time+=dt;if(!(Net.live&&Net.role==='guest')){this.remaining-=dt;if(this.remaining<=0){const cold=Game.manager&&Game.manager.heightAt(Player.pos[0],Player.pos[2])>SNOW_LINE;this.set(this.kind==='clair'?(Math.random()<.25?'orage':cold?'neige':'pluie'):'clair');}if(this.kind==='orage'&&this.outdoors()){this.lightning-=dt;if(this.lightning<=0){this.lightning=8+Math.random()*14;Flash.trigger(.85);Sfx.explosion(.28,.65);if(Net.live)Net.send(['thunder']);}}}},
-  draw(){const c=$('weatherCanvas');if(!c)return;const g=c.getContext('2d');if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight;}g.clearRect(0,0,c.width,c.height);if(this.kind==='clair'||!this.outdoors()||!['playing','paused'].includes(Game.state))return;g.fillStyle=this.kind==='orage'?'#18243866':'#31405a20';g.fillRect(0,0,c.width,c.height);const snow=this.kind==='neige';g.strokeStyle='#b9d9f577';g.fillStyle='#ecf5ffd0';g.lineWidth=1;
-    const t=this.time;for(let i=0;i<130;i++){const depth=.4+(i%11)/10,x=((i*83.7+Math.sin(t+i)* (snow?25:2)-Player.yaw*140*depth)%c.width+c.width)%c.width,y=((i*131.3+t*(snow?30:460)*depth)%c.height+c.height)%c.height;if(snow){g.beginPath();g.arc(x,y,1.5*depth,0,7);g.fill();}else{g.beginPath();g.moveTo(x,y);g.lineTo(x-3,y+15*depth);g.stroke();}}},
+  draw(){const now=performance.now(),key=this.kind+'|'+Game.state+'|'+innerWidth+'|'+innerHeight;if(key===this._key&&now-(this._drawAt||0)<(isTouch?50:33))return;this._key=key;this._drawAt=now;const c=$('weatherCanvas');if(!c)return;const visible=this.kind!=='clair'&&['playing','paused'].includes(Game.state)&&this.outdoors();if(!visible&&!this._painted)return;const g=c.getContext('2d');if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight;}g.clearRect(0,0,c.width,c.height);this._painted=visible;if(!visible)return;g.fillStyle=this.kind==='orage'?'#18243866':'#31405a20';g.fillRect(0,0,c.width,c.height);const snow=this.kind==='neige';g.strokeStyle='#b9d9f577';g.fillStyle='#ecf5ffd0';g.lineWidth=1;
+    const t=this.time;for(let i=0;i<(isTouch?55:130);i++){const depth=.4+(i%11)/10,x=((i*83.7+Math.sin(t+i)* (snow?25:2)-Player.yaw*140*depth)%c.width+c.width)%c.width,y=((i*131.3+t*(snow?30:460)*depth)%c.height+c.height)%c.height;if(snow){g.beginPath();g.arc(x,y,1.5*depth,0,7);g.fill();}else{g.beginPath();g.moveTo(x,y);g.lineTo(x-3,y+15*depth);g.stroke();}}},
 };
 
 /* A victory is persistent, idempotent and can wait for QA/pause to release focus. */
@@ -18422,12 +18437,21 @@ const Transport={
     finally{Player.pos=old.pos;Player.yaw=old.yaw;Player.vel=old.vel;Game.inv=old.inv;Game.slot=old.slot;Input.down=old.down;Railways.riding=old.cart;Boats.riding=old.boat;HUD.refreshAll();}
     this.broadcast();
   },
-  broadcast(){if(Net.live&&Net.role==='host')Net.send(['machines',{carts:Railways.carts,boats:Boats.list,levels:[...Circuits.levels],meta:[...Circuits.meta]}]);},
+  broadcast(force=false,target=null){
+    if(!Net.live||Net.role!=='host')return;const now=performance.now();
+    if(force||!this._circuits||now-(this._circuitAt||0)>=250){this._circuits={levels:[...Circuits.levels],meta:[...Circuits.meta]};this._circuitSignature=JSON.stringify(this._circuits);this._circuitAt=now;}
+    const vehicles=JSON.stringify([Railways.carts,Boats.list]),full=force||now-(this._fullAt||0)>=1000,circuitChanged=this._sentCircuits!==this._circuitSignature;
+    if(!full&&!circuitChanged&&vehicles===this._vehicles)return;
+    const data={carts:Railways.carts,boats:Boats.list};if(force||circuitChanged)Object.assign(data,this._circuits);Net.send(['machines',data],target);
+    if(!target){this._vehicles=vehicles;this._sentCircuits=this._circuitSignature;if(full)this._fullAt=now;}
+  },
+  visual(c,dt){const target=c.pos;if(!c.visualPos||Math.hypot(...target.map((n,i)=>n-c.visualPos[i]))>8)c.visualPos=target.slice();else{const t=1-Math.exp(-Math.min(dt,.1)*18);for(let i=0;i<3;i++)c.visualPos[i]+=(target[i]-c.visualPos[i])*t;}return c.visualPos;},
   receive(data){if(Net.role!=='guest'||!data||!Array.isArray(data.carts)||!Array.isArray(data.boats))return;
-    const oldSeat=Railways.riding||Boats.riding;
+    const oldSeat=Railways.riding||Boats.riding,previous=new Map(Railways.carts.concat(Boats.list).map(c=>[c.id,c]));
     Railways.carts=data.carts.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,100);Boats.list=data.boats.filter(c=>Array.isArray(c.pos)&&c.pos.every(Number.isFinite)).slice(0,50);
+    for(const c of Railways.carts.concat(Boats.list)){const old=previous.get(c.id);c.visualPos=old&&old.dim===c.dim?(old.visualPos||old.pos).slice():c.pos.slice();}
     Railways.riding=Railways.carts.find(c=>c.driver===(AdminCloud.active?AdminCloud.selfId:'guest'))||null;Boats.riding=Boats.list.find(c=>c.driver===(AdminCloud.active?AdminCloud.selfId:'guest'))||null;
-    Circuits.meta=new Map(data.meta||[]);Circuits.levels=new Map(data.levels||[]);if(oldSeat&&!Railways.riding&&!Boats.riding)Railways.safeExit(oldSeat.pos);
+    if(Array.isArray(data.meta))Circuits.meta=new Map(data.meta);if(Array.isArray(data.levels))Circuits.levels=new Map(data.levels);if(oldSeat&&!Railways.riding&&!Boats.riding)Railways.safeExit(oldSeat.pos);
   },
   tick(dt){this.timer+=dt;if(this.timer<.15||!Net.live)return;this.timer=0;if(Net.role==='host')this.broadcast();else Net.send(['boat-input',Input.f,Input.b]);},
   disconnect(){for(const c of Railways.carts.concat(Boats.list))if(c.driver==='guest')c.driver=null;this.remoteBoat={f:0,b:0};},

@@ -1124,3 +1124,45 @@ WebRTC. Les règles Firestore restent à déployer par le propriétaire :
 [firebase/SETUP.md](firebase/SETUP.md). `npm audit` ne signale aucune vulnérabilité
 après la mise à jour de Playwright et du transport gRPC indirect (non inclus dans
 le bundle web).
+
+### Fluidité mobile et multijoueur
+
+Le rendu mobile démarre à un pixel de rendu par pixel CSS, avec une résolution et
+une portée adaptatives. Deux mesures lentes successives réduisent la charge ; la
+qualité ne remonte qu'après plusieurs secondes stables. La distance choisie reste
+un plafond : elle peut être réduite temporairement pour préserver la fluidité.
+
+Le streaming mobile effectue au maximum **une génération et un maillage par image**,
+sans la rafale de maillages supplémentaires déclenchée auparavant par une grosse
+file. Les tâches les plus proches passent d'abord, sans trier/copier toute la file.
+Les budgets restent indicatifs : un chunk individuel est encore calculé sur le
+thread principal et ne peut pas être interrompu au milieu de son calcul.
+
+Autres réductions de travail : déchargement des chunks moins fréquent à l'arrêt,
+mobs hors portée visuelle non dessinés (mais pas supprimés de la simulation),
+particules météo moins nombreuses et moins fréquentes sur mobile, canvas météo
+inactif non repeint, coordonnées à 10 Hz et étiquettes de joueurs réutilisées plutôt
+que recréées à chaque image.
+
+En réseau : positions immobiles envoyées seulement au heartbeat (~1 s), positions
+mobiles jusqu'à ~12 Hz sur téléphone, snapshots de mobs à 8 Hz avec déduplication et
+filtrage par voisinage pour les mondes Admin. Les véhicules immobiles ne renvoient
+plus une copie complète des circuits en permanence ; les mises à jour partielles
+préservent les circuits déjà reçus et un état complet est renvoyé après l'arrivée
+effective du joueur. Les changements de circuits restent fiables.
+
+Les positions/yaws affichés des avatars, bateaux et wagonnets sont interpolés entre
+les messages, sans modifier les positions faisant autorité pour les interactions.
+Les grands déplacements se recalent immédiatement. Quand un canal WebRTC accumule
+des données, seuls les états remplaçables (poses, snapshots mobiles, etc.) sont
+coalescés vers leur dernière valeur ; les blocs, le chat, le butin et les métadonnées
+de circuits restent sur le canal fiable. Cela limite l'accumulation de positions
+anciennes sans supprimer des modifications du monde.
+
+`npm run test:performance` vérifie ces plafonds de travail, l'hystérésis, le
+heartbeat, les files réseau bornées par type/joueur, la conservation des blocs et
+circuits, et l'interpolation. `test:adminrealm` vérifie aussi le lissage sans modifier
+la simulation et la réutilisation des étiquettes avec de vrais échanges WebRTC.
+Ces contrôles ne constituent pas un benchmark FPS sur un téléphone physique.
+Recharger le jeu sur **tous les appareils** après la mise à jour pour utiliser le
+même format de snapshots partiels.
