@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function typeOK(t) { return t in ['overworld','flat','oneblock']; }
+  function host(t) {
+   let room = get(/databases/$(database)/documents/adminWorlds/$(t)).data;
+   return signedIn() && room.hostUid == request.auth.uid && room.leaseUntil > request.time.toMillis();
+  }
+  match /adminProfiles/{uid} {
+   allow read: if signedIn() && request.auth.uid == uid;
+   allow create, update: if signedIn() && request.auth.uid == uid
+    && request.resource.data.keys().hasOnly(['nickname','updatedAt'])
+    && request.resource.data.nickname is string && request.resource.data.nickname.size() >= 2
+    && request.resource.data.nickname.size() <= 24 && request.resource.data.updatedAt is number;
+  }
+  match /adminWorlds/{type} {
+   allow read: if signedIn() && typeOK(type);
+   allow create: if signedIn() && typeOK(type) && validLease();
+   allow update: if signedIn() && typeOK(type) && validLease()
+    && (resource.data.leaseUntil <= request.time.toMillis() || resource.data.hostUid == request.auth.uid);
+   function validLease() {
+    return request.resource.data.keys().hasOnly(['hostUid','session','peerId','nickname','leaseUntil'])
+     && request.resource.data.hostUid == request.auth.uid
+     && request.resource.data.session is string && request.resource.data.session.size() <= 80
+     && request.resource.data.peerId is string && request.resource.data.peerId.size() <= 120
+     && request.resource.data.nickname is string && request.resource.data.nickname.size() <= 24
+     && request.resource.data.leaseUntil is number && request.resource.data.leaseUntil >= 0
+     && request.resource.data.leaseUntil <= request.time.toMillis() + 60000;
+   }
+   match /state/{part} {
+    allow read: if signedIn() && typeOK(type);
+    allow create, update: if host(type) && (
+     (part == 'manifest' && request.resource.data.keys().hasOnly(['version','bank','count','updatedAt','hostUid'])
+       && request.resource.data.version is int && request.resource.data.bank in [0,1]
+       && request.resource.data.count is int && request.resource.data.count >= 1 && request.resource.data.count <= 48
+       && request.resource.data.hostUid == request.auth.uid)
+     || (part.matches('[01]-[0-9]{1,2}') && request.resource.data.keys().hasOnly(['version','payload'])
+       && request.resource.data.version is int && request.resource.data.payload is string
+       && request.resource.data.payload.size() <= 720000));
+   }
+  }
+  // All other paths (including game saves outside these three worlds) are denied.
+ }
+}

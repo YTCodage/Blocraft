@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#0a1220"><meta name="description" content="Joue à Blocraft gratuitement dans ton navigateur, sur mobile et ordinateur."><title>Jouer — BLOCRAFT</title><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070b11;color:#ecf2e5;font-family:system-ui,sans-serif}body{display:flex;flex-direction:column;height:100dvh}.game-nav{flex:none;min-height:44px;padding:6px max(14px,env(safe-area-inset-right)) 6px max(14px,env(safe-area-inset-left));padding-top:max(6px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:14px;background:#101713;border-bottom:1px solid #2b382d;font-size:11px}.home{display:flex;align-items:center;gap:8px;color:#d6e5c9;text-decoration:none;font-weight:800;letter-spacing:.6px}.home img{width:20px;height:23px}.nav-right{display:flex;gap:14px;align-items:center}.tip{color:#94a68b;font-size:10px}.fullscreen{font:inherit;border:1px solid #4d663e;background:#21321c;color:#c3efa1;border-radius:4px;padding:6px 10px;cursor:pointer;min-height:30px}a:focus-visible,button:focus-visible{outline:2px solid #b1ed7b;outline-offset:3px}iframe{border:0;display:block;width:100%;flex:1;min-height:0;background:#070b11}#fullscreen-notice{position:fixed;top:60px;left:50%;transform:translateX(-50%);padding:14px;background:#223123;border:1px solid #71895b;border-radius:6px;z-index:5;max-width:90%;font-size:12px}body:fullscreen .game-nav{display:none}@media(max-width:600px){.tip{display:none}.game-nav{min-height:42px;font-size:10px}.home{font-size:11px}}@media(max-height:450px) and (orientation:landscape){.game-nav{min-height:32px;padding-top:2px;padding-bottom:2px}.fullscreen{min-height:25px;padding:3px 8px}}
+</style>
+</head>
+<body>
+<header class="game-nav"><a class="home" href="../" aria-label="Retour à l’accueil Blocraft">← <img src="../assets/favicon.svg" alt=""> BLOCRAFT</a><div class="nav-right"><span class="tip">Sur mobile, joue en paysage pour profiter de ton monde.</span><button class="fullscreen" id="fullscreen" type="button">⛶ Plein écran</button></div></header>
+<iframe id="game" src="../blocraft.html" title="Jeu Blocraft" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+<noscript>JavaScript doit être activé pour jouer à Blocraft.</noscript>
+<script>
+const button = document.getElementById('fullscreen');
+button.addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+    if (!document.documentElement.requestFullscreen) throw new Error('unsupported');
+    await document.documentElement.requestFullscreen();
+    try { await screen.orientation.lock('landscape'); } catch (e) {}
+    document.getElementById('game').focus();
+  } catch (e) {
+    let notice = document.getElementById('fullscreen-notice');
+    if (!notice) { notice = document.createElement('div'); notice.id = 'fullscreen-notice'; notice.setAttribute('role','status'); document.body.appendChild(notice); }
+    notice.textContent = 'Le plein écran n’est pas disponible ici. Tu peux continuer à jouer et tourner ton téléphone en paysage.';
+    clearTimeout(window.noticeTimer); window.noticeTimer = setTimeout(() => notice.remove(), 5000);
+  }
+});
+document.addEventListener('fullscreenchange', () => { button.textContent = document.fullscreenElement ? '⛶ Quitter le plein écran' : '⛶ Plein écran'; });
+</script>
+</body></html>

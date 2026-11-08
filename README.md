@@ -10,15 +10,23 @@ compilation. Double-clique dessus (Chrome, Edge ou Firefox récent) et ça joue.
 
 ## 1. Lancer le jeu
 
-1. Copie `blocraft.html` où tu veux (Bureau, clé USB…).
-2. Double-clique : le monde se génère (3 à 10 secondes), le menu apparaît.
-3. Choisis **Monde normal**, **Monde plat** ou **Mono-bloc**, puis **Survie** ou **Créatif**.
-   Les cartes **Nether** et **L'End** sont verrouillées : on y entre uniquement par un portail,
-   en jeu (voir §3).
-4. Clique **▶ Jouer** : une petite fenêtre demande **le nom de ta partie** (obligatoire —
-   c'est ce qui te permet de la retrouver). Tu peux y changer le monde et le mode d'un clic
-   sur les pastilles **Monde plat ⇄** / **Créatif ⇄**.
-5. **Commencer** : le monde se génère et tu joues.
+1. Ouvre <https://ytcodage.github.io/Blocraft/jeu/>. Pour héberger une copie locale,
+   conserve `blocraft.html` **et** son dossier `assets/`.
+2. Au premier lancement, choisis ton profil **Joueur** ou **Admin**. Le code
+   Admin est demandé sur un écran séparé, avec sa propre progression.
+3. Clique **Créer une partie**. Un assistant affiche **une seule question à la fois** :
+   - **1/4 — Monde** : normal, plat ou mono-bloc ;
+   - **2/4 — Mode** : Survie, Hardcore, Créatif ou Trolle ;
+   - **3/4 — Nom** : le nom de ta partie, entre 3 et 28 caractères ;
+   - **4/4 — Graine** : facultative, laisse vide pour un terrain aléatoire.
+4. La barre indique ta progression. **Retour** conserve tes réponses ; **Annuler**
+   abandonne la création sans changer ta partie actuelle. Le monde plat propose
+   Créatif ou Trolle, pas Survie.
+5. **Créer ma partie** confirme tes choix, lance l’introduction puis la génération.
+   Rien n’est créé lors du simple passage d’une question à l’autre.
+
+Les anciennes sélections simultanées du menu ont été remplacées par cet assistant.
+Les cartes **Nether** et **L’End** restent accessibles par les portails en jeu (voir §3).
 
 La partie est sauvegardée dans le navigateur : automatiquement (toutes les 2 minutes et à
 chaque changement de mode), avec le bouton **Sauvegarder** de la pause, et en quittant.
@@ -83,8 +91,8 @@ BLOCRAFT est pensé pour être joué **au pouce, en paysage**, plein écran :
 | **Glisser à gauche** (moitié gauche de l'écran) | le joystick apparaît sous le doigt : marcher. Pousser à fond = **courir** |
 | **Glisser à droite** | regarder autour de soi (360°, sans limite) |
 | **SAUTER** | sauter — maintenir en vol fait monter |
-| **MINER** | casser le bloc visé / frapper une créature (maintien = minage continu) |
-| **POSER** | poser un bloc, manger, ouvrir un coffre, **commercer avec un villageois** |
+| **Maintenir le doigt sur un bloc** | miner en continu après 350 ms ; un glissement annule le minage |
+| **Toucher brièvement un bloc / personnage** | poser ou utiliser : coffre, établi, nourriture, commerce ; toucher une créature hostile pour frapper |
 | **SAC** | inventaire, établi, four, blocs (glisser un objet : un tap pour prendre, un tap pour déposer) |
 | **VOLER** (créatif) | active le vol ; deux flèches **▲ ▼** apparaissent pour monter et descendre |
 | **⏸ en haut à droite** | menu de pause (réglages, sauvegarde, touches) |
@@ -105,7 +113,7 @@ BLOCRAFT est pensé pour être joué **au pouce, en paysage**, plein écran :
 
 ### Commercer avec un villageois
 
-Vise un villageois puis **clic droit** (au doigt : **POSER**) : le comptoir s'ouvre.
+Vise un villageois puis **clic droit** (au doigt : **un toucher bref**) : le comptoir s'ouvre.
 Chaque villageois a un **métier** tiré au hasard (fermier, forgeron, armurier,
 bibliothécaire, boucher, prêtre, mineur), donc une liste de 4 échanges.
 Une ligne = un échange : `8 × Blé → 1 × Émeraude`. Touche la ligne (ou **Échanger**),
@@ -124,17 +132,22 @@ c'est fait, avec le compteur de ce qu'il te reste et le nombre d'échanges resta
 > Pas assez d'ingrédients ? La ligne reste grisée et un message indique ce qu'il faut.
 > Échap (ou la croix) referme le comptoir.
 
-### Portes et lit : dormir pour passer la nuit
+### Portes et lit de deux blocs : dormir pour passer la nuit
 
 Deux nouveaux blocs de mobilier, avec leurs recettes :
 
 | Bloc | Recette | Effet |
 |---|---|---|
-| 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **POSER**) ; ouverte, on passe au travers |
-| 🛏️ **Lit** | 3 laines blanches + 3 planches | la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
+| 🚪 **Porte en bois** | 6 planches → 3 portes | se pose sur **deux blocs de haut**, s'ouvre et se ferme d'un **clic droit** (au doigt : **un toucher bref**) ; ouverte, on passe au travers |
+| 🛏️ **Lit** | 3 laines blanches + 3 planches, sur un établi ouvert | occupe **deux cases de long**, orientées selon ton regard ; la nuit, un **clic droit** sur le lit te fait **dormir** : l'écran s'assombrit, la nuit passe, tu te réveilles à l'aube, et le lit devient ton **point de réapparition** |
 
 > De jour, le lit refuse : *« On ne dort que la nuit »*. Et si un monstre rôde
 > à moins de 12 blocs, impossible de fermer l'œil — il faut d'abord nettoyer.
+
+Les moutons apparaissent le jour sur l’herbe et donnent **1 à 2 blocs de laine
+blanche** lorsqu’ils sont tués. La recette « 4 fils → laine blanche » a été retirée.
+En multijoueur, le sommeil passe par l’hôte pour avancer la nuit pour les deux
+joueurs ; seul celui qui dort change son point de réapparition.
 
 Casser une moitié de porte casse l'autre, et la porte retombe entière dans
 l'inventaire. On pose les deux au sol, dos au mur, comme dans Minecraft.
@@ -146,17 +159,13 @@ Un villageois frappé **appelle à l'aide** : tous les golems de fer à moins de
 Ils abandonnent au bout d'une trentaine de secondes, ou si tu t'éloignes.
 Frapper un golem directement le met aussi en colère.
 
-### Passer de la survie au créatif (et retour)
+### Choisir le mode de jeu
 
-En jeu, **Échap** → **Passer en créatif** (ou **Passer en survie**). C'est la **même partie** :
-ton monde, ta position, ton sac et ta maison restent là.
-
-| Passage | Ce qui change tout de suite |
-|---|---|
-| → **Créatif** | barre de vie et faim masquées, blocs infinis dans l'inventaire, `F` pour voler |
-| → **Survie** | vie, faim, monstres et dégâts de chute reviennent, le vol se coupe, les blocs redeviennent finis |
-
-Le mode est enregistré avec la partie : si tu étais en créatif, tu reprends en créatif.
+Choisis **Survie** ou **Créatif** au lancement d’une nouvelle partie. Le choix
+est enregistré avec la sauvegarde. Le menu pause contient les réglages et la
+sauvegarde, mais plus de bouton de changement de mode ni de Vision X.
+Les commandes administrateur `/creatif` et `/survie` restent disponibles selon
+les droits existants. La touche `X` reste le raccourci de la Vision X sur PC.
 
 ### Les villages sont habités
 
@@ -339,35 +348,35 @@ sont des dimensions **à découvrir en jeu**, par un portail (voir §5) :
 > Le mono-bloc est un monde à part : pour y revenir, choisis-le à nouveau dans le
 > menu. En créatif, tomber dans le vide te ramène sur le bloc (pas de mort).
 
-## 4. Jouer à distance (deux écrans, deux maisons)
+## 4. Jouer à deux avec le nom de la partie
 
-Le multijoueur n'utilise **aucun serveur** : les deux navigateurs se parlent
-directement (WebRTC). Il suffit d'échanger deux codes par message.
+Après avoir choisi un mode, donne un **nom de 3 à 28 caractères** à ta partie.
+Ce nom reste modifiable dans la pause avec **Renommer la partie**.
 
-**Sur l'ordinateur qui héberge :**
+**L’hôte :** menu → **Jouer à deux**, ou pause → **Inviter un ami**. Vérifie le
+nom et clique **Créer une partie**. Envoie ce nom à ton ami et garde la page ouverte.
 
-1. Menu → **🌐 Jouer à distance** → **📡 Héberger**.
-2. Un **code d'invitation** apparaît : clique sur **Copier** et envoie-le à ton ami
-   (WhatsApp, Discord, mail…).
-3. Quand il t'envoie sa **réponse**, colle-la dans la deuxième case et clique
-   **Se connecter**.
+**L’ami :** **Jouer à deux → Se connecter**. La barre de recherche accepte le
+**nom exact de la partie**, puis **Rejoindre la partie** établit la connexion.
+Majuscules/minuscules et espaces répétés sont normalisés ; les accents comptent.
+Un nom déjà occupé par une partie ouverte est refusé. Un nom composé exactement
+de six chiffres est réservé aux anciens codes de secours : utilise un autre nom.
 
-**Sur l'ordinateur qui rejoint :**
+Le renommage d’une partie publiée réserve d’abord le nouveau nom, sans couper
+la connexion existante. En cas de nom occupé, l’ancien reste utilisable. Un **code
+à six chiffres de secours** reste affiché pour compatibilité.
 
-1. Menu → **🌐 Jouer à distance** → **🔗 Rejoindre**.
-2. Colle le **code d'invitation**, clique **Générer ma réponse**, puis **Copier** et
-   renvoie ce code à l'hôte.
-3. Dès que l'hôte l'a collé, la partie démarre toute seule.
+Il ne s’agit **pas d’un annuaire mondial ni d’une recherche partielle** : il faut
+connaître le nom exact. Une partie solo n’est publiée que lorsque l’hôte choisit
+**Créer une partie**. Deux joueurs maximum, hôte connecté ; pas de serveur permanent.
+Les noms sont des invitations faciles à deviner, pas des mots de passe.
 
-Pendant la partie : tu vois l'autre joueur (son personnage et son étiquette de nom),
-les blocs qu'il casse et pose, les monstres qu'il affronte. Le monde, l'heure et les
-créatures sont gérés par l'hôte ; la carte est régénérée à l'identique chez l'invité
-(elle est déterministe à partir de la graine).
-
-**Si la connexion échoue** (certains réseaux d'entreprise/4G sont trop verrouillés) :
-installe un VPN personnel type **Tailscale** sur les deux machines et réessaie — les
-deux ordinateurs se verront alors comme sur un réseau local. Le mode « 2 joueurs sur
-le même écran » reste disponible juste en dessous pour jouer côte à côte.
+La mise en relation utilise **PeerJS Cloud** et la bibliothèque locale PeerJS 1.5.5
+(`assets/vendor/`, licence MIT). Les données du jeu circulent directement en WebRTC.
+Internet et un réseau compatible sont nécessaires ; aucun relais TURN propre au
+projet n’est déployé. Les noms et codes cessent de fonctionner quand la session
+est fermée. Les sauvegardes restent locales. Rejoindre crée une fiche locale
+séparée, sans écraser la partie solo précédente du joueur invité.
 
 ## 5. La survie, comme dans Minecraft
 
@@ -449,7 +458,9 @@ Tape **`aide`** pour afficher le rappel des commandes dans le tchat.
 ## 6 bis. Inventaire, établi et four
 
 **`E`** ouvre l'inventaire façon Minecraft : 27 cases + barre rapide + 4 emplacements
-d'armure, et quatre onglets.
+d’armure à gauche, un aperçu du personnage équipé et une grille personnelle 2 × 2.
+Les interfaces reprennent les panneaux gris, cases biseautées et textes pixelisés des captures de référence.
+La police Pixelify Sans est fournie localement sous licence OFL dans `assets/fonts/`.
 
 | Onglet | Ce qu'on y fait |
 |---|---|
@@ -459,12 +470,20 @@ d'armure, et quatre onglets.
 | **Blocs** | palette complète en créatif |
 
 * Un **clic droit main vide** sur un **établi** ouvre l'artisanat, sur un **four**
-  ouvre le four. Le four consomme **1 charbon** (ou 1 planche, 1 bûche, 2 bâtons,
-  ou 1 bloc de charbon) par cuisson.
+  ouvre le four. Place un ingrédient dans la case du haut, du combustible en bas,
+  puis récupère le résultat à droite. Une cuisson dure 3 secondes : un charbon
+  permet 8 cuissons, un bloc de charbon 80 ; une planche, une bûche ou deux bâtons
+  permettent une cuisson. La flamme et la flèche indiquent l’avancement.
+* Chaque four possède son contenu, conservé à la fermeture et dans les sauvegardes.
+  Casser un four chargé fait tomber son contenu. Les zones non chargées ne sont
+  pas prises pour des fours détruits ; leur cuisson est suspendue.
+* Le petit **livre vert** ouvre et ferme le catalogue : recherche, ingrédients,
+  schéma de fabrication et bouton **Remplir** ; dans le four, **Charger** prépare
+  l’ingrédient et le combustible depuis le sac.
 
 ### Fabriquer des planches en un clic
 
-Dans l'onglet **Établi**, le bouton **🪵 Faire des planches** transforme **tout le bois du sac**
+Dans le livre de recettes, le bouton **Planches** transforme **tout le bois du sac**
 en planches (1 bûche → 4 planches), sans rien placer à la main. La recette manuelle
 **9 bûches (une par case) → planches** existe aussi.
 
@@ -487,12 +506,12 @@ case du résultat à droite. **C'est toi qui fabriques**, case par case :
 
 | Situation | Grille | Ce qu'on peut faire |
 |---|---|---|
-| Aucun établi posé (« table de craft par défaut ») | **2 × 2 — 4 cases** | le strict nécessaire : planches, bâtons, **établi**, torches, four… |
-| **Établi fabriqué (4 planches) et posé** à moins de 4 blocs | **3 × 3 — 9 cases** | tout : pioches, haches, armures, lit, porte, golems… |
+| Inventaire personnel | **2 × 2 — 4 cases** | recettes de base : planches, bâtons, **établi** ; aucun outil, aucune arme ou armure |
+| **Établi posé et ouvert directement** | **3 × 3 — 9 cases** | recettes avancées : blocs, outils, armes et armures |
 
 L'établi **se fabrique à la main** (4 planches en carré dans les 4 cases), puis on le
 **pose** au sol. Le badge en haut à droite indique en permanence l'état :
-**Sans établi · 4 cases (2 × 2)** ou **Établi à portée · 9 cases (3 × 3)**.
+**Sans établi · 4 cases (2 × 2)** ou **Établi ouvert · 9 cases (3 × 3)**. Être simplement à côté ne suffit plus à agrandir la grille personnelle.
 
 Le **guide** liste les recettes par catégorie (Outils / Combat / Blocs / Nourriture /
 Divers) avec un **aperçu de la forme** en 3 × 3 et un bouton **Remplir** qui place les
@@ -515,29 +534,41 @@ manquants apparaissent en **rouge**.
 ## 6 quater. Le butin suit la difficulté
 
 Chaque structure a un **niveau de difficulté de 1 à 5** : plus c'est dangereux,
-plus le coffre est garni, et plus les objets rares apparaissent.
+plus le coffre contient de ressources utiles. Les objets précieux restent rares,
+avec des plafonds même dans les structures difficiles.
 
 | Niveau | Structures | Ce qu'on trouve en plus |
 |---|---|---|
 | 1 | village, igloo | pain, blé, charbon, quelques émeraudes |
 | 2 | avant-poste, épave, bibliothèque, portail en ruine, grotte | lingots de fer, livres, obsidienne |
 | 3 | mine, donjon, cabane de sorcière, temple, forge, trésor enterré | or, diamants, pioche et plastron en fer |
-| 4 | monument, manoir, forteresse du Nether, stronghold | diamants en série, épée en diamant, blocs d'or, perles |
-| 5 | bastion, cité de l'End | **éclats et lingots de netherite**, plastron en diamant, or |
+| 4 | monument, manoir, forteresse du Nether, stronghold | rares diamants, épée en diamant occasionnelle, perles |
+| 5 | bastion, cité de l'End | **netherite très occasionnelle**, plastron en diamant rare, un peu d’or |
 
 ## 7. Mode administrateur
 
-Un seul **propriétaire** par navigateur : il tape une fois
-`proprietaire` et devient le chef. **Lui seul peut nommer des admins.**
+Au premier lancement, choisis **Joueur** (fonctionnement habituel) ou **Admin**.
+Le profil Admin demande maintenant **uniquement un pseudo** (2 à 24 caractères),
+mémorisé avec le profil dans le navigateur. Aucun PIN, code de salon ou invitation
+à saisir. **Profil** permet de changer de profil/pseudo. **Monde Admin** ouvre un
+écran réduit à « Rejoindre le monde Admin » et « Retour », puis trois types :
+**normal**, **tout plat**, **monobloc**.
+
+Ces trois mondes sont communs aux Admins : Firebase arbitre un hôte par type et
+conserve son checkpoint ; les navigateurs jouent ensemble par WebRTC. L'accès
+par simple pseudo est un choix de facilité, **pas une authentification Admin sûre**.
+Les personnes modifiant leur client peuvent également choisir ce profil.
+Voir [l'activation Firebase](firebase/SETUP.md) pour la configuration nécessaire,
+les règles, la persistance, les limites et les coûts.
 
 | Commande | Qui | Effet |
 |---|---|---|
-| `proprietaire` | tout le monde (une fois) | devenir propriétaire |
+| `proprietaire` | Profil Admin | commande de compatibilité ; ne change pas le profil |
 | `pseudo Alex` | tout le monde | changer son nom (affiché au-dessus de l'avatar en ligne) |
-| `admin Alex` | **propriétaire** | nommer un admin |
-| `retirer Alex` | **propriétaire** | destituer un admin |
+| `admin Alex` | Admin hôte | nommer le joueur connecté Admin et mémoriser son profil sur son navigateur |
+| `retirer Alex` | Admin hôte | retirer ses droits dans cette partie (son profil local Admin reste mémorisé) |
 | `admins` | tous | liste des admins |
-| `creatif` / `survie` | admin | changer de mode de jeu (l'hôte l'impose aux joueurs en ligne) |
+| `creatif` / `survie` | solo ou Admin en ligne | changer son mode, hors Hardcore |
 | `donner diamant 32` | admin | recevoir un objet (recherche par nom, insensible aux accents) |
 | `tuer` | admin | foudroyer les monstres à moins de 28 blocs |
 | `explosion` | admin | trou de creeper sur le bloc visé |
@@ -700,3 +731,449 @@ astuce qui tourne ; comptez une quinzaine de secondes au premier lancement (le m
 se génère à la volée).
 
 Bon jeu.
+
+
+## Mort, rails et repérage des portails
+
+- À la mort, le sac, la barre rapide, l’armure équipée et les objets de la grille
+  de fabrication tombent à la position du joueur. Ils tournent sur eux-mêmes,
+  sont récupérables en revenant à proximité et conservent leur usure.
+  Comme les autres objets au sol, ils disparaissent après cinq minutes actives
+  dans leur dimension (ou s’ils tombent dans le vide).
+- **Rails** : 6 lingots de fer + 1 bâton → 16 rails.
+- **Rails propulseurs** : 6 lingots d’or + 1 bâton + 1 redstone → 6 rails.
+  Ils accélèrent automatiquement les wagonnets, sans alimentation supplémentaire.
+- **Wagonnet en fer** : 5 lingots de fer. Poser sur un rail avec le clic droit ;
+  main sans wagonnet, clic droit à proximité pour monter, puis clic droit pour
+  descendre. Cette première version permet les lignes droites horizontales,
+  avec demi-tour au bout de la voie ; pas encore de pentes ni de virages.
+- Ces trois recettes utilisent l’établi. Les objets sont aussi disponibles dans
+  l’inventaire créatif. Les wagonnets et objets au sol sont sauvegardés.
+- **Vision X** : recherche des forteresses jusqu’à 8 000 blocs par axe, grands
+  repères et schéma agrandi du portail le plus proche avec distance et coordonnées.
+  Le schéma n’est pas une caméra distante et ne révèle pas les yeux déjà insérés.
+- Les portails en ruine et les forteresses sont moins fréquents dans la génération.
+  Les cadres de l’End incomplets sont étiquetés « Portail de l’End en ruine ».
+
+Test de logique ciblé : `node tests/death_rails_test.js`.
+
+## Cinématiques de début et de victoire
+
+Avant chaque nouvelle partie, une **cinématique narrative animée de 20 secondes**
+montre le personnage arrivant par un ancien portail : il cherchait un refuge,
+le passage se ferme, et il décide de rebâtir un foyer dans ce monde oublié. La reprise d’une sauvegarde ne relance pas l’introduction.
+
+Après la défaite du dragon de l’End, une seconde cinématique de 20 secondes
+raconte que le dragon était le dernier de son espèce : les tours le soignaient
+et les endermen le protégeaient. Elle rend ensuite la main au joueur.
+Cette histoire est une fiction propre à Blocraft, pas un récit officiel de Minecraft.
+Le jeu est suspendu pendant la cinématique en solo. En multijoueur, l’autre
+navigateur n’est pas mis en pause.
+
+Ces animations Canvas et leurs textes sont intégrés au fichier HTML : pas de
+fichier vidéo externe, de téléchargement ni de voix enregistrée. Le bouton
+**Passer**, `Échap`, `Espace` ou `Entrée` permettent de reprendre immédiatement.
+Le compteur s’arrête lorsque l’onglet est masqué ; les animations respectent
+la préférence de réduction des mouvements du navigateur.
+
+Test ciblé : `node tests/cinematics_test.js`.
+
+## Site web et GitHub Pages
+
+Le dépôt contient désormais un site statique complet :
+
+- `index.html` : accueil responsive en français, univers visuel voxel et boutons Jouer.
+- `assets/` : styles, favicon et illustration isométrique Canvas générée localement.
+- `jeu/index.html` : page du jeu, retour à l’accueil et plein écran. Elle charge
+  `../blocraft.html` dans une iframe de même origine, sans dupliquer le code du jeu.
+- `.nojekyll` : publication statique directe sur GitHub Pages, sans compilation.
+
+Les liens sont relatifs : le site fonctionne aussi bien à la racine d’un domaine
+que sous le chemin de projet `/Blocraft/`. Sur GitHub Pages, les adresses sont :
+
+- Accueil : <https://ytcodage.github.io/Blocraft/>
+- Jeu : <https://ytcodage.github.io/Blocraft/jeu/>
+
+Dans **Settings → Pages**, utiliser **Deploy from a branch**, chemin **/(root)**.
+La branche configurée est automatiquement republiée à chaque push. Si le site est
+publié depuis une branche de travail pour validation, sélectionner `main` après
+la fusion de la pull request pour reprendre les publications depuis la branche
+principale.
+
+Pour tester en local :
+
+```sh
+npm ci
+npm run serve
+# Ouvrir http://localhost:8000/
+```
+
+Vérifications :
+
+```sh
+npm test
+npx playwright install chromium
+npm run test:site
+```
+
+Le test du site vérifie l’accueil et la page `/jeu/` aux largeurs 320, 390, 768
+et 1440 pixels, les liens, les ressources et l’absence de débordement horizontal.
+Il remplace le contenu de l’iframe pour isoler le test de mise en page de la
+génération du monde ; ce n’est pas un test complet du moteur du jeu.
+Les autorisations plein écran restent soumises aux limitations du navigateur,
+notamment sur iOS. Les sauvegardes dépendent du navigateur et de l’origine :
+une partie ouverte en `file://` n’est pas automatiquement transférée au site HTTPS.
+
+
+## Tactile, matériaux, eau et discussion
+
+- Les boutons **Miner** et **Poser** ont été supprimés. Un tap sur la scène fait
+  une seule action ; maintenir sans bouger lance le minage. Un glissement ne pose
+  jamais de bloc. Le bloc visé est calculé sous le doigt, pas seulement au centre.
+  Le joystick à gauche et le regard à droite restent disponibles ; les gestes sont
+  annulés à l’ouverture d’un menu, à la mort et à la perte de focus.
+- Les **armes et armures nécessitent l’ouverture d’un établi posé** : elles sont
+  verrouillées dans l’inventaire personnel, même si un établi est proche. Toucher
+  l’établi (ou clic droit) l’ouvre, même en tenant un bloc. Un établi détruit ou
+  devenu trop éloigné ne permet plus ces fabrications.
+- **12 nouveaux blocs** : granit/diorite/andésite polis, marbre veiné, carrelages
+  d’ardoise et de terre cuite, parquet de chêne, grès rouge, grès poli, verres bleu
+  et vert, briques lumineuses. Ils ont leurs textures et recettes, et apparaissent
+  dans le catalogue créatif. Les identifiants existants ne changent pas.
+- La **bedrock (roche-mère)** est disponible en créatif et cassable uniquement
+  dans ce mode ; elle reste indestructible à la main ou avec un outil en survie.
+- Soleil et lune ont un disque **carré**. Les matériaux ont un éclairage directionnel
+  plus doux ; les planches et l’établi ont des textures retravaillées.
+- L’eau utilise désormais une surface raccordée entre les blocs de niveaux
+  différents et des coordonnées de texture continues. Son shader lit la bonne
+  texture d’eau (et non celle de neige), avec transparence, rides et reflets.
+  Les contours et fissures ne sont plus dessinés sur l’eau ou sur un bloc déjà cassé.
+- **Chat à gauche au milieu** : bouton **Chat** sur PC/mobile, ou `T` au clavier.
+  Écris normalement pour discuter ; commence par `/` pour une commande.
+  Les morts sont annoncées avec leur cause, par exemple « Joueur est mort,
+  tué par un zombie ». Les messages sont échangés entre les deux joueurs déjà
+  connectés en WebRTC ; en solo, ils restent locaux. Pas de salon public ni de serveur.
+  L’historique conserve 40 entrées pendant la session ; textes limités à 240 caractères.
+
+Tests supplémentaires : `npm run test:game` vérifie les vrais gestes tactiles
+Chromium, les restrictions de fabrication, le chat et la compilation/rendu WebGL
+sur une petite scène déterministe. Ce test ne remplace pas un essai sur un
+appareil Android/iOS réel, ni une validation complète du multijoueur entre deux appareils.
+
+
+## Fabrication et rareté des trésors
+
+Les recettes de **blocs** se fabriquent désormais en ouvrant un établi posé,
+comme les armes et armures. Deux exceptions permettent de démarrer : les **planches**
+et l’**établi lui-même** restent fabricables dans le sac. Les autres objets simples
+suivent leurs recettes existantes. Les blocs sans recette restent accessibles selon
+les règles existantes (minage, exploration ou catalogue créatif).
+
+Les coffres contiennent nettement moins de diamants, d’or, d’émeraudes, de fer et de
+netherite. Les tirages précieux sont moins fréquents, les piles sont plus petites
+et un plafond par coffre évite les grosses accumulations. Les bonus de forteresses
+ne garantissent plus systématiquement des diamants et des lingots. Les ressources
+dans le terrain et les récompenses du dragon ne sont pas modifiées par ce réglage.
+
+Tests : `npm test`, `npm run test:game`, `npm run test:site`, `npm run test:rooms`.
+Le dernier test utilise le vrai client PeerJS et un PeerServer de test local (la
+dépendance de développement `peer`) avec deux navigateurs et un troisième refusé.
+Il valide l’échange WebRTC, mais pas la disponibilité du cloud public ni tous les
+cas de NAT sur Internet. Aucun serveur Node ne doit être déployé sur GitHub Pages.
+
+
+### Vérification des nouveaux écrans
+
+`npm run test:inventory` vérifie dans Chromium : les 27 + 9 cases, la grille
+personnelle 2 × 2, l’équipement avec conservation de l’usure, le livre et sa
+recherche, le remplissage et la fabrication, l’établi 3 × 3, le four avec sa
+combustion et son résultat, sa sérialisation, la restitution du contenu d’un four
+cassé et les écrans de largeur 320/390 pixels. Le catalogue créatif propose des
+catégories, une recherche dans tous les objets et une barre d’accès à l’inventaire.
+Le soleil et la lune utilisent maintenant des contours carrés nets et un motif
+à pixels fixes, sans disque arrondi ni cratères lissés.
+
+
+`npm run test:profile` vérifie le premier choix, le refus d’un mauvais code,
+le profil Joueur, l’ancienne commande propriétaire, l’activation de
+l’administration, la mémorisation et le changement de profil à 390 pixels.
+Le test utilise un vérificateur de test, sans inclure le code réel dans le dépôt.
+
+
+## Mode Trolle et interfaces simplifiées
+
+**Trolle** conserve la construction du créatif, avec les attributs réels de la forme choisie. Après le choix du
+mode et du nom, **Se transformer** permet de rechercher et choisir un animal,
+un monstre courant ou un bloc. Les modèles sont animés et transmis à l’autre
+joueur. Une vue à la troisième personne permet de voir son propre déguisement ;
+le bouton de vue permet de revenir en première personne et l’apparence **Joueur**
+permet de retrouver le personnage normal. Les transformations changent réellement les PV maximum, les dégâts, la vitesse,
+la portée, la taille de collision et la hauteur des yeux. **G**, le bouton de capacité
+mobile ou `/capacite` utilise le pouvoir. Exemples : téléportation d’Enderman,
+explosion de Creeper/TNT avec mèche de 1,35 s et mort de la forme, escalade de
+l’araignée au contact d’une paroi, chute ralentie de la poule, vol et résistance au
+feu du Blaze, tirs à distance des squelettes/Blazes/golems de neige. Les morts-vivants
+subissent le soleil ; l’Enderman subit l’eau. Les animaux peuvent récupérer des PV.
+Les blocs sont immobiles, ont une taille et des PV dérivés de leur matière, n’ont
+pas de faim et peuvent poser une copie (les lits restent longs de deux cases).
+Il ne s’agit pas d’une simulation exhaustive de toutes les propriétés de chaque
+bloc ou de chaque créature ; les boss ne sont pas proposés.
+Le mode et l’apparence sont sauvegardés. `/troll` ou `/mode troll` active Trolle
+en cours de partie, sauf en Hardcore. Une forme trop grande pour l’espace libre
+est refusée sans remplacer la précédente.
+
+Les barres de catégories « Combat », « Outils », etc. sont retirées des écrans.
+Le catalogue affiche tous les objets et conserve la recherche. Le livre affiche
+les recettes autorisées, avec recherche et remplissage. Les armes ne sont pas
+supprimées du jeu : elles restent soumises aux règles d’établi.
+
+Il n’existe plus d’onglet **Four** dans l’inventaire. Le four se fabrique avec
+8 pierres taillées/cobblestone à l’établi, puis doit être posé et ouvert dans le
+monde. La grille personnelle ne permet pas de fabriquer le four.
+
+Les lits nouvellement posés utilisent deux cases sur un sol solide. Si une case
+est occupée, aucune ressource n’est consommée. Casser l’une des moitiés retire
+l’autre et ne rend qu’un lit. Les têtes internes ne sont pas des objets du catalogue.
+Les anciens lits d’une seule case présents dans des sauvegardes restent compatibles
+pour dormir ; casse-les et repose-les pour obtenir le nouveau format.
+
+Les tests `test:game` couvrent le choix du mode, l’écran de nom, les apparences
+locales/distantes, le rendu WebGL répété et les lits dans quatre orientations.
+`test:rooms` utilise un vrai PeerServer local pour les noms Unicode, les collisions,
+le renommage avec connexion conservée, le handshake Trolle et l’ancien code de secours.
+La disponibilité du service public et les NAT de réseaux physiques ne sont pas
+validés par ces tests locaux.
+
+
+### Assistant de création : vérifications
+
+`npm run test:wizard` vérifie l’unique question visible, les quatre valeurs de
+progression, les retours sans perte, le nom obligatoire, la graine facultative,
+la confirmation sans double lancement, l’annulation sans modification du monde
+courant et les largeurs 320/390/1280 pixels. Les choix sont conservés dans un
+brouillon jusqu’à la confirmation finale. Les titres reçoivent le focus à chaque
+étape et la progression est exposée aux lecteurs d’écran. Les animations de la
+barre respectent la préférence de réduction des mouvements.
+
+
+## Chat et commandes centralisés
+
+**T** ouvre le chat ; **/** ouvre directement le catalogue. La touche `/` est
+reconnue aussi sur clavier AZERTY. Les commandes existantes et leurs alias sont
+listés et filtrés à la frappe. ↑/↓ sélectionnent, **Tab** complète, **Entrée**
+confirme. Les anciens raccourcis « Codes » du panneau QA conduisent au même chat.
+
+- `/tp` demande **joueur**, **dimension** ou **coordonnées**. Le choix d’un joueur
+  affiche les personnes réellement connectées ; un pseudo inconnu n’envoie jamais
+  vers un autre joueur par défaut. `/tp Alex`, `/tp 20 80 -15`, `/tp end` fonctionnent
+  aussi directement ; une destination bloquée dans la dimension courante est refusée.
+- `/dim` propose Monde normal, Nether et End ; `/mode` propose les modes disponibles.
+- `/donner` propose un objet puis une quantité ; `/spawn` une créature puis un nombre.
+- `/xp`, `/vitesse`, `/portee` proposent des valeurs. Vitesse/portée fonctionnent sans
+  devoir activer QA et sont temporaires, non sauvegardées.
+- `/transforme` ouvre les formes ; `/capacite` utilise leur pouvoir ; `/vue` change la vue.
+- `/joueurs`, `/position`, `/sauver`, `/inventaire`, `/recettes`, `/pause`, `/inviter`,
+  `/renommer Nouveau nom`, `/dormir`, `/retour`, `/pointdepart`, `/hud` complètent les
+  commandes existantes. Dormir exige toujours de regarder un vrai lit placé.
+- `/admin` et `/retirer` proposent le joueur connecté ; la modification des droits
+  passe par l’hôte. En ligne, les commandes de triche/voyage sont réservées aux
+  admins autorisés par l’hôte. Trolle et ses pouvoirs restent accessibles hors Hardcore.
+
+### Hardcore
+
+L’assistant de création propose **Hardcore** dans les mondes normal et mono-bloc.
+C’est une partie **solo**, en survie, avec des dégâts ×1,5, une seule vie et une
+mort définitive mémorisée dans la sauvegarde. Recharger ou reprendre la partie ne
+rend pas la vie ; le bouton Réapparaître reste désactivé. Les changements de mode,
+les téléportations, le retour instantané R, QA, Vision X et les commandes de triche
+sont désactivés ; les commandes d’information et d’interface restent disponibles.
+`/hardcore` peut aussi engager la partie solo actuelle ; ce choix est irréversible
+pour cette partie. Le stockage local demeure modifiable : aucun système de classement
+ou de preuve anti-triche n’est annoncé.
+
+### Monde Admin commun et QA temporaire
+
+L'écran Admin n'a plus les options d'hébergement/invitation/copie de code. Après
+**Rejoindre le monde Admin**, choisir **normal**, **tout plat** ou **monobloc**.
+Un document canonique Firestore par type élit un navigateur hôte par transaction,
+avec un bail de 45 secondes renouvelé toutes les 12 secondes. Les autres Admins
+rejoignent automatiquement cet hôte. Le transport Admin accepte plusieurs membres
+(test avec trois), sans changer la limite des parties ordinaires à deux.
+
+Les checkpoints du monde hôte sont publiés atomiquement toutes les 30 secondes,
+en segments et avec une limite de 8 Mio. Ils permettent de reprendre sur un autre
+navigateur. Après une fermeture brutale, attendre l'expiration du bail et rejoindre
+à nouveau ; il peut manquer les changements du dernier intervalle. Le navigateur
+hôte doit rester ouvert/actif : Firestore n'est pas un serveur de jeu permanent.
+Le choix Admin/Joueur, les sauvegardes ordinaires et QA restent locaux ; seuls les mondes Admin
+et le pseudo technique associé à la session Firebase sont envoyés au cloud.
+
+**Le profil et le pseudo persistent ; QA ne persiste jamais au rechargement.**
+`/qa` l'active explicitement pendant la session. Le jeu conserve les droits hôte
+pour les listes Admin ; le profil choisi par pseudo n'est pas une preuve d'identité.
+La connexion Firebase anonyme et les règles ne créent pas de comptes du personnel.
+
+**Activation requise dans le projet Firebase réel :** Authentication anonyme,
+Firestore `(default)`, publication des règles fournies. Le SDK web ne donne pas
+les droits de modifier ces réglages. Aucun test dans ce dépôt n'affirme avoir
+validé leur activation en production. [Procédure complète](firebase/SETUP.md).
+En cas de refus Firebase ou de réseau indisponible, un message explique le problème :
+le jeu ne crée pas silencieusement un monde privé différent du monde commun.
+
+### Personnage 3D dans l’inventaire
+
+L’aperçu utilise des cuboïdes texturés projetés en 3D, une tête volumétrique avec
+cheveux et nez, un éclairage par face, l’armure et une respiration animée. La tête
+suit le pointeur ; glisser sur le personnage tourne le corps (souris ou tactile).
+Les flèches gauche/droite fonctionnent aussi après avoir focalisé l’aperçu. La
+préférence de réduction des mouvements supprime la respiration automatique.
+
+Tests complémentaires : `npm run test:commands` (palette, choix guidés, capacités,
+aperçu 3D, sauvegarde de la mort Hardcore, profil/QA) et `npm run test:adminrealm`
+(vrai PeerJS/WebRTC local avec base cloud simulée : trois Admins,
+3 types, relayage/ciblage, reprise persistante et erreurs Firebase sans fork local).
+
+### Rails, véhicules et circuits
+
+- **Utiliser / clic droit / tap** : poser un wagonnet sur un rail, puis l'utiliser
+  pour monter. **X** ou le bouton **Descendre** permet de sortir. Le wagonnet peut
+  aussi être utilisé avec un autre objet en main. Un siège occupé n'est pas écrasé.
+- Marcher contre un mob ou un villageois le pousse ; un wagonnet vide proche le
+  prend comme passager. Accroupissement + utilisation le fait descendre. Les boss
+  ne montent pas. Les passagers et les véhicules sont sauvegardés.
+- Les rails ordinaires prennent automatiquement un **angle** avec leurs voisins ;
+  la géométrie visible et la trajectoire suivent la même courbe. Une boucle fermée
+  tourne indéfiniment à faible vitesse (choix arcade, sans moteur obligatoire).
+  Le rail propulseur accélère sous tension et freine sinon. Les tracés sont **plans**,
+  pas des pentes ni des croisements à niveaux différents.
+- Un aiguillage à trois branches sélectionne l'une des deux branches à partir
+  du tronc ; un **levier adjacent** ou un signal de poussière change la sélection.
+  À quatre voisins, la sélection alterne nord/sud et est/ouest. Les connexions
+  restent des cases adjacentes : pas de téléportation entre rails éloignés.
+- Circuits implémentés : leviers, boutons temporisés, plaques, poussière avec
+  atténuation sur 15 cases, lampes, portes, TNT, répéteurs orientés et réglables,
+  comparateurs comparaison/soustraction de signaux, torches inverseuses, pistons
+  et pistons collants **horizontaux** (12 blocs maximum), détecteurs de wagonnet et
+  rails activateurs qui éjectent les passagers. Utiliser un répéteur change son délai ;
+  utiliser un comparateur change son mode. Les blocs directionnels suivent le regard
+  lors de la pose. Les conteneurs et l'obsidienne ne sont pas poussables.
+- Ce sont des circuits discrets à 10 Hz, **pas toutes les mécaniques de Minecraft** :
+  pas de quasi-connectivité, de lecture analogique des coffres, de pistons verticaux,
+  d'entonnoirs ou de distributeurs. Les recettes figurent dans le livre de l'établi.
+- Poser le **bateau** sur l'eau, puis l'utiliser pour monter. Avancer/reculer avec les
+  commandes habituelles et regarder pour tourner ; X / Descendre pour sortir.
+- En réseau, l'hôte simule les circuits et les véhicules ; l'invité demande la pose,
+  l'embarquement et la sortie, et transmet ses commandes de bateau. Un siège n'a
+  qu'un conducteur. Ce protocole ne transforme pas le client en système anti-triche.
+
+### Arc, TNT, coordonnées et météo
+
+L'**arc** et les **flèches** se fabriquent à l'établi. Le gravier peut fournir du
+silex, les poules des plumes. Tirer consomme une flèche hors créatif et use l'arc ;
+le projectile a une gravité, heurte les blocs et inflige des dégâts aux mobs.
+Une flèche arrêtée par un bloc peut être ramassée. En réseau, l'hôte applique les
+impacts ; les projectiles de l'invité sont affichés sans second calcul des dégâts.
+
+La **TNT exige un briquet pour l'allumage manuel** ; un circuit peut aussi l'amorcer.
+Choisir des blocs en créatif réutilise une pile existante ou remplit la prochaine
+case vide, sans écraser les choix précédents. Si l'inventaire est plein, un message
+invite à libérer une case.
+
+Le HUD affiche **X / Y / Z**, une rose des vents et un angle : nord 0°, est 90°,
+sud 180°, ouest 270°. Les destinations de portails et les listes de lieux indiquent
+également les trois axes. En vol, avancer suit la hauteur du regard ; lever/baisser
+la tête fait monter/descendre. Les citrouilles naturelles sont beaucoup moins
+fréquentes et les citrouilles sculptées ne sont plus générées naturellement.
+
+La météo alterne entre ciel clair, pluie, neige et orage, avec particules extérieures,
+assombrissement, éclairs et tonnerre. `/meteo clair|pluie|neige|orage` est aussi
+accessible depuis le sélecteur `/`. Pas d'accumulation de neige au sol ni d'incendies
+causés par la foudre. Le type de météo est sauvegardé et communiqué à l'invité.
+
+### Victoire et outils QA
+
+La mort du dragon met la cinématique de fin en attente même si QA, l'inventaire ou
+la pause était ouvert. Après la scène, deux choix : rejoindre le **coffre de victoire**
+ou rentrer dans le **monde normal**. `/victoire` rouvre ce choix après la victoire.
+Le coffre contient notamment la **tête du dragon**, son **cœur**, des diamants,
+de la netherite, une arme et des perles. Son contenu est sauvegardé : rouvrir le
+coffre ou recharger ne réattribue pas la récompense. Le cœur permet aussi le retour.
+Comme les coffres ordinaires, son inventaire reste local au client ; il n'existe
+pas encore de gestion transactionnelle des inventaires partagés entre navigateurs.
+
+Dans la liste **QA → entités**, chaque mob a maintenant **TP** et **Tuer**.
+Les contrôles réseau restent soumis aux droits Admin de la partie.
+
+`npm run test:mechanics` couvre les IDs de blocs 16 bits, la boucle et l'aiguillage,
+la propulsion, le passager villageois sauvegardé, la redstone atténuée, le répéteur,
+le piston collant, TNT/briquet, bateau, tir, sélection créative, vol au regard,
+coordonnées, météo et victoire déclenchée depuis la pause. `test:rooms` vérifie aussi
+le wagonnet invité et son siège exclusif, le décompte, la météo et le tir via un
+vrai canal PeerJS/WebRTC local. `test:game` maillage/rendu WebGL inclut les nouveaux
+blocs, rails courbes, wagonnets et bateaux.
+
+
+### Développement Firebase
+
+Le SDK est chargé à la demande et bundlé localement (pas de script CDN à l'exécution) :
+`npm run build:cloud`. La configuration publique du projet `blocraft` est dans
+`src/firebase-cloud.js` ; aucune clé de compte de service ni Analytics n'est ajouté.
+`npm run test:cloud` teste le stockage transactionnel et les baux en mémoire ;
+`npm run test:adminrealm` teste la coordination cloud simulée avec de vrais canaux
+WebRTC. Les règles Firestore restent à déployer par le propriétaire :
+[firebase/SETUP.md](firebase/SETUP.md). `npm audit` ne signale aucune vulnérabilité
+après la mise à jour de Playwright et du transport gRPC indirect (non inclus dans
+le bundle web).
+
+### Fluidité mobile et multijoueur
+
+Le rendu mobile démarre à un pixel de rendu par pixel CSS, avec une résolution et
+une portée adaptatives. Deux mesures lentes successives réduisent la charge ; la
+qualité ne remonte qu'après plusieurs secondes stables. La distance choisie reste
+un plafond : elle peut être réduite temporairement pour préserver la fluidité.
+
+Le streaming mobile effectue au maximum **une génération et un maillage par image**,
+sans la rafale de maillages supplémentaires déclenchée auparavant par une grosse
+file. Les tâches les plus proches passent d'abord, sans trier/copier toute la file.
+Les budgets restent indicatifs : un chunk individuel est encore calculé sur le
+thread principal et ne peut pas être interrompu au milieu de son calcul.
+
+Autres réductions de travail : déchargement des chunks moins fréquent à l'arrêt,
+mobs hors portée visuelle non dessinés (mais pas supprimés de la simulation),
+particules météo moins nombreuses et moins fréquentes sur mobile, canvas météo
+inactif non repeint, coordonnées à 10 Hz et étiquettes de joueurs réutilisées plutôt
+que recréées à chaque image.
+
+En réseau : positions immobiles envoyées seulement au heartbeat (~1 s), positions
+mobiles jusqu'à ~12 Hz sur téléphone, snapshots de mobs à 8 Hz avec déduplication et
+filtrage par voisinage pour les mondes Admin. Les véhicules immobiles ne renvoient
+plus une copie complète des circuits en permanence ; les mises à jour partielles
+préservent les circuits déjà reçus et un état complet est renvoyé après l'arrivée
+effective du joueur. Les changements de circuits restent fiables.
+
+Les positions/yaws affichés des avatars, bateaux et wagonnets sont interpolés entre
+les messages, sans modifier les positions faisant autorité pour les interactions.
+Les grands déplacements se recalent immédiatement. Quand un canal WebRTC accumule
+des données, seuls les états remplaçables (poses, snapshots mobiles, etc.) sont
+coalescés vers leur dernière valeur ; les blocs, le chat, le butin et les métadonnées
+de circuits restent sur le canal fiable. Cela limite l'accumulation de positions
+anciennes sans supprimer des modifications du monde.
+
+`npm run test:performance` vérifie ces plafonds de travail, l'hystérésis, le
+heartbeat, les files réseau bornées par type/joueur, la conservation des blocs et
+circuits, et l'interpolation. `test:adminrealm` vérifie aussi le lissage sans modifier
+la simulation et la réutilisation des étiquettes avec de vrais échanges WebRTC.
+Ces contrôles ne constituent pas un benchmark FPS sur un téléphone physique.
+Recharger le jeu sur **tous les appareils** après la mise à jour pour utiliser le
+même format de snapshots partiels.
+
+### Objets au sol, rituel et effets visuels
+
+- **Jeter** : prends une pile dans l’inventaire puis utilise **Jeter ↓** (également sur mobile), ou clique dans le fond extérieur à la fenêtre. En jeu, **G** jette un objet de la case sélectionnée ; **Maj+G** jette la pile. Les quantités et l’usure des outils/armures sont conservées. Une sélection créative infinie produit un seul objet réel. Les objets jetés restent ramassables pendant cinq minutes ; le délai initial évite de les reprendre immédiatement. En multijoueur, l’hôte arbitre leur physique et chaque ramassage, y compris entre plusieurs Admins. Les inventaires restent toutefois gérés par les clients : ce n’est pas un système anti-triche.
+- **Wagonnet** : approche-toi à moins de trois blocs et utilise le clic droit / bouton tactile **Poser / Utiliser**, même si ton viseur atteint le sol derrière le wagon. **X** ou Utiliser permet de descendre. Les sièges déjà occupés restent protégés ; avec un wagon en main, viser un autre rail permet toujours d’en poser un nouveau.
+- **Herobrine** : construis une base **3 × 3 de blocs d’or**, pose **une torche de redstone sur chacun des quatre coins**, puis **un bloc de pierre au centre, juste au-dessus de l’or**. L’ordre de construction est libre. Laisse deux blocs d’air au-dessus de la pierre. La pierre est consommée à l’invocation, empêchant une réactivation automatique après rechargement ; Herobrine vivant est inclus dans la sauvegarde de la dimension active. Il possède un modèle à yeux blancs, poursuit les joueurs et peut être combattu. Le rituel ne fonctionne pas dans le Nether ou l’End.
+- **Graphismes** : contours et reflets des armes, rivets/joints des armures et biseaux des blocs métalliques. Les torches éclairent les surfaces voisines avec une teinte chaude, même la nuit. Les quatre sources les plus proches sont retenues pour limiter le coût sur mobile ; cet éclairage local n’ajoute pas de projection d’ombres.
+- **Fourneaux** : flammes animées et fumée montante tant que le combustible brûle, lumière locale et extinction des effets à l’arrêt. L’activité visuelle de l’hôte est partagée ; les particules restent calculées localement et plafonnées.
+- **Monstres** : pas de génération naturelle de monstres dans le monde principal pendant la journée, y compris dans les grottes. Les monstres ordinaires exposés au soleil brûlent visiblement et perdent de la vie ; l’ombre et l’eau les protègent. Les créatures de feu, les boss et Herobrine sont immunisés ; le Nether et l’End gardent leurs règles propres.
+
+Vérification dédiée : `npm run test:world-features` (Chromium/Playwright). Les tests multi-Admin exercent aussi les objets jetés, le ramassage unique et l’activité des fourneaux sur de vraies connexions WebRTC avec stockage cloud simulé. **Recharge le jeu sur tous les appareils après une mise à jour.**
