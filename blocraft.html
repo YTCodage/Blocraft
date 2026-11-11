@@ -1301,6 +1301,14 @@
   }
 
   /* Discussion : à gauche au milieu, loin de la barre rapide et du joystick. */
+  #touch #tCrouch.active{background:#426b47;border-color:#b4f38d}
+  #touch #tPlace,#touch #tCrouch{display:flex;align-items:center;justify-content:center;touch-action:none;cursor:pointer}
+  .is-touch #touch #tPlace{right:calc(env(safe-area-inset-right) + 110px)!important;bottom:calc(env(safe-area-inset-bottom) + 70px)!important}
+  .is-touch #touch #tCrouch{right:calc(env(safe-area-inset-right) + 110px)!important;bottom:calc(env(safe-area-inset-bottom) + 132px)!important}
+  #voiceToggle{display:none;position:fixed;left:max(14px,env(safe-area-inset-left));top:calc(34% - 49px);z-index:26;border:1px solid #789b85;background:#132e29ee;color:#ebfbee;border-radius:8px;padding:9px 12px;min-height:40px;cursor:pointer;font:600 12px system-ui}
+  body.chat-enabled #voiceToggle,body.voice-live #voiceToggle{display:block}body.chat-open #voiceToggle{top:max(5px,calc(20% - 46px));left:auto;right:max(14px,env(safe-area-inset-right))}
+  #voiceToggle[aria-pressed="true"]{background:#27694a;border-color:#adfbb4}
+  @media(max-width:700px){#voiceToggle{top:calc(40% - 44px);padding:7px 10px;font-size:10px}body.chat-open #voiceToggle{top:max(5px,calc(16% - 40px))}}
   #chatToggle{display:none;position:fixed;left:max(14px,env(safe-area-inset-left));top:34%;z-index:25;border:1px solid #6d9b67;background:#14271fe6;color:#d8f4cf;padding:9px 12px;border-radius:8px;font:600 12px system-ui;cursor:pointer;min-height:40px}
   body.chat-enabled #chatToggle{display:block}
   .is-touch #touch #tJump{bottom:calc(env(safe-area-inset-bottom) + 70px)!important}
@@ -1392,6 +1400,8 @@
 
 #commandMenu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:#111e1cf5;border:1px solid #8ccf83;border-radius:12px;max-height:min(46vh,400px);overflow:auto;padding:10px;box-shadow:0 15px 50px #0009;display:grid;gap:6px;color:#effff2}#commandMenu.hidden{display:none}#commandMenu h3{font:700 15px system-ui;margin:4px 6px 9px}#commandMenu button{width:100%;text-align:left;white-space:normal;background:#ffffff09;border-color:#ffffff20;font:14px system-ui;padding:10px;line-height:1.5}#commandMenu button:focus,#commandMenu button.selected{background:#365e39;outline:2px solid #afe193}#commandMenu small{display:block;color:#bacdc2;font-size:12px}#skinPreview{cursor:grab;touch-action:none;image-rendering:pixelated}#skinPreview:active{cursor:grabbing}#realm .panel{max-height:90dvh;overflow:auto}#realm p{line-height:1.7}#realm input{max-width:100%;box-sizing:border-box;border:1px solid #66857c;border-radius:7px;padding:11px;background:#091516;color:#e4f7ed;margin:7px 0 13px;font:13px monospace}#realm .btn{margin:5px 0}#realm label{display:block;margin-top:10px;font-size:13px}#powerButton{position:fixed;right:16px;top:115px;z-index:13;background:#243b2e;color:#dfffe3;border:1px solid #8abd7a;border-radius:9px;padding:10px;max-width:200px}#powerButton small{display:block;font-size:11px}body:not(.chat-enabled) #powerButton{display:none}@media(max-width:600px){#powerButton{top:85px;max-width:145px;font-size:12px}#newgame .wizardChoice{padding:10px 13px}#newgame .wizardChoices{gap:6px}}
 
+.socialPanel{width:min(560px,95vw);max-height:94dvh;overflow:auto;gap:12px;padding:24px}.socialPanel p{color:#c5dbc9;line-height:1.5;margin:4px 0 12px}.socialGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.socialGrid button{min-height:92px;background:#1b2c25;border:2px solid #517354;border-radius:12px;color:#f0ffee;cursor:pointer;padding:12px;text-align:left}.socialGrid button.active{border-color:#bdf58f;background:#24472c}.socialGrid button:disabled{opacity:.48;cursor:not-allowed}.socialGrid b{display:block;font-size:22px}.socialGrid small{display:block;margin-top:5px}.socialRow{display:flex;gap:8px;margin:8px 0}.socialRow input{min-width:0;flex:1;background:#0c201b;border:1px solid #688c6d;color:#fff;border-radius:7px;padding:10px;font:inherit}.socialRow .btn{flex:none}.socialQuality{display:flex;align-items:start;gap:10px;padding:12px;background:#183026;border-radius:8px}.socialPanel>button:last-child{margin-top:14px}.socialFriend{display:flex;align-items:center;gap:8px;border-bottom:1px solid #53735a;padding:8px 0;overflow-wrap:anywhere}.socialFriend span{flex:1;min-width:0}.socialFriend button{cursor:pointer;background:#23412c;color:#fff;border:1px solid #6b9b70;border-radius:6px;padding:9px}@media(max-width:450px){.socialGrid{grid-template-columns:1fr 1fr}.socialGrid button{padding:8px}.socialPanel{padding:14px}.socialRow{flex-wrap:wrap}}
+@media(max-width:700px){#chatToggle{top:40%}#chatLog{top:calc(40% + 45px)}body.chat-open #chatToggle{top:calc(16% - 40px)}body.chat-open #chatLog{top:16%}}
 #weatherCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}#worldCoordinates{position:fixed;left:12px;top:10px;display:flex;gap:9px;align-items:center;z-index:14;background:#07131dc9;padding:7px 10px;border-radius:9px;font:11px monospace;color:#d6efe5;pointer-events:none}#worldCoordinates.hidden{display:none}.compassRose{position:relative;width:40px;height:40px;border:1px solid #8fb3a877;border-radius:50%}.compassRose span{position:absolute;font:9px monospace}.compassRose span:nth-child(1){top:0;left:16px}.compassRose span:nth-child(2){right:1px;top:15px}.compassRose span:nth-child(3){bottom:0;left:16px}.compassRose span:nth-child(4){left:1px;top:15px}.compassRose i{display:block;position:absolute;left:13px;top:11px;color:#ff9b85;transform-origin:7px 9px;font-style:normal}#vehicleExit{position:fixed;right:15px;bottom:190px;z-index:30;padding:12px;border:1px solid #95ccaa;border-radius:9px;background:#18382e;color:#eaffee}.qaSite:has(button:nth-of-type(2)){grid-template-columns:minmax(0,1fr) auto auto}.qaSite:has(button:nth-of-type(2)) .d{grid-column:1/-1;grid-row:2}.qaSite .d{white-space:normal}#victory .panel p{line-height:1.7}#victory .btn{margin-top:12px}@media(max-width:500px){#worldCoordinates{font-size:9px;gap:5px;padding:5px;left:6px;top:5px}#worldCoordinates .compassRose{width:40px;flex-shrink:0}#modeBadge{top:66px!important;right:7px!important;font-size:11px}#powerButton{top:100px!important}}
 </style>
 </head>
@@ -1513,6 +1523,7 @@
           <button id="btnPlay" class="btn primary big">▶&nbsp; Créer une partie</button>
           <button id="btnContinue" class="btn hidden">▶ Reprendre la partie</button>
           <button id="btnOnline" class="btn online">Jouer à deux · rechercher une partie</button>
+          <button id="btnShop" class="btn">Boutique · skins</button><button id="btnFriends" class="btn">Amis · favoris</button>
           <button id="btnProfile" class="btn">Choisir mon profil</button><button id="btnAdminRealm" class="btn hidden">Monde Admin</button>
         </aside>
       </div>
@@ -1541,6 +1552,8 @@
       <p id="profileError" role="status" aria-live="polite"></p><small class="profileLocal">Ton pseudo et ton profil sont mémorisés dans ce navigateur. Aucun mot de passe ni compte en ligne.</small>
     </section>
   </div>
+  <div id="shop" class="overlay hidden"><section class="panel socialPanel"><h2>Boutique · skins</h2><p id="shopIntro">Skins gratuits pour les profils Admin. Aucun achat ni monnaie.</p><div id="shopSkins" class="socialGrid"></div><label id="adminQualityLabel" class="socialQuality hidden"><input id="adminQuality" type="checkbox"> Graphismes améliorés (plus de détails et de portée ; peut ralentir sur mobile)</label><button id="shopClose" class="btn">Retour</button></section></div>
+  <div id="friends" class="overlay hidden"><section class="panel socialPanel"><h2>Amis · favoris locaux</h2><p>Enregistre le pseudo de ton ami et le nom exact de sa partie. Liste privée sur cet appareil, sans présence en ligne ni demande d’amitié. L’hôte doit laisser sa partie ouverte.</p><form id="friendForm"><label for="friendNickname">Pseudo de ton ami</label><div class="socialRow"><input id="friendNickname" maxlength="24" required placeholder="Son pseudo"></div><label for="friendName">Nom exact de sa partie</label><div class="socialRow"><input id="friendName" maxlength="28" required placeholder="Nom de sa partie"><button class="btn primary" type="submit">Ajouter</button></div></form><p id="friendStatus" role="status"></p><div id="friendList"></div><button id="friendsClose" class="btn">Retour</button></section></div>
   <div id="pause" class="overlay hidden">
     <div class="panel pp">
       <header class="ppHead">
@@ -1558,7 +1571,7 @@
             <span class="ppIco">▶</span>
           </button>
           <button id="btnShareParty" class="ppBtn">Inviter un ami · publier la partie</button><label for="partyName">Nom de la partie</label><input id="partyName" maxlength="28" placeholder="Nom de la partie"><button id="renameParty" class="ppBtn">Renommer la partie</button><small id="partyNameStatus" role="status"></small>
-          <button id="btnCreatorAdmin" class="ppBtn hidden">Monde Admin</button>
+          <button id="btnCreatorAdmin" class="ppBtn hidden">Monde Admin</button><button id="btnShopPause" class="ppBtn">Boutique · skins</button><button id="btnFriendsPause" class="ppBtn">Amis · favoris</button>
           <button id="btnSave" class="ppBtn"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 3h11l3 3v11H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 3h6v4H6z" fill="currentColor"/><path d="M6 12h8v5H6z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>Sauvegarder la partie</span></span><span class="ppArw">›</span></button>
           <div class="ppSep"></div>
           <div class="ppSub">Réglages</div>
@@ -1570,6 +1583,7 @@
               <option value="4">Basse</option>
               <option value="6" selected>Normale</option>
               <option value="8">Élevée</option>
+              <option value="12" hidden>Améliorée · Admin</option>
               <option value="0">Infinie — pas de limite</option>
             </select>
             <label for="setSound">Sons</label>
@@ -1688,7 +1702,6 @@
             <div class="qaCard">
               <h3>Vision</h3>
               <div class="qaToggles">
-                <div class="qaTog" data-qa="xray"><span>X-ray · voir les minerais</span><i></i></div>
                 <div class="qaTog" data-qa="esp"><span>ESP · entités et joueurs</span><i></i></div>
                 <div class="qaTog" data-qa="coords"><span>Coordonnées à l'écran</span><i></i></div>
                 <div class="qaTog" data-qa="espSites"><span>ESP · structures proches</span><i></i></div>
@@ -1771,6 +1784,7 @@
   </div>
 
   <div id="nameTags"></div>
+  <button id="voiceToggle" type="button" aria-label="Activer le micro pour le chat vocal" aria-pressed="false">🎙 Micro coupé</button>
   <button id="chatToggle" type="button" aria-label="Ouvrir le chat">☵ <span>Chat</span></button>
   <button id="powerButton" class="hidden" type="button">Capacité · G<small id="powerHint"></small></button>
 <div id="realm" class="overlay hidden"><section class="panel" style="max-width:520px"><p class="profileEyebrow">ESPACE ADMIN</p><h2 class="title">Bonjour <span id="realmNickname"></span></h2><p>Un monde commun par type. Choisis-le : la connexion aux autres Admins est automatique.</p><button id="realmPlay" class="btn primary">Rejoindre le monde Admin</button><div id="realmTypes" class="hidden"><button class="btn" data-realm-type="overworld">Monde normal</button><button class="btn" data-realm-type="flat">Monde tout plat</button><button class="btn" data-realm-type="oneblock">Monobloc</button></div><p id="realmStatus" role="status" aria-live="polite"></p><p><small>Monde commun sauvegardé dans Firebase. Un navigateur Admin simule la partie et doit rester ouvert pendant le jeu. Aucun code ni invitation. Le pseudo ne constitue pas une identité vérifiée. QA reste désactivé au rechargement ; /qa en jeu.</small></p><button id="realmClose" class="btn">Retour au menu</button></section></div>
@@ -1968,6 +1982,8 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6 12l6-6 6 6"/></svg>
       <span class="lbl">Sauter</span>
     </div>
+    <button class="tbtn mini" id="tPlace" type="button" aria-label="Poser ou utiliser le bloc" style="right:calc(env(safe-area-inset-right) + 110px);bottom:calc(env(safe-area-inset-bottom) + 130px)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5zM3 7v10l9 5 9-5V7M12 12v10"/></svg><span class="lbl">Poser</span></button>
+    <button class="tbtn mini" id="tCrouch" type="button" aria-label="S’accroupir" aria-pressed="false" style="right:calc(env(safe-area-inset-right) + 110px);bottom:calc(env(safe-area-inset-bottom) + 200px)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M5 7l4 5h8l2-5M4 17h16M8 12v5m8-5v5"/></svg><span class="lbl">Accroupi</span></button>
     <div class="tbtn mini" id="tInv" style="left:calc(env(safe-area-inset-left) + 18px);bottom:calc(env(safe-area-inset-bottom) + 20px)">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h14v11H5z"/><path d="M9 9V6a3 3 0 016 0v3"/></svg>
       <span class="lbl">Sac</span>
@@ -2164,7 +2180,8 @@ const TEXTURES = [
   /* --- créatures du Nether --- */
   'blaze', 'blaze_face', 'piglin', 'piglin_face',
   /* --- fêlures de minage (4 étapes) --- */
-  'crack0', 'crack1', 'crack2', 'crack3', 'player_skin', 'player_hair', 'herobrine_face', 'flame_fx', 'smoke_fx'
+  'crack0', 'crack1', 'crack2', 'crack3', 'player_skin', 'player_hair', 'herobrine_face', 'flame_fx', 'smoke_fx',
+  'shirt_forest','pants_forest','shirt_ember','pants_ember','shirt_royal','pants_royal'
 ];
 const TEX = {};
 TEXTURES.forEach((n, i) => TEX[n] = i);
@@ -2733,32 +2750,42 @@ function generateTextureAtlas() {
       speck('#c9ac6a', 22, 1); speck('#f3e3ae', 16, 1);
     },
     log_side() {
-      for (let x = 0; x < S; x++) {
-        const stripe = x % 4 === 0 ? -20 : (x % 7 === 3 ? 14 : 0);
-        for (let y = 0; y < S; y++) {
-          const v = 104 + stripe + R(-10, 10) | 0;
-          px(x, y, `rgb(${v},${Math.round(v * 0.72)},${Math.round(v * 0.45)})`);
-        }
+      // Écorce de chêne : fibres verticales, creux ombrés et nœud asymétrique.
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const wave = Math.round(Math.sin(y * Math.PI / 8 + x * .65) * .7);
+        const groove = (x + wave + 16) % 4;
+        const grain = Math.sin(y * .95 + x * 1.3) * 4 + R(-7, 7);
+        const depth = groove === 0 ? -29 : groove === 1 ? -10 : groove === 2 ? 10 : 2;
+        px(x, y, shade('#785438', depth + grain));
       }
-      speck('#4c3720', 18, 1);
-      for (let i = 0; i < 3; i++) {
-        const x = (rnd() * S) | 0;
-        g.fillStyle = '#5a3f28';
-        g.fillRect(x, 0, 1, S);
+      for (let y = 1; y < 15; y++) {
+        const bend = Math.round(Math.sin(y * Math.PI / 8) * 1.2);
+        px(2 + bend, y, y % 5 === 0 ? '#ac8155' : '#926a45');
+        px(11 - bend, y, y % 4 === 0 ? '#38291f' : '#4d3626');
       }
+      // Le nœud ne recouvre pas tout le motif : il doit rester lisible de loin.
+      for (let y = 5; y <= 10; y++) for (let x = 7; x <= 11; x++) {
+        const d = ((x - 9) / 2.5) ** 2 + ((y - 7.5) / 3.2) ** 2;
+        if (d < .28) px(x, y, '#34251c');
+        else if (d < .72) px(x, y, '#533725');
+        else if (d < 1.05) px(x, y, '#a2764b');
+      }
+      px(8, 6, '#b48956'); px(10, 9, '#38281c');
     },
     log_top() {
+      // Coupe claire et cernes irréguliers, cerclés d'une écorce plus sombre.
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const d = Math.max(Math.abs(x - 7.5), Math.abs(y - 7.5));
-        const ring = (Math.floor(d * 1.15) % 2 === 0) ? 18 : -10;
-        const v = 148 + ring + R(-8, 8) | 0;
-        px(x, y, `rgb(${v},${Math.round(v * 0.76)},${Math.round(v * 0.48)})`);
+        const ax = Math.abs(x - 7.4), ay = Math.abs(y - 7.6);
+        const dist = Math.max(ax, ay) + .3 * Math.sin(x * 1.5) + .2 * Math.cos(y * 1.7);
+        let color;
+        if (x === 0 || x === 15 || y === 0 || y === 15) color = '#463326';
+        else if (dist > 6.2) color = '#6c4c32';
+        else if (dist > 5.5) color = '#8b6341';
+        else color = Math.floor(dist * 1.7) % 3 === 0 ? '#947048' : '#c49a65';
+        px(x, y, shade(color, R(-5, 5)));
       }
-      // bord écorce
-      for (let i = 0; i < S; i++) {
-        px(i, 0, '#5d452b'); px(i, S - 1, '#5d452b'); px(0, i, '#5d452b'); px(S - 1, i, '#5d452b');
-      }
-      speck('#6b4f30', 10, 1);
+      px(7, 7, '#765537'); px(8, 7, '#a17a50');
+      px(7, 8, '#aa7e4d'); px(8, 8, '#83603e');
     },
     leaves() {
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
@@ -2776,15 +2803,21 @@ function generateTextureAtlas() {
       speck('#1f421a', 8, 1);
     },
     planks() {
+      // Quatre planches de chêne décalées : joints, chants éclairés et veinage fin.
+      const joints = [12, 5, 10, 3];
+      const bases = ['#b98a53', '#bf925c', '#b18551', '#bb9058'];
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const board = (y / 4) | 0;
-        const joint = x === ((board * 5 + 3) % S);
-        let v = 162 + R(-12, 12) - board * 4;
-        if (y % 4 === 3) v -= 42;
-        if (joint) v -= 30;
-        px(x, y, `rgb(${Math.round(v)},${Math.round(v * 0.74)},${Math.round(v * 0.47)})`);
+        const board = y >> 2, seam = y % 4, join = joints[board];
+        const grain = Math.sin(x * .9 + board * 3) * 3 + R(-5, 5);
+        let color = shade(bases[board], grain);
+        if (seam === 0) color = shade('#d6aa70', grain);
+        if (seam === 2 && (x + board * 7) % 9 < 5) color = shade('#a77b49', grain);
+        if (seam === 3) color = '#775132';
+        if (seam !== 3 && x === join) color = '#744c2e';
+        if (seam !== 3 && x === join + 1) color = '#d3a46a';
+        px(x, y, color);
       }
-      speck('#8d6a41', 16, 1); speck('#d3a976', 10, 1);
+      for (const [x, y] of [[2, 1], [8, 5], [13, 9], [6, 13]]) px(x, y, '#e1b879');
     },
     glow() {
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
@@ -3014,23 +3047,31 @@ function generateTextureAtlas() {
       speck('#8a6a3c', 14, 1);
     },
     chest_top() {
-      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const v = 132 + R(-10, 10);
-        px(x, y, `rgb(${Math.round(v * 0.72)},${Math.round(v * 0.48)},${Math.round(v * 0.22)})`);
+      drawers.planks();
+      g.fillStyle = '#76502e66'; g.fillRect(1, 1, 14, 14);
+      for (let i = 0; i < S; i++) {
+        px(i, 0, '#4a3526'); px(i, 15, '#39291f');
+        px(0, i, '#4a3526'); px(15, i, '#39291f');
       }
-      for (let i = 0; i < 16; i++) { px(i, 0, '#5a3a18'); px(i, 15, '#5a3a18'); px(0, i, '#5a3a18'); px(15, i, '#5a3a18'); }
-      g.fillStyle = '#5a3a18'; g.fillRect(2, 7, 12, 1);
-      speck('#a8763c', 18, 1);
+      for (let i = 2; i < 14; i++) { px(i, 2, '#c29a66'); px(i, 13, '#664529'); }
+      g.fillStyle = '#61432c'; g.fillRect(2, 7, 12, 1);
+      g.fillStyle = '#d3ad70'; g.fillRect(3, 8, 10, 1);
+      for (const x of [2, 13]) for (const y of [2, 13]) px(x, y, '#8c8c79');
     },
     chest_side() {
-      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const v = 126 + R(-12, 12);
-        px(x, y, `rgb(${Math.round(v * 0.70)},${Math.round(v * 0.46)},${Math.round(v * 0.20)})`);
-      }
-      for (let x = 0; x < 16; x++) { px(x, 4, '#4e3113'); px(x, 15, '#4e3113'); }
-      for (let y = 0; y < 16; y++) { px(0, y, '#4e3113'); px(15, y, '#4e3113'); }
-      for (let y = 6; y < 11; y++) for (let x = 7; x < 9; x++) px(x, y, '#d8c070');
-      speck('#b98a48', 14, 1);
+      drawers.planks();
+      g.fillStyle = '#68401f55'; g.fillRect(1, 1, 14, 14);
+      // Le couvercle dépasse le caisson et la serrure relie les deux.
+      g.fillStyle = '#493122'; g.fillRect(0, 0, 16, 1);
+      g.fillStyle = '#b48a58'; g.fillRect(1, 1, 14, 1);
+      g.fillStyle = '#563820'; g.fillRect(1, 4, 14, 1);
+      g.fillStyle = '#d1a56c'; g.fillRect(2, 5, 12, 1);
+      g.fillStyle = '#463021'; g.fillRect(0, 14, 16, 2);
+      g.fillStyle = '#62452e'; g.fillRect(0, 1, 1, 13); g.fillRect(15, 1, 1, 13);
+      for (const x of [2, 13]) for (const y of [2, 12]) px(x, y, '#999581');
+      g.fillStyle = '#403b36'; g.fillRect(6, 4, 4, 6);
+      g.fillStyle = '#d3c29a'; g.fillRect(7, 5, 2, 4);
+      px(7, 6, '#f2e2b1'); px(8, 8, '#817660');
     },
     wheat() {
       g.clearRect(0, 0, S, S);
@@ -3469,19 +3510,23 @@ function generateTextureAtlas() {
   };
   drawers.bookshelf = function () {
     drawers.planks();
-    for (let shelf = 0; shelf < 2; shelf++) {
-      const y0 = 1 + shelf * 7;
-      g.fillStyle = '#2a1d10'; g.fillRect(0, y0 + 5, 16, 1);
-      const colors = ['#b4462f', '#3f6fb0', '#4f8a3c', '#c8a02c', '#8a3f8a', '#d8d0b0'];
-      let x = 1;
-      while (x < 15) {
-        const w = 2 + ((rnd() * 2) | 0);
-        const c = colors[(rnd() * colors.length) | 0];
-        const h = 3 + ((rnd() * 2) | 0);
-        g.fillStyle = c; g.fillRect(x, y0 + 5 - h, Math.min(w, 15 - x), h);
-        x += w;
+    const covers = ['#ad4d36','#476681','#648049','#b9924e','#805476','#d1b78c'];
+    for (const base of [1,8]) {
+      g.fillStyle='#42301f';g.fillRect(2,base,12,5);
+      let x=3;
+      while(x<13){
+        const w=Math.min(1+((rnd()*2)|0),13-x),h=3+((rnd()*2)|0);
+        g.fillStyle=covers[(rnd()*covers.length)|0];g.fillRect(x,base+5-h,w,h);
+        px(x,base+5-h,'#dcc498');
+        if(w===2)px(x+1,base+4,'#56422d');
+        x+=w;
       }
+      g.fillStyle='#614329';g.fillRect(2,base+5,12,1);
+      g.fillStyle='#dbaf73';g.fillRect(2,base+6,12,1);
     }
+    g.fillStyle='#573b27';g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
+    g.fillStyle='#c89962';g.fillRect(1,1,1,14);g.fillRect(14,1,1,14);
+    g.fillStyle='#68462b';g.fillRect(0,0,16,1);g.fillRect(0,15,16,1);
   };
   drawers.furnace_front = function () {
     noisy('#8a8a8d', 10);
@@ -3658,6 +3703,10 @@ function generateTextureAtlas() {
     noisy('#2fa2c4', 10);
     speck('#37b4d8', 18, 1); speck('#2589a8', 14, 1);
   };
+  for(const [name,shirt,pants] of [['forest','#338553','#294930'],['ember','#bf5837','#54332c'],['royal','#815dcc','#322d68']]){
+    drawers['shirt_'+name]=()=>{noisy(shirt,8);speck('#ffffff44',10,1);};
+    drawers['pants_'+name]=()=>{noisy(pants,8);speck('#ffffff33',8,1);};
+  }
   drawers.player_skin = function(){noisy('#c99775',7);};
   drawers.player_hair = function(){noisy('#39281e',8);speck('#513b2a',18,1);};
   drawers.player_pants = function () {
@@ -3704,30 +3753,28 @@ function generateTextureAtlas() {
     for (let x = 6; x <= 9; x++) px(x, 10, '#b9c4cc');
   };
 
-  /* ---- porte en bois : planches verticales + poignée ---- */
-  drawers.door_closed = function () {
-    drawers.planks();
-    for (let y = 0; y < 16; y++) {
-      px(0, y, '#7c5626'); px(15, y, '#7c5626');
-      px(1, y, '#8f6530');
+  /* Porte assemblée : lattes verticales et panneaux encastrés. */
+  const drawWoodDoor = (open) => {
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const grain = Math.sin(y * 1.1 + x * .5) * 4 + R(-5, 5);
+      const groove = x === 5 || x === 10 ? -19 : x === 6 || x === 11 ? 8 : 0;
+      px(x, y, shade('#b38753', grain + groove));
     }
-    for (let x = 2; x < 14; x += 4) { for (let y = 2; y < 14; y++) px(x, y, '#6d4a20'); }
-    /* panneaux */
-    for (let y = 3; y <= 6; y++) for (let x = 3; x <= 6; x++) px(x, y, '#c08a48');
-    for (let y = 3; y <= 6; y++) for (let x = 9; x <= 12; x++) px(x, y, '#c08a48');
-    for (let y = 9; y <= 12; y++) for (let x = 3; x <= 6; x++) px(x, y, '#c08a48');
-    for (let y = 9; y <= 12; y++) for (let x = 9; x <= 12; x++) px(x, y, '#c08a48');
-    /* poignée */
-    px(12, 7, '#f0d060'); px(12, 8, '#c9a020'); px(11, 7, '#fff0a0');
-    speck('#5e3f18', 10, 1);
+    g.fillStyle='#523a26';g.fillRect(0,0,1,16);g.fillRect(15,0,1,16);
+    g.fillStyle='#dbad71';g.fillRect(1,1,1,14);g.fillRect(14,1,1,14);
+    g.fillStyle='#6b482b';g.fillRect(1,0,14,1);g.fillRect(1,15,14,1);
+    for (const y of [2,9]) for (const x of [3,9]) {
+      g.fillStyle='#775033';g.fillRect(x,y,4,5);
+      g.fillStyle='#d1a069';g.fillRect(x+1,y+1,2,3);
+      px(x+1,y+1,'#dfb679');px(x+2,y+3,'#aa7645');
+    }
+    // Charnières et loquet : lisibles sur un battant ouvert comme fermé.
+    px(1,4,'#777262');px(1,11,'#777262');
+    px(12,7,open?'#e4c976':'#cfb46d');px(13,7,'#f0dd9b');px(12,8,'#82714f');
+    if(open){g.fillStyle='#533b2a';g.fillRect(14,2,1,12);}
   };
-  drawers.door_open = function () {
-    drawers.planks();
-    for (let y = 0; y < 16; y++) { px(0, y, '#7c5626'); px(15, y, '#7c5626'); }
-    for (let y = 2; y < 14; y += 5) for (let x = 2; x < 14; x++) px(x, y, '#6d4a20');
-    for (let y = 4; y < 12; y++) for (let x = 4; x < 12; x++) if ((x + y) % 3 === 0) px(x, y, '#c08a48');
-    speck('#5e3f18', 8, 1);
-  };
+  drawers.door_closed = () => drawWoodDoor(false);
+  drawers.door_open = () => drawWoodDoor(true);
   /* ---- lit : couverture rouge + oreiller blanc ---- */
   drawers.bed_top = function () {
     for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
@@ -3843,16 +3890,25 @@ function generateTextureAtlas() {
       }
     };
   }
-  const oldPlanks = drawers.planks;
-  drawers.planks = () => { oldPlanks(); for(let y=3;y<16;y+=4){for(let x=1;x<15;x++)if(rnd()>.38)px(x,y,'#b18a57');} };
   drawers.craft_top = () => {
-    noisy('#b38a52',7);g.fillStyle='#5b3e26';g.fillRect(0,0,16,2);g.fillRect(0,14,16,2);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
-    for(let y=0;y<3;y++)for(let x=0;x<3;x++){g.fillStyle='#65452b';g.fillRect(3+x*4,3+y*4,3,3);g.fillStyle='#d0a668';g.fillRect(3+x*4,3+y*4,2,1);}
-    for(const [x,y] of [[1,1],[14,1],[1,14],[14,14]])px(x,y,'#d4c6a0');
+    drawers.planks();
+    g.fillStyle='#4c3423';g.fillRect(0,0,16,2);g.fillRect(0,14,16,2);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
+    for(let row=0;row<3;row++)for(let col=0;col<3;col++){
+      const x=3+col*4,y=3+row*4;
+      g.fillStyle='#65492e';g.fillRect(x,y,3,3);
+      g.fillStyle='#d0a56a';g.fillRect(x,y,2,1);
+      px(x+2,y+2,'#8b643d');
+    }
+    for(const [x,y] of [[1,1],[14,1],[1,14],[14,14]])px(x,y,'#aaa28a');
   };
   drawers.craft_side = () => {
-    drawers.planks();g.fillStyle='#68452c';g.fillRect(0,0,16,3);g.fillRect(0,13,16,3);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
-    g.fillStyle='#d1c6a3';g.fillRect(4,5,6,2);g.fillRect(4,6,2,3);g.fillStyle='#62482e';g.fillRect(7,7,2,5);g.fillStyle='#aa8752';g.fillRect(11,5,1,6);
+    drawers.planks();
+    g.fillStyle='#563922';g.fillRect(0,0,16,3);g.fillRect(0,13,16,3);g.fillRect(0,0,2,16);g.fillRect(14,0,2,16);
+    g.fillStyle='#d3a56b';g.fillRect(2,3,12,1);g.fillStyle='#785334';g.fillRect(2,12,12,1);
+    // Outils suspendus dans le panneau central de l'établi.
+    for(let y=5;y<12;y++){px(6,y,'#d1c3a3');px(11,y,'#9c7651');}
+    g.fillStyle='#c0b5a1';g.fillRect(4,5,5,2);g.fillStyle='#5e4432';g.fillRect(9,5,4,2);
+    px(7,9,'#786048');px(12,10,'#ccb587');
   };
   drawers.bed_foot=()=>{noisy('#b83732',6);g.fillStyle='#a22c28';g.fillRect(0,0,1,16);g.fillRect(15,0,1,16);};
   drawers.sheep_face = () => { noisy('#bfb09d',5);g.fillStyle='#ece9df';g.fillRect(0,0,16,4);g.fillStyle='#242328';g.fillRect(3,6,3,3);g.fillRect(10,6,3,3);g.fillStyle='#ddafa3';g.fillRect(6,11,4,3); };
@@ -5399,6 +5455,8 @@ class ChunkManager {
     c.data[lx + CHUNK * (lz + CHUNK * y)] = t;
     this.recomputeColumn(c, lx, lz);
 
+    /* Un coffre détruit par explosion ou modification réseau ne garde pas son ancien butin. */
+    if (oldT === B.CHEST && t !== B.CHEST && typeof Chests !== 'undefined') Chests.remove(x,y,z,this.dim);
     /* fluides + redstone réagissent au changement */
     if (oldT !== t) {
       if (typeof Fluids !== 'undefined') Fluids.onBlockChange(this, x, y, z);
@@ -5892,6 +5950,10 @@ function collidesAt(p) {
 
 function movePlayer(dt) {
   const p = Player.pos, v = Player.vel;
+  if(!MorphPowers.active()&&(Player.height===1.8||Player.crouched)){
+    if(Input.down&&!Player.flying){Player.height=1.5;Player.eye=1.35;Player.crouched=true;}
+    else if(Player.crouched){Player.height=1.8;if(collidesAt(p)){Player.height=1.5;Player.eye=1.35;}else{Player.eye=1.62;Player.crouched=false;}}
+  }
   const wasInWater = Player.inWater;
   const feet = Game.manager.getBlock(Math.floor(p[0]), Math.floor(p[1] + 0.3), Math.floor(p[2]));
   const body = Game.manager.getBlock(Math.floor(p[0]), Math.floor(p[1] + 1.1), Math.floor(p[2]));
@@ -5903,7 +5965,7 @@ function movePlayer(dt) {
   let speed;
   if (Player.flying) speed = Player.sprint ? 26 : 12;
   else if (Player.inWater) speed = Player.sprint ? 4.6 : 3.2;
-  else speed = Player.sprint ? 7.6 : 5.0;
+  else speed = Input.down ? 2.1 : Player.sprint ? 7.6 : 5.0;
   if (typeof QA !== 'undefined' && QA.on) speed *= QA.speedMul;
   else if(typeof CommandHub!=='undefined'&&!Game.hardcore)speed*=CommandHub.speed;
 
@@ -5955,10 +6017,12 @@ function movePlayer(dt) {
     if (collidesAt(p)) { p[axis] -= delta; return true; }
     return false;
   };
+  const supported = () => {const t=Game.manager.getBlock(Math.floor(p[0]),Math.floor(p[1]-.08),Math.floor(p[2]));return !!(BLOCKS[t]&&BLOCKS[t].solid);};
+  const edgeGuard = Input.down && !Player.flying && !Player.inWater && Player.onGround && supported();
   const blockedX = check(0, v[0] * dt);
-  if (blockedX) v[0] = 0;
+  if (edgeGuard && !supported()) {p[0]-=v[0]*dt;v[0]=0;} else if (blockedX) v[0] = 0;
   const blockedZ = check(2, v[2] * dt);
-  if (blockedZ) v[2] = 0;
+  if (edgeGuard && !supported()) {p[2]-=v[2]*dt;v[2]=0;} else if (blockedZ) v[2] = 0;
 
   /* dans l'eau, on se hisse sur les berges d'un bloc de haut */
   if (Player.inWater && Input.jump && (blockedX || blockedZ)) {
@@ -6422,7 +6486,7 @@ const EnderEye = {
     if (t) {
       const d = Math.round(Math.hypot(t.x - Player.pos[0], t.z - Player.pos[2]));
       HUD.toastText('👁️ L\'œil retombe : portail de l\'End à ' + d + ' blocs au ' +
-        this.bearing(t.x - Player.pos[0], t.z - Player.pos[2])+' · '+Coordinates.xyz(t.x,t.y,t.z)+'. Touche X pour le voir.', 5);
+        this.bearing(t.x - Player.pos[0], t.z - Player.pos[2])+' · '+Coordinates.xyz(t.x,t.y,t.z)+'. Tape /vision pour le voir.', 5);
     } else {
       HUD.toastText('👁️ L\'œil est revenu dans ton sac', 2.6);
     }
@@ -6461,7 +6525,7 @@ const EnderPearl = {
       if (t) {
         const dx = t.x - Player.pos[0], dz = t.z - Player.pos[2];
         setTimeout(() => HUD.toastText('🧭 Portail de l\'End à ' + Math.round(t.dist) + ' blocs au ' +
-          EnderEye.bearing(dx, dz) + ' (touche X pour le voir)', 3.4), 700);
+          EnderEye.bearing(dx, dz) + ' (commande /vision pour le voir)', 3.4), 700);
       }
     } catch (e) { }
     return true;
@@ -6654,7 +6718,18 @@ function placeBlock() {
     if (!placed) return;
   }
   if (y < 0 || y >= WH) return;
-  if (playerBoxOverlaps(x, y, z)) return;
+  // Sur le mono-bloc, viser le dessus choisit une case occupée par les pieds.
+  // Une case libre latérale, au niveau du bloc visé, permet d'agrandir l'île.
+  if (playerBoxOverlaps(x, y, z) && Game.manager.dim === 'oneblock' && t.ny === 1) {
+    const dir=lookDir(), sides=[[1,0],[-1,0],[0,1],[0,-1]];
+    sides.sort((a,b)=>(b[0]*dir[0]+b[1]*dir[2])-(a[0]*dir[0]+a[1]*dir[2]));
+    for(const [dx,dz] of sides){const sx=t.x+dx,sz=t.z+dz;
+      if(isReplaceable(Game.manager.getBlock(sx,t.y,sz))&&!playerBoxOverlaps(sx,t.y,sz)){
+        x=sx;y=t.y;z=sz;break;
+      }
+    }
+  }
+  if (playerBoxOverlaps(x, y, z)) {if(isTouch&&Game.manager.dim==='oneblock')HUD.toastText('Regarde le côté du bloc pour construire.',2);return;}
   if(type===B.BED){Beds.place(x,y,z);return;}
   if (Game.mode === 'survival' && !Game.inv.remove(type, 1)) {
     HUD.toast(type, 'Plus de ' + itemName(type));
@@ -6898,7 +6973,7 @@ function saveGame(opts) {
       armor: Armor.serialize(),
       furnaces: Furnace.serialize(),herobrine:Herobrine.serialize(),
       xp: Xp.serialize(),
-      oneblock:{count:OneBlock.count},drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
+      oneblock:{count:OneBlock.count},chests:Chests.serialize(),drops:Drops.list,carts:Railways.serialize(),boats:Boats.serialize(),circuits:[...Circuits.meta],weather:{kind:Weather.kind,remaining:Weather.remaining},victory:EndVictory.serialize(),
       slot: Game.slot,
       twoPlayers: !!(Game.twoPlayers && !isTouch),
       players: Players.count > 1 ? Players.list.map(p => ({
@@ -7318,6 +7393,7 @@ async function loadWorld(seed, savedData, onProgress, opts) {
   const startDim = (dim === 'oneblock' || dim === 'flat') ? dim : 'overworld';
   Game.manager = new ChunkManager(startDim);
   Game.manager.editLog = new Map();
+  Chests.load(savedData && savedData.chests);
   WorldGen.init(seed);
   WorldGenOneBlock.init(seed);
   WorldGenFlat.init(seed);
@@ -7601,7 +7677,7 @@ const View = {
     this.slowSamples=fps<38?this.slowSamples+1:0;this.fastSamples=fps>55?this.fastSamples+1:0;
     if(isTouch){
       if(this.slowSamples>=2){this.dprCap=Math.max(.75,+(this.dprCap-.1).toFixed(2));this.radius=Math.max(this.min,this.radius-1);this.growAt=now+6000;this.slowSamples=0;}
-      else if(this.fastSamples>=12&&now>=this.growAt){if(this.dprCap<1.25)this.dprCap=Math.min(1.25,+(this.dprCap+.05).toFixed(2));else if(this.infinite||this.radius<SETTINGS.dist)this.radius=Math.min(this.max,this.radius+1);this.growAt=now+6000;this.fastSamples=0;}
+      else if(this.fastSamples>=12&&now>=this.growAt){const cap=SkinShop.quality&&RoleGate.role==='creator'?1.5:1.25;if(this.dprCap<cap)this.dprCap=Math.min(cap,+(this.dprCap+.05).toFixed(2));else if(this.infinite||this.radius<SETTINGS.dist)this.radius=Math.min(this.max,this.radius+1);this.growAt=now+6000;this.fastSamples=0;}
       return;
     }
     if(!this.infinite)return;
@@ -7925,7 +8001,7 @@ function drawSelection(VP, t) {
 
 
 /* =========================================================================
-   VISION X — touche X : on voit à travers le sol les portails de l'End
+   VISION X — commande /vision : on voit à travers le sol les portails de l'End
    (ouverts ou non), leurs cadres, et les minerais. Un repère flottant
    indique chaque forteresse et sa distance.
    ========================================================================= */
@@ -8502,7 +8578,7 @@ function tick(dt) {
     Players.activate(pi);
     if (pi === 0) updateInputFromKeys(); else updateInputP2();
     if (pi === 0) Input.sprint = Keys.down('sprint');
-    Player.sprint = Input.sprint;
+    Player.sprint = Input.sprint && !Input.down;
     if (pi === 1) lookP2(dt);
 
     // sous-pas de physique
@@ -8639,19 +8715,19 @@ const Keys = {
     right: ['KeyD', 'ArrowRight'],
     jump: ['Space'],
     sprint: ['ShiftLeft', 'ShiftRight', 'ControlLeft'],
+    crouch: ['KeyC'],
     fly: ['KeyF'],
     inventory: ['KeyE'],
     chat: ['KeyT', 'Slash'],
-    vision: ['KeyX'],
     debug: ['F3'],
     hud: ['F1'],
     pause: ['Escape'],
   },
-  ORDER: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'fly', 'inventory', 'chat', 'vision', 'debug', 'hud', 'pause'],
+  ORDER: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'crouch', 'fly', 'inventory', 'chat', 'debug', 'hud', 'pause'],
   LABEL: {
     forward: 'Avancer', back: 'Reculer', left: 'Gauche', right: 'Droite',
-    jump: 'Sauter', sprint: 'Courir / descendre', fly: 'Voler (créatif)',
-    inventory: 'Inventaire', chat: 'Discussion / commandes', vision: 'Vision X (portails)', debug: 'Infos (F3)', hud: 'Masquer le HUD', pause: 'Pause',
+    jump: 'Sauter', sprint: 'Courir', crouch: 'S’accroupir / descendre', fly: 'Voler (créatif)',
+    inventory: 'Inventaire', chat: 'Discussion / commandes', debug: 'Infos (F3)', hud: 'Masquer le HUD', pause: 'Pause',
   },
   map: null,
   init() {
@@ -8846,7 +8922,6 @@ function setupInput() {
         else { if (!Music.on) Music.start(); else Music.setVolume(SETTINGS.music || 0.5); }
         HUD.toastText(SETTINGS.musicOn === false ? '🔇 Musique coupée' : '🎵 Musique activée', 1.8);
       }
-      if (Keys.has('vision', e.code)&&!Game.hardcore) { e.preventDefault(); Vision.toggle(); }
       if (Keys.has('debug', e.code)) { e.preventDefault(); toggleDebug(); }
       if (Keys.has('hud', e.code)) { e.preventDefault(); toggleHud(); }
       if (Keys.has('pause', e.code)) {
@@ -9067,14 +9142,14 @@ function showOverlay(id) {
   if(id==='pause'){$('partyName').value=RoomNames.name||Saves.currentName||'';$('partyNameStatus').textContent='';}
   if($('trollButton'))$('trollButton').classList.add('hidden');
   if(id==='menu' && typeof RoleGate!=='undefined' && !RoleGate.role)id='profile';
-  for (const o of ['victory','realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
+  for (const o of ['victory','realm','troll', 'profile', 'shop', 'friends', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) {
     const el = $(o);
     if (el) el.classList.toggle('hidden', o !== id);
   }
 }
 function hideOverlays() {
   if($('trollButton'))$('trollButton').classList.toggle('hidden',!Game.troll||Game.state!=='playing');
-  for (const o of ['victory','realm','troll', 'profile', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
+  for (const o of ['victory','realm','troll', 'profile', 'shop', 'friends', 'menu', 'pause', 'inventory', 'help', 'loading', 'mp', 'qa', 'trade', 'saves', 'newgame']) { const el = $(o); if (el) el.classList.add('hidden'); }
 }
 
 function startPlaying() {
@@ -9147,7 +9222,7 @@ function resetTouchInput() {
   if (!isTouch) return;
   TouchActions.reset();
   Game.breakHeld = Game.placeHeld = false;
-  touchJump = false; touchRise = 0; touchDescend = false;
+  touchJump = false; touchRise = 0; touchDescend = false; touchCrouch = false; $('tCrouch')?.classList.remove('active'); $('tCrouch')?.setAttribute('aria-pressed','false');
   stick.active = false; stick.x = stick.y = 0;
   touchStickId = touchLookId = null;
   stopTouchMarks();
@@ -9159,7 +9234,7 @@ function resetTouchInput() {
 function clearKeys() {
   TouchActions.reset();
   touchStickId = touchLookId = null; stick.active = false; stick.x = stick.y = 0;
-  touchJump = false; touchRise = 0; touchDescend = false;
+  touchJump = false; touchRise = 0; touchDescend = false; touchCrouch = false; $('tCrouch')?.classList.remove('active'); $('tCrouch')?.setAttribute('aria-pressed','false');
   stopTouchMarks();
   for (const k in keys) keys[k] = false;
   Input.l = Input.r = Input.f = Input.b = 0;
@@ -9407,7 +9482,7 @@ function respawnAfterDeath() {
 const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 let touchStickId = null, touchLookId = null;
 let stickOrigin = [0, 0], lookLast = [0, 0];
-let touchJump = false, touchRise = 0, touchDescend = false;
+let touchJump = false, touchRise = 0, touchDescend = false, touchCrouch = false;
 const stick = { x: 0, y: 0, active: false };
 
 /* ===================== Confort mobile : plein écran, paysage ============= */
@@ -9493,6 +9568,7 @@ const Mobile = {
       const sel = $('setDist');
       if (sel) sel.value = '4';
     }
+    SkinShop.applyQuality();
     /* la sensibilité tactile est un peu plus basse que la souris par défaut */
     if (localStorage.getItem('blocraft.sens') === null) {
       SETTINGS.sens = 0.9;
@@ -9665,6 +9741,8 @@ function setupTouch() {
   };
 
   bind('tJump', () => { touchJump = true; }, () => { touchJump = false; });
+  bind('tCrouch', () => { touchCrouch=!touchCrouch; $('tCrouch').classList.toggle('active',touchCrouch); $('tCrouch').setAttribute('aria-pressed',String(touchCrouch)); HUD.toastText(touchCrouch?'Accroupi':'Debout',1); });
+  bind('tPlace', () => { if(Game.state==='playing'){Game.target=raycastVoxel(eyePos(),lookDir(),7,Game.manager,Player.inWater||Player.headInWater);useAction();Game.placeHeld=false;} });
   bind('tInv', () => { openInventory(); }, null, { silent: true });
   bind('tPause', () => { openPause(); }, null, { silent: true });
   bind('tFly', () => {
@@ -9742,10 +9820,16 @@ Object.assign(I, {
   IRON_PICK: 152, IRON_SWORD: 153, BOOK: 154,
   BUCKET: 155, BUCKET_WATER: 156, BUCKET_LAVA: 157,
   IRON_AXE: 158, DIAMOND_AXE: 159, IRON_SHOVEL: 160, DIAMOND_SHOVEL: 161,
-  MEAT_COOKED:162,MINECART:300,BOW:301,ARROW:302,BOAT:303,DRAGON_HEART:304,FLINT_SHARD:305,FEATHER:306,
+  MEAT_COOKED:162,BEDROCK_SWORD:307,BEDROCK_PICK:308,BEDROCK_HELM:309,BEDROCK_CHEST:310,BEDROCK_LEGS:311,BEDROCK_BOOTS:312,MINECART:300,BOW:301,ARROW:302,BOAT:303,DRAGON_HEART:304,FLINT_SHARD:305,FEATHER:306,
 });
 
 const ITEMS = {
+  307:{name:'Épée en bedrock',icon:'sword_bedrock',stack:1,tool:'sword',speed:2,damage:12,tier:6,dur:4096},
+  308:{name:'Pioche en bedrock',icon:'pick_bedrock',stack:1,tool:'pick',speed:13,damage:7,tier:6,dur:4096},
+  309:{name:'Casque en bedrock',icon:'helm_bedrock',stack:1,dur:900,armor:{slot:'head',def:4}},
+  310:{name:'Plastron en bedrock',icon:'chest_bedrock',stack:1,dur:1300,armor:{slot:'chest',def:9}},
+  311:{name:'Jambières en bedrock',icon:'legs_bedrock',stack:1,dur:1100,armor:{slot:'legs',def:7}},
+  312:{name:'Bottes en bedrock',icon:'boots_bedrock',stack:1,dur:900,armor:{slot:'feet',def:4}},
   301:{name:'Arc',icon:'bow',stack:1,dur:384},302:{name:'Flèche',icon:'arrow',stack:64},303:{name:'Bateau en bois',icon:'boat',stack:1},304:{name:'Cœur unique du dragon · retour au monde',icon:'dragon_heart',stack:1},305:{name:'Silex',icon:'shard',stack:64},306:{name:'Plume',icon:'feather',stack:64},
   300: { name: 'Wagonnet en fer', icon: 'minecart_iron', stack: 1 },
   100: { name: 'Bâton', icon: 'stick', stack: 64 },
@@ -10009,6 +10093,7 @@ const Crafting = {
     add('outils', true, I.DIAMOND_AXE, 1, [[I.DIAMONDGEM, 3], [I.STICK, 2]]);
     add('outils', true, I.DIAMOND_SHOVEL, 1, [[I.DIAMONDGEM, 1], [I.STICK, 2]]);
     add('outils', true, I.NETHERITE_PICK, 1, [[I.NETHERITE_INGOT, 3], [I.STICK, 2]]);
+    add('outils', true, I.BEDROCK_PICK, 1, [[B.BEDROCK, 3], [I.STICK, 2]]);
     add('outils', true, I.BUCKET, 1, [[I.IRON_INGOT, 3]]);
     add('outils', true, I.FLINT, 1, [[I.IRON_INGOT, 1], [I.COAL, 1]]);
     add('outils', true, I.BOOK, 1, [[I.STRING, 2], [B.PLANKS, 3]]);
@@ -10019,6 +10104,8 @@ const Crafting = {
     add('combat', true, I.IRON_SWORD, 1, [[I.IRON_INGOT, 2], [I.STICK, 1]]);
     add('combat', true, I.DIAMOND_SWORD, 1, [[I.DIAMONDGEM, 2], [I.STICK, 1]]);
     add('combat', true, I.NETHERITE_SWORD, 1, [[I.NETHERITE_INGOT, 2], [I.STICK, 1]]);
+    add('combat', true, I.BEDROCK_SWORD, 1, [[B.BEDROCK, 2], [I.STICK, 1]]);
+    for(const [id,n] of [[I.BEDROCK_HELM,5],[I.BEDROCK_CHEST,8],[I.BEDROCK_LEGS,7],[I.BEDROCK_BOOTS,4]]) add('combat', true, id, 1, [[B.BEDROCK,n]]);
     add('combat', true, I.IRON_HELM, 1, [[I.IRON_INGOT, 5]]);
     add('combat', true, I.IRON_CHEST, 1, [[I.IRON_INGOT, 8]]);
     add('combat', true, I.IRON_LEGS, 1, [[I.IRON_INGOT, 7]]);
@@ -10309,7 +10396,9 @@ const CraftGrid = {
   },
   counts() {
     const m = new Map();
-    for (const s of this.slots) if (s) m.set(s.id, (m.get(s.id) || 0) + s.n);
+    // Une pile occupe une seule case de la forme ; sa taille détermine le
+    // nombre de fabrications possibles, pas le nombre d'ingrédients du motif.
+    for (const s of this.slots) if (s) m.set(s.id, (m.get(s.id) || 0) + 1);
     return m;
   },
   same(a, b) {
@@ -10335,7 +10424,7 @@ const CraftGrid = {
             if (ch === ' ' || ch === '.') { if (cell) ok = false; }
             else {
               const want = sh.keys[ch];
-              if (!cell || cell.id !== want || cell.n !== 1) ok = false;
+              if (!cell || cell.id !== want || cell.n < 1) ok = false;
             }
           }
         }
@@ -10546,10 +10635,14 @@ const CraftGrid = {
       }
     }
     this.dump();
+    // Le livre empile autant de fournées que possible (64 max) : un clic
+    // fabrique une fournée, « Tout fabriquer » consomme toutes les piles.
+    const batches = Math.min(64, ...[...need].map(([id, count]) =>
+      Math.min(itemStackSize(id), Math.floor(Game.inv.count(id) / count))));
     this.slots = new Array(n * n).fill(null);
     for (const c of cells) {
-      Game.inv.remove(c.id, 1);
-      this.slots[c.i] = { id: c.id, n: 1 };
+      Game.inv.remove(c.id, batches);
+      this.slots[c.i] = { id: c.id, n: batches };
     }
     this.pick = r;
     Sfx.play('click', 0.7);
@@ -10623,7 +10716,7 @@ function buildCraftBoard() {
     } else if (res && res.locked) {
       hint.textContent = 'Recette d\'établi : il faut être à côté d\'un établi posé';
     } else if (res) {
-      hint.innerHTML = '<b>Recette prête</b> — clique le résultat pour fabriquer';
+      hint.innerHTML = '<b>Recette prête</b> — clique pour une fournée, ou « Tout fabriquer » pour utiliser les piles';
     } else {
       hint.textContent = 'Aucune recette ne correspond à ces ingrédients';
     }
@@ -10695,6 +10788,7 @@ function outlineIcon(c) {
 
 /* palette de matière pour un outil : wood, stone, iron, gold, diamond, netherite */
 function toolPalette(ic) {
+  if (ic.includes('bedrock')) return ['#596269','#282c35','#a6afba'];
   if (ic.includes('diamond')) return ['#6ff0e8', '#2f9e99', '#d8fffd'];
   if (ic.includes('netherite')) return ['#5f5358', '#3a3034', '#a898a0'];
   if (ic.includes('iron')) return ['#e2e2e2', '#a9a9a9', '#ffffff'];
@@ -10806,6 +10900,7 @@ function drawItemIcon(id, size, skipOutline) {
       gold: ['#f0cf4a', '#c9a01f', '#8f6d12'],
       diamond: ['#6ff0e8', '#35b8b2', '#1d8a86'],
       netherite: ['#5a5054', '#3d3538', '#241f22'],
+      bedrock: ['#596269','#363c46','#20242e'],
     }[mat] || ['#cccccc', '#999999', '#666666'];
     const [base, mid, dark] = pal;
     const shape = ic.split('_')[0];
@@ -11643,7 +11738,39 @@ function buildInventoryUI() {
 
 /* ---------------------------- Coffres ---------------------------------- */
 const Chests = {
-  open: null,
+  open: null, contents: new Map(),
+  key(x,y,z){return Game.manager.dim+'|'+x+'|'+y+'|'+z;},
+  load(data){this.open=null;this.contents=new Map();if(!Array.isArray(data))return;
+    for(const pair of data.slice(0,5000))if(Array.isArray(pair)&&typeof pair[0]==='string'&&pair[0].length<100&&Array.isArray(pair[1])&&pair[1].length===27)
+      this.contents.set(pair[0],pair[1].map(stack=>stack&&Number.isInteger(stack.id)&&Number.isInteger(stack.n)&&stack.n>0&&(ITEMS[stack.id]||BLOCKS[stack.id])?{id:stack.id,n:Math.min(stack.n,itemStackSize(stack.id))}:null));
+  },
+  serialize(){return [...this.contents];},
+  remove(x,y,z,dim=Game.manager.dim){this.contents.delete(dim+'|'+x+'|'+y+'|'+z);},
+  broadcast(x,y,z){if(Net.live&&Net.role==='host')Net.send(['chest-state',x,y,z,this.contents.get(this.key(x,y,z))]);},
+  network(m){const [kind,x,y,z,slot]=m;
+    if(![x,y,z].every(Number.isInteger)||Math.abs(x)>30000000||y<0||y>=WH||Math.abs(z)>30000000)return;
+    const key=this.key(x,y,z);
+    if(Net.role==='host'){
+      const r=Net.remote;
+      if(!r||r.dim!==Game.manager.dim||Math.hypot(r.x-x-.5,r.y-y-.5,r.z-z-.5)>7||Game.manager.getBlock(x,y,z)!==B.CHEST)return;
+      if(!this.contents.has(key))this.contents.set(key,this.lootFor(x,y,z));
+      if(kind==='chest-open'){Net.send(['chest-state',x,y,z,this.contents.get(key)],AdminCloud.active?AdminCloud.sender:null);return;}
+      if(kind!=='chest-take'||!Number.isInteger(slot)||slot<0||slot>=27)return;
+      const items=this.contents.get(key),stack=items[slot],amount=Math.min(stack?.n||0,Math.max(0,Math.min(64,m[5]|0)));
+      if(!amount)return;items[slot]=stack.n>amount?{id:stack.id,n:stack.n-amount}:null;
+      Net.send(['chest-grant',x,y,z,stack.id,amount],AdminCloud.active?AdminCloud.sender:null);this.broadcast(x,y,z);
+      if(Saves.currentId)saveGame({silent:true});
+    }else if(Net.role==='guest'){
+      if(kind==='chest-state'&&Array.isArray(slot)&&slot.length===27){
+        const items=slot.map(it=>it&&Number.isInteger(it.id)&&Number.isInteger(it.n)&&it.n>0&&(BLOCKS[it.id]||ITEMS[it.id])?{id:it.id,n:Math.min(itemStackSize(it.id),it.n)}:null);
+        this.contents.set(key,items);if(this.open?.key===key){this.open.items=items;buildInventoryUI();}
+      }else if(kind==='chest-grant'&&Number.isInteger(slot)&&Number.isInteger(m[5])&&m[5]>0&&m[5]<=64&&(ITEMS[slot]||BLOCKS[slot])){
+        const left=Game.inv.add(slot,m[5]);if(left){GroundItems.grant({id:slot,n:left});HUD.toastText('Inventaire plein : surplus déposé au sol.',3);}
+        if(this.open?.key===key)this.open.pending=false;
+        HUD.refreshAll();buildInventoryUI();
+      }
+    }
+  },
   /* Les trésors gardent des objets utiles, mais beaucoup moins de métaux précieux. */
   balance(items, rnd, diff) {
     const budgets = { diamond: 2, gold: diff >= 4 ? 6 : 3, emerald: 2, netherite: 1, iron: 6 };
@@ -11716,11 +11843,14 @@ const Chests = {
     return this.balance(items, rnd, level >= 5 ? 5 : 4);
   },
   openAt(x, y, z) {
-    this.open = { x, y, z, tier: (typeof Structures !== 'undefined' ? Structures.chestTierOf(x, y, z) : null) || 'village', items: this.lootFor(x, y, z) };
+    const key=this.key(x,y,z);
+    if(!this.contents.has(key))this.contents.set(key,this.lootFor(x,y,z));
+    this.open = { x, y, z, key, items:this.contents.get(key) };
+    if(Net.live&&Net.role==='guest')Net.send(['chest-open',x,y,z]);
     Game.openChest = { x: x + 0.5, y: y + 0.5, z: z + 0.5 };
     openInventory('chest');
   },
-  close(){const reward=this.open&&EndVictory.loot(this.open.x,this.open.y,this.open.z);this.open=null;Game.openChest=null;if(reward)saveGame({silent:true});},
+  close(){const wasOpen=!!this.open;this.open=null;Game.openChest=null;if(wasOpen&&Game.inv&&Saves.currentId)saveGame({silent:true});},
 };
 
 /* clic : slot du coffre (chestSlot défini) ou du sac */
@@ -11737,9 +11867,17 @@ function invClick(index, half, chestSlot) {
     const c = Chests.open.items;
     const item = c[chestSlot];
     if (!item) return;
+    if(Net.live&&Net.role==='guest'){
+      if(Chests.open.pending)return;
+      const room=Game.inv.slots.reduce((n,stack)=>n+(!stack?itemStackSize(item.id):stack.id===item.id?Math.max(0,itemStackSize(item.id)-stack.n):0),0);
+      if(!room){HUD.toastText('Inventaire plein.',2);return;}
+      Chests.open.pending=true;Net.send(['chest-take',Chests.open.x,Chests.open.y,Chests.open.z,chestSlot,Math.min(room,item.n)]);
+      setTimeout(()=>{if(Chests.open)Chests.open.pending=false;},2000);return;
+    }
     const left = Game.inv.add(item.id, item.n);
     if (left < item.n) HUD.toast(item.id, `+${item.n - left} ${itemName(item.id)}`);
     c[chestSlot] = left > 0 ? { id: item.id, n: left } : null;
+    Chests.broadcast(Chests.open.x,Chests.open.y,Chests.open.z);
     Sfx.play('click', 0.6);
     buildInventoryUI(); HUD.refreshAll();
     return;
@@ -11748,9 +11886,11 @@ function invClick(index, half, chestSlot) {
   const cur = cursorStack;
   const slot = inv.slots[index];
   if (Chests.open && half && slot) {
+    if(Net.live&&Net.role==='guest'){HUD.toastText('Le dépôt en coffre partagé se fait depuis le navigateur hôte.',3);return;}
     const free = Chests.open.items.findIndex(it => !it);
     if (free >= 0) {
       Chests.open.items[free] = { id: slot.id, n: slot.n };
+      Chests.broadcast(Chests.open.x,Chests.open.y,Chests.open.z);
       inv.slots[index] = null;
       Sfx.play('click', 0.5);
       buildInventoryUI(); HUD.refreshAll();
@@ -12935,17 +13075,20 @@ const Mobs = {
     if(def.model==='block'){A(0,0,0,...(def.blockSize||[1,1,1]),def.skin);return;}
     if (def.model === 'player') {
       /* Steve : bras qui pendent et balancent avec les jambes */
-      A(-0.15, 0, sw * 0.16, 0.25, 0.74, 0.25, TEX.player_pants);
-      A(0.15, 0, sw2 * 0.16, 0.25, 0.74, 0.25, TEX.player_pants);
-      A(0, 0.74, 0, 0.56, 0.6, 0.3, TEX.player);
+      const outfit=SkinShop.valid(m.skin)?m.skin:'classic',shirt=TEX['shirt_'+outfit]??TEX.player,pants=TEX['pants_'+outfit]??TEX.player_pants;
+      A(-0.15, 0, sw * 0.16, 0.25, 0.74, 0.25, pants);
+      A(0.15, 0, sw2 * 0.16, 0.25, 0.74, 0.25, pants);
+      A(-0.15, 0, sw * 0.16 - .025, .26, .15, .3, TEX.player_hair);
+      A(0.15, 0, sw2 * 0.16 - .025, .26, .15, .3, TEX.player_hair);
+      A(0, 0.74, 0, 0.56, 0.6, 0.3, shirt);
       /* ceinture */
-      A(0, 0.70, 0, 0.57, 0.08, 0.31, TEX.player_pants);
+      A(0, 0.70, 0, 0.57, 0.08, 0.31, pants);
       /* bras */
-      A(-0.375, 0.72 + sw2 * 0.05, -sw2 * 0.1, 0.18, 0.62, 0.18, TEX.player);
-      A(0.375, 0.72 + sw * 0.05, -sw * 0.1, 0.18, 0.62, 0.18, TEX.player);
+      A(-0.375, 0.72 + sw2 * 0.05, -sw2 * 0.1, 0.18, 0.62, 0.18, shirt);
+      A(0.375, 0.72 + sw * 0.05, -sw * 0.1, 0.18, 0.62, 0.18, shirt);
       /* mains */
-      A(-0.375, 0.66 + sw2 * 0.05, -sw2 * 0.1, 0.19, 0.1, 0.19, TEX.glow);
-      A(0.375, 0.66 + sw * 0.05, -sw * 0.1, 0.19, 0.1, 0.19, TEX.glow);
+      A(-0.375, 0.66 + sw2 * 0.05, -sw2 * 0.1, 0.19, 0.1, 0.19, TEX.player_skin);
+      A(0.375, 0.66 + sw * 0.05, -sw * 0.1, 0.19, 0.1, 0.19, TEX.player_skin);
       /* tête */
       A(0, 1.34, 0, 0.5, 0.5, 0.5, TEX.player_skin, def.face || TEX.player_face);
       /* cheveux */
@@ -13298,10 +13441,10 @@ const STRUCT_DEFS = {
     desc: 'Petit puits de grès, purement décoratif.',
   },
   ruined_portal: {
-    name: 'Portail en ruine', icon: '🌀', dim: 'overworld', group: 'surface',
-    region: 192, chance: 0.10, radius: 14, chests: [1, 1], houses: [0, 0],
+    name: 'Portail du Nether', icon: '🌀', dim: 'overworld', group: 'surface',
+    region: 192, chance: 1, radius: 14, chests: [1, 1], houses: [0, 0],
     biomes: 'partout', y: 'surface',
-    desc: 'Cadre d\'obsidienne brisé, blocs de netherrack et coffre de voyageur.',
+    desc: 'Un des cinq portails naturels du Nether : cadre actif, netherrack et coffre de voyageur.',
   },
   ruins: {
     name: 'Ruines', icon: '🧱', dim: 'overworld', group: 'surface',
@@ -13521,6 +13664,15 @@ const Structures = {
     return WorldGen.desertAt(x, z) > 0.16 && h < SEA + 16 && h > SEA - 4;
   },
 
+  /* Cinq portails du Nether à la surface et une seule forteresse de l'End
+     par graine. Les portails construits par les joueurs restent libres. */
+  PORTAL_CELLS: [[0,0],[1,0],[-1,0],[0,1],[0,-1]],
+  portalSite(type, rx, rz) {
+    if (type === 'stronghold') return rx === 0 && rz === 0;
+    if (type === 'ruined_portal') return this.PORTAL_CELLS.some(([x,z]) => x === rx && z === rz);
+    return null;
+  },
+
   /* ---------------------- choix du site (biome / relief) ------------------ */
   siteOK(type, x, z) {
     if (typeof WorldGen === 'undefined') return false;
@@ -13555,16 +13707,21 @@ const Structures = {
   cellDesc(type, rx, rz) {
     const def = STRUCT_DEFS[type];
     if (!def) return null;
-    /* le portail de l'End doit toujours être trouvable : une forteresse
-       est garantie dans deux cellules proches du point de départ */
-    const forced = (type === 'village' && rx === 0 && rz === 0)
-      || (type === 'stronghold' && ((rx === 1 && rz === 1) || (rx === -2 && rz === 0)));
+    const portalSite = this.portalSite(type, rx, rz);
+    if (portalSite === false) return null;
+    const forced = portalSite === true || (type === 'village' && rx === 0 && rz === 0);
     const rnd = mulberry32(this.seedFor(rx, rz, 'st:' + type));
     const dens = this.DENSITY[def.group] !== undefined ? this.DENSITY[def.group] : 0.6;
     if (!forced && rnd() > def.chance * dens) return null;
     const size = def.region;
     let x, z;
-    if (forced) {
+    if (type === 'stronghold') {
+      x = 52 + Math.floor(rnd() * 18);
+      z = 52 + Math.floor(rnd() * 18);
+    } else if (type === 'ruined_portal') {
+      x = rx * size + 112 + Math.floor(rnd() * 20);
+      z = rz * size + 112 + Math.floor(rnd() * 20);
+    } else if (forced) {
       x = 40 + Math.floor(rnd() * 40);
       z = 40 + Math.floor(rnd() * 40);
     } else {
@@ -14542,20 +14699,16 @@ const Structures = {
     bl.put(x, g + 4, z, B.TORCH);
   },
 
-  /* ========================== PORTAIL EN RUINE ========================= */
+  /* ========================== PORTAIL DU NETHER ======================== */
   build_ruined_portal(bl, rnd, x, z) {
-    const h = WorldGen.heightAt(x, z);
-    const y0 = h + 1;
-    /* cadre d'obsidienne 5x6 dont certaines pierres manquent */
-    for (let dy = 0; dy <= 5; dy++) {
-      for (let dx = 0; dx <= 4; dx++) {
-        const edgeX = dx === 0 || dx === 4;
-        const edgeY = dy === 0 || dy === 5;
-        if (!edgeX && !edgeY) continue;
-        if (rnd() < 0.22) continue;
-        bl.put(x + dx, y0 + dy, z, rnd() < 0.2 ? B.CRYING_OBSIDIAN : B.OBSIDIAN);
-      }
+    const terrain = this.pad(bl, x + 1, z, 4, B.NETHERRACK);
+    const h = Math.max(terrain, SEA + 1);
+    // Même si la cellule tombe en mer, le portail reste au-dessus de l'eau.
+    if (h > terrain) for (let dz = -3; dz <= 3; dz++) for (let dx = -3; dx <= 4; dx++) {
+      for (let y = terrain + 1; y <= h; y++) bl.put(x + dx, y, z + dz, y === h ? B.NETHERRACK : B.OBSIDIAN);
+      for (let y = h + 1; y <= h + 6; y++) bl.put(x + dx, y, z + dz, B.AIR);
     }
+    const y0 = h + 1;
     for (let i = 0; i < 6; i++) {
       const px = x - 2 + Math.floor(rnd() * 9), pz = z - 2 + Math.floor(rnd() * 9);
       const gh = WorldGen.heightAt(px, pz);
@@ -14570,6 +14723,11 @@ const Structures = {
     bl.put(x + 1, y0, z + 1, B.GOLD);
     this.ch(bl, x + 2, y0, z + 2, 'ruined_portal', 3);
     bl.put(x - 2, y0 + 1, z, B.TORCH);
+    // Cadre 4 × 5, intérieur actif 2 × 3 : franchissable sans briquet.
+    for (let dy = 0; dy <= 4; dy++) for (let dx = 0; dx <= 3; dx++) {
+      const edge = dx === 0 || dx === 3 || dy === 0 || dy === 4;
+      bl.put(x + dx, y0 + dy, z, edge ? B.OBSIDIAN : B.PORTAL);
+    }
   },
 
   /* ================================ RUINES ============================== */
@@ -16503,7 +16661,7 @@ function updateInputFromKeys() {
   Input.l = Keys.down('left') ? 1 : 0;
   Input.r = Keys.down('right') ? 1 : 0;
   Input.jump = Keys.down('jump') || touchJump;
-  Input.down = Keys.down('sprint');
+  Input.down = Keys.down('crouch') || (isTouch && touchCrouch);
 
   if (isTouch) {
     // le joystick tactile s'ajoute aux touches
@@ -16731,6 +16889,7 @@ const RoomNames = {
       const fail=message=>{if(settled)return;settled=true;clearTimeout(timer);p.destroy();reject(new Error(message));};
       const timer=setTimeout(()=>fail('Publication du nom trop longue. Réessaie.'),18000);
       p.on('open',()=>{if(epoch!==ShortRooms.epoch){fail('Publication annulée.');return;}settled=true;clearTimeout(timer);if(this.peer)this.retired.push(this.peer);this.peer=p;this.name=String(name).trim().replace(/\s+/g,' ');resolve(this.name);});
+      p.on('call',call=>Voice.answer(call));
       p.on('connection',c=>{if(epoch!==ShortRooms.epoch||p!==this.peer||ShortRooms.connection||Net.live){c.close();return;}ShortRooms.attach(c,epoch);});
       p.on('error',e=>{if(!settled)fail(e.type==='unavailable-id'?'Ce nom est déjà utilisé par une partie ouverte. Choisis un autre nom.':'Impossible de publier ce nom de partie.');});
       p.on('disconnected',()=>{if(p===this.peer&&!Net.live)ShortRooms.fail('Le nom de partie est déconnecté. Publie à nouveau ta partie.',epoch);});
@@ -16828,6 +16987,7 @@ const ShortRooms = {
       $('mpCodeOut').value = code;
       Net.status('Partie ouverte : '+RoomNames.name+' — ton ami peut rechercher ce nom exact.');Saves.currentName=RoomNames.name;const entry=Saves.current();if(entry){entry.name=RoomNames.name;Saves.persist();}
     });
+    peer.on('call', call=>Voice.answer(call));
     peer.on('connection', connection => {
       if (epoch !== this.epoch || peer !== this.peer || this.connection || Net.live) { connection.close(); return; }
       this.attach(connection, epoch);
@@ -16857,6 +17017,7 @@ const ShortRooms = {
       const target=this.valid(code)?'blocraft-'+code:await RoomNames.id(code);if(epoch!==this.epoch)return;
       const peer = new window.Peer(undefined, { config: ICE_SERVERS, debug: 0 }); this.peer = peer;
       this.timer = setTimeout(() => this.fail('Partie introuvable ou connexion bloquée. Vérifie le code et demande à ton ami de garder sa page ouverte.', epoch), 20000);
+      peer.on('call', call=>Voice.answer(call));
       peer.on('open', () => {
         if (epoch !== this.epoch) return;
         this.attach(peer.connect(target, { reliable: true, serialization: 'binary', metadata: { game: 'blocraft', version: 1 } }), epoch);
@@ -16917,6 +17078,7 @@ var Net = {
 
   /* ----------------------------- connexion ----------------------------- */
   reset() {
+    Voice.stop();
     if(typeof AdminCloud!=='undefined'&&AdminCloud.active){if(Net.role==='host'&&AdminCloud.ready&&Game.manager&&Game.inv)saveGame({silent:true});AdminCloud.shutdown();}
     this.live = false;if(typeof AdminRealm!=='undefined')AdminRealm.reset(); ShortRooms.close();
     try { if (this.dc) this.dc.close(); } catch (e) { }
@@ -16932,6 +17094,7 @@ var Net = {
 
   disconnected() {
     if (!this.live) return;
+    Voice.stop();
     if(AdminRealm.autoType&&this.role==='host'){
       this.live=false;this.remote=null;this.dc=null;ShortRooms.connection=null;clearTimeout(ShortRooms.timer);AdminRealm.admitted=false;Transport.disconnect();
       if(this.tagsEl)this.tagsEl.innerHTML='';HUD.toastText('L’autre Admin est parti. Le monde reste ouvert.',3);return;
@@ -16974,7 +17137,7 @@ var Net = {
     const edits = [];
     for (const arr of Game.manager.editLog.values()) for (const e of arr) edits.push(e);
     this.send(['h', Game.seed, Game.mode, Game.time, Dimensions.current, edits,
-      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm,{oneblock:{count:OneBlock.count},adminRealmType:Game.adminRealmType||null,victory:EndVictory.serialize(),weather:{kind:Weather.kind,remaining:Weather.remaining},circuits:[...Circuits.meta]}],target);
+      Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,!!Game.troll,RoomNames.name||Saves.currentName||'',!!Game.hardcore,!!Game.adminRealm,{oneblock:{count:OneBlock.count},adminRealmType:Game.adminRealmType||null,victory:EndVictory.serialize(),weather:{kind:Weather.kind,remaining:Weather.remaining},circuits:[...Circuits.meta],chests:Chests.serialize()}],target);
   },
 
   async onHello(m) {
@@ -17018,11 +17181,13 @@ var Net = {
           r.px = r.x; r.py = r.y; r.pz = r.z;
           r.x = m[1]; r.y = m[2]; r.z = m[3]; r.yaw = m[4]; r.pitch = m[5]; r.hp = m[6];
           r.name = m[7] || 'Ami';
+          r.skin=SkinShop.valid(m[11])?m[11]:'classic';
           r.dim = m[8] || 'overworld';r.morph=(Game.troll||m[10]===true)&&Troll.valid(m[9])?m[9]:null;
           r.t = performance.now();
           break;
         }
         case 'b': this.applyBlocks(m); break;
+        case 'chest-open':case 'chest-take':case 'chest-state':case 'chest-grant':Chests.network(m);break;
         case 'm': this.applyMobs(m[1]); break;
         case 'd': this.applyDeath(m); break;
         case 'k': {
@@ -17168,7 +17333,7 @@ var Net = {
       const state=['p',
         Math.round(Player.pos[0] * 100) / 100, Math.round(Player.pos[1] * 100) / 100, Math.round(Player.pos[2] * 100) / 100,
         Math.round(Player.yaw * 100) / 100, Math.round(Player.pitch * 100) / 100,
-        Math.round(Survival.health), Net.playerName, Dimensions.current,Game.troll?Troll.morph:null,!!Game.troll];
+        Math.round(Survival.health), Net.playerName, Dimensions.current,Game.troll?Troll.morph:null,!!Game.troll,SkinShop.current()];
       const signature=JSON.stringify(state);if(signature!==this._lastPose||now-(this._poseAt||0)>1000){this.send(state);this._lastPose=signature;this._poseAt=now;}
     }
     /* changements de blocs, en paquets */
@@ -17217,10 +17382,10 @@ var Net = {
     if (!this._avatar) {
       this._avatar = { type: 'player', def: MOB_DEFS.player, pos: [r.x, r.y, r.z], yaw: r.yaw || 0, walkPhase: 0, hp: 20, light: 1 };
     }
-    const a = this._avatar;
+    const a = this._avatar; a.skin=r.skin;
     const visual=r.renderPos||[r.x,r.y,r.z];a.pos[0]=visual[0];a.pos[1]=visual[1];a.pos[2]=visual[2];
     const disguise=Troll.avatar(r.morph,[r.x,r.y,r.z],r.yaw||0);a.type=disguise.type;a.def=disguise.def;
-    a.yaw=r.renderYaw??r.yaw??0;
+    a.skin=r.skin;a.yaw=r.renderYaw??r.yaw??0;
     a.light = clamp(1 - (Game.manager.heightAt(r.x, r.z) - r.y) * 0.075, 0.4, 1);
     return a;
   },
@@ -17539,6 +17704,68 @@ const GameChat = {
   },
 };
 
+/* Chat vocal P2P. Jamais de micro avant un clic explicite, aucun audio stocké. */
+const Voice = {
+  stream:null,calls:new Map(),pending:false,
+  peers(){if(!Net.live)return [];if(AdminCloud.active)return Net.role==='host'?[...AdminCloud.peers].filter(([,p])=>p.admitted).map(([id])=>id):[AdminCloud.hostId,...AdminCloud.records.keys()].filter(id=>id&&id!==AdminCloud.selfId);return ShortRooms.connection?.peer?[ShortRooms.connection.peer]:[];},
+  peer(){return AdminCloud.active?ShortRooms.peer:(ShortRooms.connection?.provider||ShortRooms.peer);},
+  update(){document.body.classList.toggle('voice-live',!!this.stream);const b=$('voiceToggle');if(!b)return;b.setAttribute('aria-pressed',String(!!this.stream));b.textContent=this.pending?'🎙 Autorisation…':this.stream?'🎙 Micro actif':'🎙 Micro coupé';b.title=this.stream?'Couper le micro':'Activer le chat vocal';},
+  async toggle(){if(this.stream){const stream=this.stream;this.stream=null;stream.getTracks().forEach(t=>t.stop());this.update();HUD.toastText('Micro coupé · tu peux toujours écouter.',2);return;}
+    if(!Net.live||!this.peer()){HUD.toastText('Rejoins une partie en ligne pour parler.',3);return;}
+    if(this.pending)return;if(!navigator.mediaDevices?.getUserMedia){HUD.toastText('Micro indisponible : utilise HTTPS ou localhost.',4);return;}
+    this.pending=true;this.update();
+    try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+      if(!this.pending||!Net.live){stream.getTracks().forEach(t=>t.stop());return;}
+      this.stream=stream;stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{if(this.stream===stream){this.stream=null;this.update();}},{once:true}));
+      for(const id of this.peers())this.call(id);HUD.toastText('Micro actif · appuie à nouveau pour couper.',3);
+    }catch(e){HUD.toastText('Micro refusé ou indisponible dans ce navigateur.',4);}finally{this.pending=false;this.update();}
+  },
+  call(id){const peer=this.peer();if(!peer||!this.stream||!id)return;try{this.attach(peer.call(id,this.stream,{metadata:{blocraftVoice:true}}));}catch(e){HUD.toastText('Appel vocal indisponible.',3);}},
+  answer(call){if(!Net.live||!this.peers().includes(call.peer)||!call.metadata?.blocraftVoice){call.close();return;}try{call.answer(this.stream||new MediaStream());this.attach(call);}catch(e){call.close();}},
+  attach(call){if(!call)return;const old=this.calls.get(call.peer);if(old&&old!==call)old.close();this.calls.set(call.peer,call);
+    call.on('stream',stream=>{if(this.calls.get(call.peer)!==call)return;let audio=document.getElementById('voice-audio-'+call.peer);if(!audio){audio=document.createElement('audio');audio.id='voice-audio-'+call.peer;audio.autoplay=true;audio.playsInline=true;document.body.appendChild(audio);}audio.srcObject=stream;audio.play().catch(()=>HUD.toastText('Appuie sur Micro pour autoriser le son.',3));});
+    const cleanup=()=>{if(this.calls.get(call.peer)===call){this.calls.delete(call.peer);const audio=document.getElementById('voice-audio-'+call.peer);if(audio){audio.srcObject=null;audio.remove();}}};call.on('close',cleanup);call.on('error',cleanup);
+  },
+  stop(){this.pending=false;for(const call of this.calls.values())call.close();this.calls.clear();document.querySelectorAll('audio[id^="voice-audio-"]').forEach(a=>{a.srcObject=null;a.remove();});if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null;}this.update();},
+};
+
+/* Cosmetic outfits and saved party favorites are local browser preferences.
+   No payments, accounts, friend directory or online presence are implied. */
+const SkinShop={
+  styles:{classic:['Classique','🧍','#2fa2c4'],forest:['Explorateur','🌿','#338553'],ember:['Aventurier','🔥','#bf5837'],royal:['Royal','👑','#815dcc']},
+  chosen:'classic',quality:false,back:'menu',baseDist:null,boosted:false,
+  valid(id){return typeof id==='string'&&Object.prototype.hasOwnProperty.call(this.styles,id);},
+  current(){return RoleGate.role==='creator'&&this.valid(this.chosen)?this.chosen:'classic';},
+  load(){try{const id=localStorage.getItem('blocraft.skin.v1');if(this.valid(id))this.chosen=id;this.quality=localStorage.getItem('blocraft.adminQuality.v1')==='1';}catch(e){}},
+  render(){const admin=RoleGate.role==='creator',box=$('shopSkins');box.textContent='';$('shopIntro').textContent=admin?'Tous les skins sont gratuits pour les Admins. Choisis ton apparence.':'Skins gratuits réservés aux profils Admin ; aucun achat.';
+    for(const [id,[name,icon,color]] of Object.entries(this.styles)){const btn=document.createElement('button');btn.type='button';btn.disabled=!admin;btn.classList.toggle('active',admin&&this.chosen===id);btn.innerHTML='<b></b><small></small>';btn.querySelector('b').textContent=icon+' '+name;btn.querySelector('b').style.color=color;btn.querySelector('small').textContent=admin?(this.chosen===id?'Équipé · gratuit':'Équiper · gratuit'):'Profil Admin requis';btn.onclick=()=>{if(RoleGate.role!=='creator')return;this.chosen=id;try{localStorage.setItem('blocraft.skin.v1',id);}catch(e){}this.render();Preview3D.draw();};box.appendChild(btn);}
+    $('adminQualityLabel').classList.toggle('hidden',!admin);$('adminQuality').checked=admin&&this.quality;
+  },
+  open(){this.back=Game.state==='paused'?'pause':'menu';this.render();showOverlay('shop');},
+  close(){showOverlay(this.back);},
+  setQuality(yes){if(RoleGate.role!=='creator')return;this.quality=!!yes;try{localStorage.setItem('blocraft.adminQuality.v1',this.quality?'1':'0');}catch(e){}this.applyQuality();},
+  applyQuality(){if(RoleGate.role!=='creator'||!this.quality){if(this.boosted){SETTINGS.dist=this.baseDist;const sel=$('setDist');if(sel.querySelector('option[value="'+this.baseDist+'"]'))sel.value=String(this.baseDist);this.baseDist=null;this.boosted=false;}View.max=isTouch?8:18;View.dprCap=Math.min(View.dprCap,isTouch?1.25:2);return;}
+    if(!this.boosted){this.baseDist=isTouch&&localStorage.getItem('blocraft.dist')===null?4:SETTINGS.dist;this.boosted=true;}
+    View.max=isTouch?10:20;View.dprCap=isTouch?1.5:2;View.radius=Math.max(View.radius,isTouch?6:12);SETTINGS.dist=Math.max(SETTINGS.dist,isTouch?6:12);$('setDist').value=String(SETTINGS.dist);},
+  init(){this.load();$('btnShop').onclick=$('btnShopPause').onclick=()=>this.open();$('shopClose').onclick=()=>this.close();$('adminQuality').onchange=e=>this.setQuality(e.target.checked);},
+};
+const Friends={
+  key:'blocraft.friends.v2',list:[],back:'menu',
+  load(){try{const v=JSON.parse(localStorage.getItem(this.key)||'[]');this.list=Array.isArray(v)?v.filter(f=>f&&RoleGate.validName(f.nickname)&&RoomNames.valid(f.room)).slice(0,30):[];}catch(e){this.list=[];}},
+  persist(){try{localStorage.setItem(this.key,JSON.stringify(this.list));}catch(e){$('friendStatus').textContent='Stockage local indisponible.';}},
+  open(){this.back=Game.state==='paused'?'pause':'menu';if(Net.live&&!Game.adminRealm&&Net.remote?.name){$('friendNickname').value=Net.remote.name;$('friendName').value=RoomNames.name||Saves.currentName||'';}this.render();showOverlay('friends');},
+  close(){showOverlay(this.back);},
+  add(nickname,room){nickname=String(nickname).trim();room=String(room).trim();if(!RoleGate.validName(nickname)||!RoomNames.valid(room)){$('friendStatus').textContent='Pseudo (2 à 24 caractères) et nom de partie (3 à 28) requis.';return;}
+    if(this.list.some(f=>f.nickname.toLocaleLowerCase()===nickname.toLocaleLowerCase()&&f.room.toLocaleLowerCase()===room.toLocaleLowerCase())){$('friendStatus').textContent='Déjà enregistré.';return;}
+    if(this.list.length>=30){$('friendStatus').textContent='Liste pleine (30 maximum).';return;}
+    this.list.push({nickname,room});this.persist();$('friendNickname').value='';$('friendName').value='';$('friendStatus').textContent='Ami enregistré sur cet appareil.';this.render();},
+  render(){const box=$('friendList');box.textContent='';if(!this.list.length){box.textContent='Aucun favori enregistré.';return;}
+    for(const friend of this.list){const row=document.createElement('div');row.className='socialFriend';const label=document.createElement('span');label.textContent=friend.nickname+' · '+friend.room;
+      const join=document.createElement('button');join.type='button';join.textContent='Rejoindre';join.onclick=()=>{this.close();$('btnOnline').click();$('btnMpJoin').click();$('mpJoinIn').value=friend.room;};
+      const remove=document.createElement('button');remove.type='button';remove.textContent='Retirer';remove.setAttribute('aria-label','Retirer '+friend.nickname);remove.onclick=()=>{this.list=this.list.filter(f=>f!==friend);this.persist();this.render();};row.append(label,join,remove);box.appendChild(row);}},
+  init(){this.load();$('btnFriends').onclick=$('btnFriendsPause').onclick=()=>this.open();$('friendsClose').onclick=()=>this.close();$('friendForm').onsubmit=e=>{e.preventDefault();this.add($('friendNickname').value,$('friendName').value);};},
+};
+
 /* Local profile gate, not server authentication: this project is a static site. */
 const RoleGate = {
   KEY:'blocraft.profile.v1',role:null,pending:false,epoch:0,
@@ -17564,7 +17791,7 @@ const RoleGate = {
     if(this.role!=='creator'&&QA.on)QA.lock();
     Admin.save();Admin.refreshBadge();
     $('btnProfile').textContent='Profil · '+(this.role==='creator'?'Admin':this.role==='player'?'Joueur':'Choisir');
-    $('btnCreatorAdmin').classList.toggle('hidden',this.role!=='creator');$('btnAdminRealm').classList.toggle('hidden',this.role!=='creator');
+    $('btnCreatorAdmin').classList.toggle('hidden',this.role!=='creator');$('btnAdminRealm').classList.toggle('hidden',this.role!=='creator');SkinShop.applyQuality();
   },
   commit(role){
     if(role==='player'&&(Net.live||ShortRooms.peer))Net.reset();
@@ -18056,7 +18283,7 @@ const Admin = {
 const LegacyCommands = Admin.run.bind(Admin);
 const CommandHub = {
   entries:[], choices:[], index:-1,speed:1,reach:7,
-  descriptions:{inventaire:'Ouvrir ton inventaire',recettes:'Ouvrir le livre de recettes',pause:'Mettre en pause',inviter:'Partager la partie actuelle',renommer:'Renommer la partie : /renommer Nouveau nom',dormir:'Dormir dans le lit que tu regardes',hud:'Afficher ou masquer les informations',pseudo:'Changer ton pseudo : /pseudo Alex',hardcore:'Survie difficile, une seule vie, sans triche',tp:'Voyager : joueur, dimension ou coordonnées',dim:'Choisir une dimension',mode:'Changer de mode',troll:'Activer Trolle à tout moment hors Hardcore',transforme:'Choisir une créature ou un bloc',capacite:'Utiliser le pouvoir de ta transformation',joueurs:'Voir les joueurs connectés',position:'Afficher ta position',sauver:'Sauvegarder la partie',admin:'Nommer un joueur connecté Admin',retirer:'Retirer les droits du joueur',qa:'Activer ou désactiver QA pour cette session',mondeadmin:'Ouvrir ton espace Admin',pointdepart:'Définir ton point de retour',retour:'Revenir au point de départ',vue:'Changer de vue Trolle'},
+  descriptions:{inventaire:'Ouvrir ton inventaire',recettes:'Ouvrir le livre de recettes',pause:'Mettre en pause',inviter:'Partager la partie actuelle',renommer:'Renommer la partie : /renommer Nouveau nom',dormir:'Dormir dans le lit que tu regardes',hud:'Afficher ou masquer les informations',pseudo:'Changer ton pseudo : /pseudo Alex',hardcore:'Survie difficile, une seule vie, sans triche',tp:'Voyager : joueur, dimension ou coordonnées',dim:'Choisir une dimension',mode:'Changer de mode',troll:'Activer Trolle à tout moment hors Hardcore',transforme:'Choisir une créature ou un bloc',capacite:'Utiliser le pouvoir de ta transformation',joueurs:'Voir les joueurs connectés',position:'Afficher ta position',sauver:'Sauvegarder la partie',admin:'Nommer un joueur connecté Admin',retirer:'Retirer les droits du joueur',qa:'Activer ou désactiver QA pour cette session',mondeadmin:'Ouvrir ton espace Admin',pointdepart:'Définir ton point de retour',retour:'Revenir au point de départ',vue:'Changer de vue Trolle',vision:'Afficher ou cacher la vision X (portails et minerais) : /vision',xray:'Alias de /vision'},
   public:new Set(['aide','help','commands','structures','structs','structure','graine','seed','pseudo','name','admins','adminlist','joueurs','position','sauver','inventaire','recettes','pause','inviter','renommer','dormir','hud']),
   init(){
     this.entries=[...new Set([...this.legacyNames,...Object.keys(this.descriptions)])].filter(n=>n!=='2026');
@@ -18133,6 +18360,12 @@ const CommandHub = {
       const type=Admin.mobType(arg);let m=type?['mob',type]:['block',Admin.findItem(arg)];if(!Troll.valid(m)){Admin.say('Transformation inconnue. Utilise /transforme pour choisir.','warn');return;}Troll.choose(m);return;
     }
     if(['capacite','pouvoir'].includes(cmd)){MorphPowers.use();return;}
+    if(['vision','xray'].includes(cmd)){
+      const value=Admin.norm(arg);
+      if(value&&!['on','off','oui','non','1','0'].includes(value)){Admin.say('Utilise /vision, /vision on ou /vision off.','warn');return;}
+      Vision.toggle(value ? ['on','oui','1'].includes(value) : undefined);
+      return;
+    }
     if(cmd==='vue'){Troll.third=!Troll.third;return;}
     if(cmd==='inventaire'||cmd==='recettes'){openInventory();if(cmd==='recettes'){PixelUI.book=true;PixelUI.refresh();}return;}
     if(cmd==='pause'){openPause();return;}
@@ -18184,7 +18417,7 @@ const MorphPowers={
   },
   apply(){
     const s=this.active()?this.stats():this.stats(null),old=Survival.maxHealth;
-    const previous=[Player.width,Player.height,Player.eye];Player.width=s.w/2;Player.height=s.h;Player.eye=Math.max(.2,s.h*.9);
+    const previous=[Player.width,Player.height,Player.eye];Player.width=s.w/2;Player.height=s.h;Player.eye=Math.max(.2,s.h*.9);Player.crouched=false;
     if(this.active()&&Game.manager&&collidesAt(Player.pos)){[Player.width,Player.height,Player.eye]=previous;Troll.morph=null;Admin.say('Pas assez de place pour cette transformation.','warn');this.apply();return false;}
     Survival.maxHealth=s.hp;Survival.health=Math.min(s.hp,Math.max(1,Survival.health/old*s.hp));this.next=0;this.fuseUntil=0;Player.flying=!!s.fly;
     const btn=$('powerButton');btn.classList.toggle('hidden',!this.active());$('powerHint').textContent=s.ability+' · '+s.hp+' PV';
@@ -18226,11 +18459,21 @@ const Preview3D={
       v=v.map(project);
       for(const [ids,tex,shade]of [[[3,2,6,7],front===undefined?tile:front,.03],[[1,0,4,5],tile,.35],[[0,3,7,4],tile,.24],[[2,1,5,6],tile,.16],[[7,6,5,4],tile,0],[[0,1,2,3],tile,.45]]){const p=ids.map(i=>v[i]);const area=(p[1][0]-p[0][0])*(p[2][1]-p[0][1])-(p[1][1]-p[0][1])*(p[2][0]-p[0][0]);if(area>=0)continue;faces.push({p,tex,shade,color,z:p.reduce((a,n)=>a+n[2],0)/4});}
     };
-    const breath=matchMedia('(prefers-reduced-motion: reduce)').matches?0:Math.sin(performance.now()/700)*.008;
-    box(-.15,0,0,.27,.74,.28,TEX.player_pants);box(.15,0,0,.27,.74,.28,TEX.player_pants);box(0,.74,0,.55,.6,.3,TEX.player);
-    for(const side of [-1,1]){box(side*.38,.7+breath,0,.2,.63,.22,TEX.player);box(side*.38,.62+breath,0,.2,.17,.22,TEX.player_skin);}
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const breath=reduced?0:Math.sin(performance.now()/700)*.008;
+    const stride=reduced?0:Math.sin(performance.now()/540)*.035;
+    const outfit=SkinShop.current(),shirt=TEX['shirt_'+outfit]??TEX.player,pants=TEX['pants_'+outfit]??TEX.player_pants;
+    for(const side of [-1,1]){
+      box(side*.15,0,side*stride,.27,.74,.28,pants);
+      box(side*.15,0,side*stride-.025,.28,.15,.32,TEX.player_hair);
+    }
+    box(0,.74,0,.55,.6,.3,shirt);box(0,.70,0,.56,.08,.32,pants);
+    for(const side of [-1,1]){
+      box(side*.38,.72+breath,-side*stride,.2,.62,.22,shirt);
+      box(side*.38,.66+breath,-side*stride,.2,.12,.22,TEX.player_skin);
+    }
     box(0,1.34+breath,0,.5,.5,.5,TEX.player_skin,TEX.player_face,true);box(0,1.76+breath,0,.53,.12,.53,TEX.player_hair,undefined,true);box(0,1.39,-.24,.5,.4,.05,TEX.player_hair,undefined,true);box(0,1.48,.27,.085,.09,.06,TEX.player_skin,undefined,true);
-    const armor=id=>/diamant/i.test(itemName(id))?'#55cbd4':/netherite/i.test(itemName(id))?'#534550':/or\b/i.test(itemName(id))?'#e5bc49':'#aabac2';
+    const armor=id=>/diamant/i.test(itemName(id))?'#55cbd4':/netherite/i.test(itemName(id))?'#534550':/bedrock/i.test(itemName(id))?'#353b45':/or\b/i.test(itemName(id))?'#e5bc49':'#aabac2';
     if(Armor.slots.head){box(0,1.76,0,.57,.13,.57,0,undefined,true,armor(Armor.slots.head));for(const side of [-1,1])box(side*.255,1.4,0,.06,.36,.54,0,undefined,true,armor(Armor.slots.head));}
     if(Armor.slots.chest)box(0,.76,0,.59,.57,.35,0,undefined,false,armor(Armor.slots.chest));
     if(Armor.slots.legs)for(const side of [-1,1])box(side*.15,.19,0,.29,.53,.31,0,undefined,false,armor(Armor.slots.legs));
@@ -18306,6 +18549,7 @@ const AdminCloud={
           for(const record of this.peers.values())if(record.admitted)this.welcome(record.id);
         }else this.dial(peer,room.peerId,epoch,0);
       }catch(e){this.fail(e);}});
+      peer.on('call',call=>Voice.answer(call));
       peer.on('connection',connection=>{if(!this.active||Net.role!=='host'||epoch!==ShortRooms.epoch){connection.close();return;}this.attach(connection,true);});
       peer.on('error',error=>{if(epoch!==ShortRooms.epoch)return;if(error.type==='peer-unavailable'&&!room.host&&!this.ready)return;if(Net.live&&this.ready&&['network','socket-error','server-error'].includes(error.type))return;this.fail(error);});
       this.unwatch=this.store.watch(type,state=>{if(!this.active||epoch!==ShortRooms.epoch)return;if(state&&state.peerId!==this.hostId)this.fail(Error('L’hôte du monde commun a changé. Rejoins le monde pour charger sa dernière sauvegarde.'));},e=>this.fail(e));
@@ -18320,7 +18564,7 @@ const AdminCloud={
     }else if(this.ready)this.fail(Error('L’hôte a fermé le monde. La dernière sauvegarde reste dans Firebase. Réessaie sous 45 secondes.'));});
     connection.on('error',()=>{if(this.ready&&this.active){if(host)connection.close();else this.fail(Error('Connexion à l’hôte interrompue.'));}});
   },
-  welcome(id){if(!this.ready)return;this.send(['cloud-self',id,this.hostId,[...this.records].map(([key,r])=>[key,{...r,_avatar:undefined}])],id);Net.hostStart(id).catch(e=>this.fail(e));},
+  welcome(id){if(!this.ready)return;if(Voice.stream)Voice.call(id);this.send(['cloud-self',id,this.hostId,[...this.records].map(([key,r])=>[key,{...r,_avatar:undefined}])],id);Net.hostStart(id).catch(e=>this.fail(e));},
   receive(id,raw){
     if(typeof raw!=='string'||raw.length>12000000)return;let m;try{m=JSON.parse(raw);}catch(e){return;}if(!Array.isArray(m))return;
     if(Net.role==='guest'){
@@ -18329,9 +18573,10 @@ const AdminCloud={
       if(m[0]==='cloud-error'){this.fail(Error(m[1]));return;}
       if(m[0]==='cloud-self'){this.selfId=m[1];for(const [key,r]of m[3]||[])if(key!==this.selfId)this.records.set(key,r);return;}
       if(m[0]==='cloud-left'){this.records.delete(m[1]);return;}
+      if(m[0]==='cloud-peer-info'){if(typeof m[1]==='string'&&m[1]!==this.selfId&&m[2]&&typeof m[2].name==='string'){this.records.set(m[1],m[2]);if(Voice.stream)Voice.call(m[1]);}return;}
       if(m[0]==='cloud-oneblock-count'){if(Number.isSafeInteger(m[1]))OneBlock.count=Math.max(0,m[1]);return;}
       if(m[0]==='cloud-core-done'){for(const [item,n]of m[1]||[])Game.inv.add(item,n);wearHeld(1);HUD.refreshAll();return;}
-      if(m[0]==='cloud-peer'){if(m[1]!==this.selfId)this.position(m[1],m[2]);return;}
+      if(m[0]==='cloud-peer'){if(m[1]!==this.selfId){this.position(m[1],m[2]);if(Voice.stream)Voice.call(m[1]);}return;}
       if(m[0]==='p'){this.position(this.hostId,m);return;}
       if(m[0]==='h'&&!this.records.has(this.hostId))this.records.set(this.hostId,{id:this.hostId,name:this.hostName,x:m[6],y:m[7],z:m[8],yaw:0,dim:m[4]});
       this.rawMessage(raw);return;
@@ -18340,15 +18585,15 @@ const AdminCloud={
     if(m[0]==='cloud-proof'){
       if(peer.admitted||m[2]!==this.type||!RoleGate.validName(m[1]))return;
       const name=m[1].trim();if(name===Admin.me||[...this.records.values()].some(r=>r.name===name)){this.send(['cloud-error','Ce pseudo est déjà présent dans ce monde. Choisis un autre pseudo.'],id,true);return;}
-      peer.admitted=true;this.records.set(id,{id,name,x:Player.pos[0],y:Player.pos[1],z:Player.pos[2],yaw:0,dim:Dimensions.current});if(!Admin.admins.includes(name))Admin.admins.push(name);this.welcome(id);return;
+      peer.admitted=true;const record={id,name,x:Player.pos[0],y:Player.pos[1],z:Player.pos[2],yaw:0,dim:Dimensions.current};this.records.set(id,record);if(!Admin.admins.includes(name))Admin.admins.push(name);this.send(['cloud-peer-info',id,record],null,false,id);this.welcome(id);return;
     }
-    if(!peer.admitted||!['p','r','b','k','S','sleep','bow-shot','qa-kill','circuit-meta','vehicle-use','boat-input','ignite-tnt','chat','player-death','morph-power','g','oneblock-break','ground-throw','ground-pick'].includes(m[0]))return;
+    if(!peer.admitted||!['p','r','b','k','S','sleep','bow-shot','qa-kill','circuit-meta','vehicle-use','boat-input','ignite-tnt','chat','player-death','morph-power','g','oneblock-break','ground-throw','ground-pick','chest-open','chest-take'].includes(m[0]))return;
     if(m[0]==='p'){if(!this.position(id,m))return;this.send(['cloud-peer',id,m],null,false,id);return;}
     if(m[0]==='oneblock-break'){const r=this.records.get(id),s=OneBlock.SPAWN;if(Game.manager.dim!=='oneblock'||!r||Math.hypot(r.x-s[0],r.y-s[1],r.z-s[2])>8||m[1]!==Game.manager.getBlock(...s))return;const loot=Game.mode==='survival'?blockDrops(m[1]):[];OneBlock.onBreak({x:s[0],y:s[1],z:s[2]});this.send(['cloud-core-done',loot],id);return;}
     const old=Net.remote;this.sender=id;Net.remote=this.records.get(id);
     try{this.rawMessage(JSON.stringify(m));if(['b','chat','player-death','g'].includes(m[0]))this.send(m,null,false,id);}finally{this.sender=null;Net.remote=this.records.values().next().value||old;}
   },
-  position(id,m){if(!Array.isArray(m)||m[0]!=='p'||!m.slice(1,7).every(Number.isFinite)||Math.abs(m[1])>30000000||Math.abs(m[3])>30000000)return false;const r=this.records.get(id)||{id,name:m[7]||'Admin'};r.px=r.x;r.py=r.y;r.pz=r.z;[r.x,r.y,r.z,r.yaw,r.pitch,r.hp]=m.slice(1,7);r.dim=m[8]||'overworld';r.morph=Troll.valid(m[9])?m[9]:null;r.t=performance.now();this.records.set(id,r);Net.remote=this.records.values().next().value||null;return true;},
+  position(id,m){if(!Array.isArray(m)||m[0]!=='p'||!m.slice(1,7).every(Number.isFinite)||Math.abs(m[1])>30000000||Math.abs(m[3])>30000000)return false;const r=this.records.get(id)||{id,name:m[7]||'Admin'};r.px=r.x;r.py=r.y;r.pz=r.z;[r.x,r.y,r.z,r.yaw,r.pitch,r.hp]=m.slice(1,7);r.dim=m[8]||'overworld';r.skin=SkinShop.valid(m[11])?m[11]:'classic';r.morph=Troll.valid(m[9])?m[9]:null;r.t=performance.now();this.records.set(id,r);Net.remote=this.records.values().next().value||null;return true;},
   send(m,target=null,force=false,except=null){if(!this.active)return;if(Net.role==='host'&&this.sender&&!target&&['H','x','vehicle-consumed','profile-grant'].includes(m[0]))target=this.sender;const raw=JSON.stringify(m);for(const [id,r]of this.peers)if(id!==except&&(!target||id===target)&&(r.admitted||force)&&r.connection.open)try{NetFlow.send(r.connection,m,raw);}catch(e){}},
   async flush(){if(!this.active||Net.role!=='host'||!this.ready)return;const data=Saves.current()?.data;if(!data||data.adminRealmType!==this.type)return;if(this.saving)return this.saving;const promise=this.store.save(this.type,JSON.parse(JSON.stringify(data)));this.saving=promise;try{await promise;}finally{if(this.saving===promise)this.saving=null;}},
   shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();for(const node of this.tagNodes.values())node.remove();this.tagNodes.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
@@ -18775,7 +19020,7 @@ function boot() {
   initSelection();
   try { Fx.init(); } catch (e) { console.error('Fx', e); }
   try { Admin.load(); } catch (e) { console.error('Admin', e); }
-  RoleGate.init();
+  SkinShop.init();Friends.init();RoleGate.init();
   setupInput();
   PixelUI.init();
   Troll.init();
@@ -18783,6 +19028,8 @@ function boot() {
   CommandHub.init();Preview3D.init();AdminRealm.init();Adventure.init();
   $('renameParty').onclick=()=>RoomNames.rename();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
+  $('voiceToggle').addEventListener('click', () => Voice.toggle());
+  window.addEventListener('pagehide', () => Voice.stop());
   $('chatSend').addEventListener('click', () => GameChat.submit());
   $('chatClose').addEventListener('click', () => Admin.closeBar());
 
