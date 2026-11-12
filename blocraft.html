@@ -1403,6 +1403,14 @@
 .socialPanel{width:min(560px,95vw);max-height:94dvh;overflow:auto;gap:12px;padding:24px}.socialPanel p{color:#c5dbc9;line-height:1.5;margin:4px 0 12px}.socialGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.socialGrid button{min-height:92px;background:#1b2c25;border:2px solid #517354;border-radius:12px;color:#f0ffee;cursor:pointer;padding:12px;text-align:left}.socialGrid button.active{border-color:#bdf58f;background:#24472c}.socialGrid button:disabled{opacity:.48;cursor:not-allowed}.socialGrid b{display:block;font-size:22px}.socialGrid small{display:block;margin-top:5px}.socialRow{display:flex;gap:8px;margin:8px 0}.socialRow input{min-width:0;flex:1;background:#0c201b;border:1px solid #688c6d;color:#fff;border-radius:7px;padding:10px;font:inherit}.socialRow .btn{flex:none}.socialQuality{display:flex;align-items:start;gap:10px;padding:12px;background:#183026;border-radius:8px}.socialPanel>button:last-child{margin-top:14px}.socialFriend{display:flex;align-items:center;gap:8px;border-bottom:1px solid #53735a;padding:8px 0;overflow-wrap:anywhere}.socialFriend span{flex:1;min-width:0}.socialFriend button{cursor:pointer;background:#23412c;color:#fff;border:1px solid #6b9b70;border-radius:6px;padding:9px}@media(max-width:450px){.socialGrid{grid-template-columns:1fr 1fr}.socialGrid button{padding:8px}.socialPanel{padding:14px}.socialRow{flex-wrap:wrap}}
 @media(max-width:700px){#chatToggle{top:40%}#chatLog{top:calc(40% + 45px)}body.chat-open #chatToggle{top:calc(16% - 40px)}body.chat-open #chatLog{top:16%}}
 #weatherCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}#worldCoordinates{position:fixed;left:12px;top:10px;display:flex;gap:9px;align-items:center;z-index:14;background:#07131dc9;padding:7px 10px;border-radius:9px;font:11px monospace;color:#d6efe5;pointer-events:none}#worldCoordinates.hidden{display:none}.compassRose{position:relative;width:40px;height:40px;border:1px solid #8fb3a877;border-radius:50%}.compassRose span{position:absolute;font:9px monospace}.compassRose span:nth-child(1){top:0;left:16px}.compassRose span:nth-child(2){right:1px;top:15px}.compassRose span:nth-child(3){bottom:0;left:16px}.compassRose span:nth-child(4){left:1px;top:15px}.compassRose i{display:block;position:absolute;left:13px;top:11px;color:#ff9b85;transform-origin:7px 9px;font-style:normal}#vehicleExit{position:fixed;right:15px;bottom:190px;z-index:30;padding:12px;border:1px solid #95ccaa;border-radius:9px;background:#18382e;color:#eaffee}.qaSite:has(button:nth-of-type(2)){grid-template-columns:minmax(0,1fr) auto auto}.qaSite:has(button:nth-of-type(2)) .d{grid-column:1/-1;grid-row:2}.qaSite .d{white-space:normal}#victory .panel p{line-height:1.7}#victory .btn{margin-top:12px}@media(max-width:500px){#worldCoordinates{font-size:9px;gap:5px;padding:5px;left:6px;top:5px}#worldCoordinates .compassRose{width:40px;flex-shrink:0}#modeBadge{top:66px!important;right:7px!important;font-size:11px}#powerButton{top:100px!important}}
+  #dimensionArrival{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px) scale(.96);z-index:61;
+    min-width:min(480px,85vw);padding:24px 30px;text-align:center;pointer-events:none;opacity:0;
+    border:2px solid #ff9545;border-radius:16px;background:linear-gradient(140deg,#250c0cea,#632117ee);
+    box-shadow:0 0 45px #d4432777;transition:opacity .4s,transform .4s;color:#fff0dc}
+  #dimensionArrival.end{border-color:#c8a1ff;background:linear-gradient(140deg,#130c2bee,#432478ee);box-shadow:0 0 45px #9361ed77}
+  #dimensionArrival.show{opacity:1;transform:translate(-50%,0) scale(1)}
+  #dimensionArrival strong{display:block;font-size:clamp(25px,5vw,43px);letter-spacing:.08em;text-shadow:0 3px 15px #000}
+  #dimensionArrival span{display:block;margin-top:8px;font-size:14px}
 </style>
 </head>
 <body>
@@ -1443,6 +1451,7 @@
     <div id="bossTrack"><i id="bossFill"></i></div>
   </div>
   <div id="dimBadge">Nether</div>
+  <div id="dimensionArrival" role="status" aria-live="polite"><strong></strong><span></span></div>
   <div id="toasts"></div><button id="trollButton" class="btn hidden">Se transformer</button>
 <div id="troll" class="overlay hidden"><section class="panel trollPanel"><h2>Mode Trolle · choisis ton apparence</h2><p>Déguisements animés visibles par ton ami. Les déplacements et collisions restent ceux du joueur.</p><input id="trollSearch" type="search" placeholder="Animal, monstre, bloc…" aria-label="Rechercher un déguisement"><button id="trollView" class="btn small">Vue : ton personnage</button><div id="trollChoices"></div><button id="trollClose" class="btn">Retour au jeu</button></section></div>
 
@@ -1753,7 +1762,7 @@
   </div>
   <div id="qaEsp"></div>
   <div id="visionEsp"></div>
-  <div id="visBanner" class="hidden"><b>VISION X</b><span id="visText">Portails de l'End…</span></div>
+  <div id="visBanner" class="hidden"><b>VISION X</b><span id="visText">Ruines du Nether…</span></div>
   <div id="qaCoords" class="qaCoords" style="display:none">XYZ</div>
   <div id="qaBadge" class="qaBadge">MODE QA</div>
 
@@ -1811,6 +1820,7 @@
         <div><kbd>1</kbd>–<kbd>9</kbd>, molette : bloc actif</div>
         <div><kbd>E</kbd> inventaire · artisanat</div>
         <div><kbd>F</kbd> voler (créatif)</div>
+        <div><kbd>M</kbd> monter / descendre du wagonnet proche · <kbd>N</kbd> musique</div>
         <div><kbd>F3</kbd> infos techniques</div>
         <div><kbd>Échap</kbd> pause</div>
         <div><kbd>R</kbd> retour au point de départ</div>
@@ -2263,7 +2273,7 @@ BLOCKS.push(
   { name: 'Bloc d\'émeraude', tex: [TEX.emerald_block, TEX.emerald_block, TEX.emerald_block], solid: true, opaque: true },// 69
   { name: 'Botte de foin', tex: [TEX.hay_top, TEX.hay_side, TEX.hay_top], solid: true, opaque: true },           // 70
   { name: 'Bibliothèque', tex: [TEX.planks, TEX.bookshelf, TEX.planks], solid: true, opaque: true },             // 71
-  { name: 'Four', tex: [TEX.furnace_top, TEX.furnace_side, TEX.furnace_top], solid: true, opaque: true, furnace: true }, // 72
+  { name: 'Four', tex: [TEX.furnace_top, TEX.furnace_front, TEX.furnace_side], solid: true, opaque: true, furnace: true }, // 72
   { name: 'Glace', tex: [TEX.ice, TEX.ice, TEX.ice], solid: true, opaque: false, alpha: true, slippery: true },  // 73
   { name: 'Glace bleue', tex: [TEX.blue_ice, TEX.blue_ice, TEX.blue_ice], solid: true, opaque: true },           // 74
   { name: 'Argile', tex: [TEX.clay, TEX.clay, TEX.clay], solid: true, opaque: true },                            // 75
@@ -2570,7 +2580,12 @@ for (const b of BLOCKS) {
 
 function isOpaque(t) { return BLOCKS[t].opaque; }
 function isSolid(t) { return BLOCKS[t].solid; }
-function texOf(t, face) { const tx = BLOCKS[t].tex; return tx[face]; }
+function texOf(t, face, side) {
+  const tx = BLOCKS[t].tex;
+  // Les fours ont une façade visible vers +Z ; le dessus reste une grille.
+  if (t === B.FURNACE && face === 1) return side === 4 ? TEX.furnace_front : TEX.furnace_side;
+  return tx[face];
+}
 
 /* -------------------- Génération des textures (canvas) ------------------ */
 function generateTextureAtlas() {
@@ -2688,36 +2703,30 @@ function generateTextureAtlas() {
     drawers_chicken_ref() { drawersRef.chicken(); },
     drawers_creeper_ref() { drawersRef.creeper(); },
     grass_top() {
-      /* pelouse plus riche : touffes, reflets et ombres */
+      // Tapis de feuilles en petits îlots : nuances denses plutôt que bruit uniforme.
+      const shades = ['#326a2d','#438333','#51933b','#5ea345','#6ba94a','#80b65a'];
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const r = rnd();
-        let v;
-        if (r < 0.06) v = 92; else if (r < 0.22) v = 112; else if (r < 0.6) v = 134;
-        else if (r < 0.82) v = 150; else if (r < 0.95) v = 166; else v = 184;
-        px(x, y, `rgb(${Math.round(v * 0.40)},${Math.round(v * 0.80)},${Math.round(v * 0.31)})`);
+        const patch = Math.sin(x * .73 + y * .43) + Math.cos(y * .81 - x * .32);
+        const k = clamp(Math.floor(2.5 + patch + R(-1,1)),0,5);
+        px(x,y,shades[k]);
       }
-      // petites touffes
-      for (let i = 0; i < 16; i++) {
-        const x = (rnd() * 15) | 0, y = (rnd() * 15) | 0;
-        px(x, y, '#4c9a36'); px(x + 1, y, '#58a840'); px(x, y + 1, '#3f7f2e');
+      for(let i=0;i<21;i++){
+        const x=(rnd()*15)|0,y=(rnd()*15)|0;
+        px(x,y,'#356f2d');px(x+1,y,'#82bd58');
+        if(i%2===0)px(x,y+1,'#4f9238');
       }
-      speck('#356b26', 18, 1); speck('#6dbb50', 12, 1);
     },
     grass_side() {
-      // terre
+      // Terre en mottes, petites racines et ourlet herbeux irrégulier.
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const v = 84 + R(-14, 14) | 0;
-        px(x, y, `rgb(${v + 24},${v + 2},${v - 26})`);
+        const fleck = Math.sin(x*.8+y*.9)*6 + R(-12,12);
+        px(x,y,shade('#78583c',fleck));
       }
-      speck('#5c4834', 26, 1);
-      speck('#a08a6a', 12, 1);
-      // bande d'herbe avec franges irrégulières
+      for(let i=0;i<32;i++)px((rnd()*16)|0,5+((rnd()*11)|0),rnd()<.55?'#644b35':'#9b7950');
       for (let x = 0; x < S; x++) {
-        const h = 3 + ((rnd() * 3) | 0) + (rnd() < 0.25 ? 1 : 0);
-        for (let y = 0; y < h; y++) {
-          const v = 112 + R(-18, 20) | 0;
-          px(x, y, `rgb(${Math.round(v * 0.44)},${Math.round(v * 0.8)},${Math.round(v * 0.34)})`);
-        }
+        const h = 3 + ((rnd()*3)|0) + (x%5===0?1:0);
+        for(let y=0;y<h;y++) px(x,y,y===h-1?'#34632b':y===0?'#6cab4b':rnd()<.5?'#4a8b38':'#599a40');
+        if(x%4===1)px(x,h,'#67523a'); // racine sous la touffe
       }
     },
     dirt() {
@@ -3431,10 +3440,18 @@ function generateTextureAtlas() {
   drawers.copper_ore = function () { drawers.stone(); speck('#c8743a', 12, 2); speck('#e0955a', 8, 1); };
   drawers.copper_block = matTex('#c8743a', 12, [['#a85a2a', 20, 2], ['#e69355', 18, 1]]);
   drawers.iron_block = function () { metalPanel('#f2f2f2', '#d0d0d2', '#9c9c9f', '#ffffff'); };
-  drawers.gold_block = function () { metalPanel('#fff09a', '#f2c81e', '#a8820c', '#fffbd0'); };
+  drawers.gold_block = function () {
+    metalPanel('#fff1a4', '#dfa91c', '#754a08', '#fffae0');
+    g.fillStyle='#fff9d0';g.fillRect(4,4,8,1);g.fillRect(4,5,1,6);
+    g.fillStyle='#ac7610';g.fillRect(11,5,1,7);g.fillRect(5,11,7,1);
+    px(5,5,'#ffffff');px(10,6,'#ffe670');
+  };
   drawers.copper_block = function () { metalPanel('#f0a86a', '#c8743a', '#8a4a1e', '#ffd0a0'); };
   drawers.diamond_block = function () {
-    noisy('#3fd8cf', 8);
+    noisy('#1b8594', 8);
+    g.fillStyle='#0b5269';g.fillRect(0,0,16,2);g.fillRect(0,0,2,16);
+    g.fillStyle='#83f7e6';g.fillRect(2,2,12,1);g.fillRect(2,2,1,12);
+    g.fillStyle='#095570';g.fillRect(13,3,2,12);g.fillRect(3,13,11,2);
     /* quatre gros cristaux taillés */
     const gem = (ox, oy) => {
       for (let y = 0; y < 4; y++) {
@@ -3528,14 +3545,40 @@ function generateTextureAtlas() {
     g.fillStyle='#c89962';g.fillRect(1,1,1,14);g.fillRect(14,1,1,14);
     g.fillStyle='#68462b';g.fillRect(0,0,16,1);g.fillRect(0,15,16,1);
   };
-  drawers.furnace_front = function () {
-    noisy('#8a8a8d', 10);
-    g.fillStyle = '#2a2a2e'; g.fillRect(3, 5, 10, 8);
-    g.fillStyle = '#4a4a4e'; g.fillRect(4, 6, 8, 6);
-    g.fillStyle='#17171c';g.fillRect(5,7,6,4);g.fillStyle='#b2b2b9';g.fillRect(2,3,12,1); // Fire is animated only while fuel burns.
+  const furnaceStone = () => {
+    noisy('#797e82', 8);
+    for (let y = 0; y < 16; y += 5) {
+      g.fillStyle='#505358';g.fillRect(0,y,16,1);
+      g.fillStyle='#abb0ad';g.fillRect(0,y+1,16,1);
+      for (let x = (y/5%2)*7; x < 16; x += 8) {
+        g.fillStyle='#505358';g.fillRect(x,y+1,1,4);
+        px(x+1,y+1,'#999e9c');
+      }
+    }
+    speck('#5f6367',12,1);
   };
-  drawers.furnace_side = function () { noisy('#8a8a8d', 10); speck('#6f6f74', 22, 2); };
-  drawers.furnace_top = function () { noisy('#7b7b80', 9); speck('#5f5f64', 18, 2); };
+  drawers.furnace_front = function () {
+    furnaceStone();
+    // Chambre de cuisson, grille, rebord métallique et entrée de combustible.
+    g.fillStyle='#474b4e';g.fillRect(3,2,10,5);
+    g.fillStyle='#b4b9b7';g.fillRect(4,2,8,1);
+    g.fillStyle='#27292c';g.fillRect(4,4,8,2);
+    for(const x of [5,8,11])px(x,4,'#666a6d');
+    g.fillStyle='#c3c2b9';g.fillRect(2,7,12,1);
+    g.fillStyle='#36383a';g.fillRect(2,9,12,5);
+    g.fillStyle='#171a1b';g.fillRect(4,10,8,3);
+    g.fillStyle='#595d5e';g.fillRect(3,13,10,1);
+    px(11,11,'#aeb3ae');px(12,12,'#414446');
+  };
+  drawers.furnace_side = function () { furnaceStone();g.fillStyle='#474a4c';g.fillRect(1,8,14,1); };
+  drawers.furnace_top = function () {
+    furnaceStone();
+    g.fillStyle='#4a4c4d';g.fillRect(2,2,12,12);
+    g.fillStyle='#a1a5a3';g.fillRect(3,3,10,1);g.fillRect(3,3,1,10);
+    g.fillStyle='#2a2c2e';g.fillRect(4,5,8,7);
+    for(const x of [5,7,9,11]){g.fillStyle='#686c6c';g.fillRect(x,5,1,7);}
+    g.fillStyle='#4a4d4e';g.fillRect(3,13,10,1);
+  };
   drawers.ice = function () {
     noisy('#a8d8f0', 8);
     for (let i = 0; i < 6; i++) {
@@ -3915,11 +3958,16 @@ function generateTextureAtlas() {
   for (const k in drawers) drawersRef[k] = drawers[k];
 
   for (const name of ['rail', 'powered_rail']) drawers[name] = () => {
-    fill('#493723');
-    for (let y = 1; y < 16; y += 4) { g.fillStyle = '#a5793f'; g.fillRect(0, y, 16, 2); }
-    g.fillStyle = name === 'rail' ? '#cbd1d8' : '#ffd34e';
-    g.fillRect(3, 0, 2, 16); g.fillRect(11, 0, 2, 16);
-    if (name === 'powered_rail') { g.fillStyle = '#ee3322'; g.fillRect(7, 0, 2, 16); }
+    const hot=name==='powered_rail';
+    fill(hot?'#542920':'#493723');
+    for (let y = 1; y < 16; y += 4) {
+      g.fillStyle = hot?'#a84422':'#a5793f'; g.fillRect(0, y, 16, 2);
+      g.fillStyle = hot?'#fa7940':'#9b7650';g.fillRect(1,y,14,1);
+    }
+    g.fillStyle=hot?'#e85622':'#73818b';g.fillRect(2,0,4,16);g.fillRect(10,0,4,16);
+    g.fillStyle=hot?'#ffbc49':'#e2e8ee';g.fillRect(3,0,2,16);g.fillRect(11,0,2,16);
+    if(hot){g.fillStyle='#ff3127';g.fillRect(7,0,2,16);
+      for(let y=2;y<16;y+=4){g.fillStyle='#ffe082';g.fillRect(7,y,2,2);}}
   };
   drawers.herobrine_face = () => { drawers.player_face(); g.fillStyle='#fff';g.fillRect(3,6,3,2);g.fillRect(10,6,3,2); };
   drawers.flame_fx = () => { g.clearRect(0,0,16,16);g.fillStyle='#ec6b16';g.fillRect(4,6,8,9);g.fillRect(6,2,3,7);g.fillStyle='#ffd34c';g.fillRect(6,8,5,7);g.fillStyle='#fff1a2';g.fillRect(7,11,2,4); };
@@ -5642,7 +5690,7 @@ class ChunkManager {
             const nb = get(x + F.dir[0], y + F.dir[1], z + F.dir[2]);
             if (!XRAY && opaque(nb)) continue;
             if (!XRAY && nb === t && def.alpha) continue; // le verre fusionne avec lui-même
-            const layer = texOf(t, F.face);
+            const layer = texOf(t, F.face, f);
             const baseL = lightAt(x, y, z) * F.bright;
             const vs = [];
             for (let i = 0; i < 4; i++) {
@@ -6291,6 +6339,7 @@ function breakBlock() {
 
 /* ------------------------------ Combat ---------------------------------- */
 function tryAttack(aim) {
+  if(typeof Firearms!=='undefined'&&Firearms.isGun(heldItemId()))return Firearms.shoot();
   if(heldItemId()===I.BOW){Archery.shoot();return true;}
   if (Game.attackCd > 0) return false;
   const direction = aim || (TouchActions.mining ? TouchActions.direction() : lookDir());
@@ -6390,12 +6439,12 @@ const Golems = {
 };
 
 /* ------------------------- Œil de l'End (lancer) ------------------------- */
-/* Comme dans Minecraft : jeté, l'œil file droit vers le portail de l'End le plus
-   proche (celui des forteresses), puis retombe. Il sert de boussole. */
+/* L'œil guide encore vers la forteresse ; son portail naturel est désormais
+   une ruine du Nether, et l'End reste accessible par un anneau fabriqué. */
 const EnderEye = {
   live: null,
 
-  /* le portail de l'End le plus proche (salle du portail dans une forteresse) */
+  /* la forteresse la plus proche (salle de la ruine) */
   portalTarget() {
     if (!Game.manager || Game.manager.dim !== 'overworld') return null;
     const px = Player.pos[0], pz = Player.pos[2];
@@ -6433,7 +6482,7 @@ const EnderEye = {
       const sp = 15.5;
       vx = dx / d * sp; vz = dz / d * sp; vy = 3.4;
       const dist = Math.round(tgt.dist);
-      HUD.toastText('👁️ L\'œil de l\'End file vers le portail · ' + dist + ' blocs · '+Coordinates.xyz(tgt.x,tgt.y,tgt.z)+' au ' +
+      HUD.toastText('👁️ L\'œil guide vers la forteresse en ruine · ' + dist + ' blocs · '+Coordinates.xyz(tgt.x,tgt.y,tgt.z)+' au ' +
         this.bearing(dx, dz), 3.4);
     } else {
       vx = dir[0] * 15.5; vy = 3.4; vz = dir[2] * 15.5;
@@ -6485,7 +6534,7 @@ const EnderEye = {
     const t = e.target;
     if (t) {
       const d = Math.round(Math.hypot(t.x - Player.pos[0], t.z - Player.pos[2]));
-      HUD.toastText('👁️ L\'œil retombe : portail de l\'End à ' + d + ' blocs au ' +
+      HUD.toastText('👁️ L\'œil retombe : forteresse en ruine à ' + d + ' blocs au ' +
         this.bearing(t.x - Player.pos[0], t.z - Player.pos[2])+' · '+Coordinates.xyz(t.x,t.y,t.z)+'. Tape /vision pour le voir.', 5);
     } else {
       HUD.toastText('👁️ L\'œil est revenu dans ton sac', 2.6);
@@ -6495,12 +6544,12 @@ const EnderEye = {
 };
 
 /* --------------------------- Perle de l'End ----------------------------- */
-/* clic droit : on la lance, elle rebondit, et on se téléporte là où elle s'arrête. */
+/* Deux projectiles indépendants : chaque impact téléporte, dans l'ordre réel des chutes. */
 const EnderPearl = {
-  live: null,
+  live: [], nextId: 0,
 
   canThrow() {
-    if (Game.state !== 'playing' || Dimensions.busy) return false;
+    if (Game.state !== 'playing' || Dimensions.busy || this.live.length >= 2) return false;
     if (heldItemId() !== I.ENDER_PEARL) return false;
     return true;
   },
@@ -6510,21 +6559,20 @@ const EnderPearl = {
     if (!Game.inv.remove(I.ENDER_PEARL, 1)) return false;
     const dir = lookDir();
     const eye = eyePos();
-    this.live = {
+    this.live.push({
       pos: [eye[0] + dir[0] * 0.4, eye[1] + dir[1] * 0.4, eye[2] + dir[2] * 0.4],
       vel: [dir[0] * 21, dir[1] * 21 + 2.2, dir[2] * 21],
-      life: 6,
-      trail: 0,
-    };
+      life: 6, trail: 0, manager: Game.manager, dim: Dimensions.current, id: ++this.nextId,
+    });
     Sfx.play('throw', 0.9);
     HUD.refreshAll();
     HUD.toastText('✦ Perle de l\'End lancée', 1.4);
-    /* petit repère en plus : de quel côté est le portail de l'End ? */
+    /* repère vers la forteresse, dont le portail naturel est en ruine */
     try {
       const t = EnderEye.portalTarget();
       if (t) {
         const dx = t.x - Player.pos[0], dz = t.z - Player.pos[2];
-        setTimeout(() => HUD.toastText('🧭 Portail de l\'End à ' + Math.round(t.dist) + ' blocs au ' +
+        setTimeout(() => HUD.toastText('🧭 Forteresse en ruine à ' + Math.round(t.dist) + ' blocs au ' +
           EnderEye.bearing(dx, dz) + ' (commande /vision pour le voir)', 3.4), 700);
       }
     } catch (e) { }
@@ -6563,7 +6611,6 @@ const EnderPearl = {
     Player.vel = [0, 0, 0];
     Player.onGround = false;
     Player.fallDist = 0;
-    this.live = null;
     /* comme dans Minecraft : la téléportation coûte 5 points de vie */
     if (Game.mode === 'survival' && !Survival.dead) {
       Survival.invuln = 0;
@@ -6575,33 +6622,97 @@ const EnderPearl = {
   },
 
   update(dt) {
-    const p = this.live;
-    if (!p) return;
-    if (Game.state !== 'playing' || Dimensions.busy) return;
+    if (!this.live.length || Game.state !== 'playing' || Dimensions.busy) return;
     const mgr = Game.manager;
-    const steps = Math.max(1, Math.ceil((Math.hypot(p.vel[0], p.vel[1], p.vel[2]) * dt) / 0.22));
-    const h = dt / steps;
-    for (let i = 0; i < steps; i++) {
+    this.live = this.live.filter(p => p.manager === mgr && p.dim === Dimensions.current);
+    if (!this.live.length) return;
+    // Sous-pas partagés : même si la seconde perle touche d'abord, son impact
+    // n'attend pas que la première termine son trajet.
+    const speed = Math.max(...this.live.map(p => Math.hypot(...p.vel)));
+    const steps = Math.max(1, Math.ceil(speed * dt / 0.22));
+    const h = dt / steps, impacts = [];
+    const collides = pos => {
+      const bx = Math.floor(pos[0]), by = Math.floor(pos[1]), bz = Math.floor(pos[2]);
+      const t = mgr.getBlock(bx, by, bz), def = BLOCKS[t] || {};
+      return t !== B.AIR && (def.solid || def.water);
+    };
+    for (let i = 0; i < steps; i++) for (const p of this.live) {
+      if (p.done) continue;
+      const start = p.pos.slice();
       p.vel[1] -= 24 * h;
-      p.pos[0] += p.vel[0] * h;
-      p.pos[1] += p.vel[1] * h;
-      p.pos[2] += p.vel[2] * h;
-      const bx = Math.floor(p.pos[0]), by = Math.floor(p.pos[1]), bz = Math.floor(p.pos[2]);
-      const t = mgr.getBlock(bx, by, bz);
-      const def = BLOCKS[t] || {};
-      if (t !== B.AIR && (def.solid || def.water)) {
-        this.impact(bx + 0.5, by + 1, bz + 0.5);
-        return;
+      for (let k = 0; k < 3; k++) p.pos[k] += p.vel[k] * h;
+      if (collides(p.pos)) {
+        // Premier contact dans le sous-pas, pour ordonner les deux impacts.
+        let lo = 0, hi = 1;
+        if (!collides(start)) for (let k = 0; k < 7; k++) {
+          const mid = (lo + hi) / 2;
+          if (collides(start.map((v, j) => v + (p.pos[j] - v) * mid))) hi = mid;
+          else lo = mid;
+        }
+        const hit = start.map((v, j) => v + (p.pos[j] - v) * hi);
+        impacts.push({ time: (i + hi) * h, id: p.id,
+          pos: [Math.floor(hit[0]) + .5, Math.floor(hit[1]) + 1, Math.floor(hit[2]) + .5] });
+        p.done = true;
+      } else if (p.pos[1] < -6) p.done = true;
+    }
+    for (const p of this.live) {
+      if (p.done) continue;
+      p.trail -= dt;
+      if (p.trail <= 0) {
+        p.trail = 0.035;
+        Fx.puff(...p.pos, 1, TEX.enderman_face);
       }
-      if (p.pos[1] < -6) { this.live = null; return; }
+      p.life -= dt;
+      if (p.life <= 0) p.done = true;
     }
-    p.trail -= dt;
-    if (p.trail <= 0) {
-      p.trail = 0.035;
-      Fx.puff(p.pos[0], p.pos[1], p.pos[2], 1, TEX.enderman_face);
+    this.live = this.live.filter(p => !p.done);
+    impacts.sort((a, b) => a.time - b.time || a.id - b.id);
+    for (const hit of impacts) {
+      if (Game.state !== 'playing' || Survival.dead || Game.manager !== mgr) break;
+      this.impact(...hit.pos);
     }
-    p.life -= dt;
-    if (p.life <= 0) this.live = null;
+  },
+};
+
+/* Fusée tenue en main : vol temporaire en survie, renouvelable avec une autre. */
+const Fireworks = {
+  flights: new Map(),
+  owner() { return typeof Players !== 'undefined' ? Players.active : 0; },
+  flight() { return this.flights.get(this.owner()); },
+  active() {
+    const f = this.flight();
+    return !!f && f.remaining > 0 && f.manager === Game.manager && f.dim === Dimensions.current;
+  },
+  use() {
+    if (Game.state !== 'playing' || Dimensions.busy || !Game.inv.remove(I.FIREWORK, 1)) return false;
+    const previous = this.active() ? this.flight().remaining : 0;
+    this.flights.set(this.owner(), { manager: Game.manager, dim: Dimensions.current,
+      remaining: Math.min(8, previous + 3.5), sparks: 0 });
+    Player.flying = true; Player.vel[1] = Math.max(Player.vel[1], 7);
+    Player.fallDist = 0;
+    Sfx.play('levelup', 0.65);
+    Fx.puff(Player.pos[0], Player.pos[1] + .3, Player.pos[2], 20, TEX.glow);
+    HUD.toastText('🎆 Fusée : vole 3,5 s · espace pour monter · réutilise une fusée pour prolonger !', 3);
+    HUD.refreshAll(); refreshFlyButtons();
+    return true;
+  },
+  cancel() {
+    if (this.flight() && Game.mode === 'survival') Player.flying = false;
+    this.flights.delete(this.owner());
+    refreshFlyButtons();
+  },
+  cancelAll() { this.cancel(); this.flights.clear(); },
+  update(dt) {
+    const f = this.flight();
+    if (!f || Game.state !== 'playing') return;
+    if (!this.active() || Survival.dead) { this.cancel(); return; }
+    f.remaining -= dt;
+    if (f.remaining <= 0) { this.cancel(); HUD.toastText('La fusée s’éteint : atterris prudemment.', 2); return; }
+    f.sparks += dt;
+    if (f.sparks >= .12) {
+      f.sparks = 0;
+      Fx.puff(Player.pos[0], Player.pos[1] + .2, Player.pos[2], 2, TEX.glow);
+    }
   },
 };
 
@@ -6609,30 +6720,31 @@ const EnderPearl = {
 function useBucket() {
   const held = heldItemId();
   if (held !== I.BUCKET && held !== I.BUCKET_WATER && held !== I.BUCKET_LAVA) return false;
-  const hit = raycastVoxel(eyePos(), lookDir(), 6, Game.manager, true);
+  const origin = eyePos(), dir = lookDir(), mgr = Game.manager;
+  let hit = raycastVoxel(origin, dir, 6, mgr, true), travelled = 0;
+  // L'eau lâchée s'écoule : traverse ses blocs courants pour viser la source
+  // derrière eux, sans passer à travers un bloc solide.
+  if (held === I.BUCKET) for (let i = 0; hit && i < 8; i++) {
+    const t = mgr.getBlock(hit.x, hit.y, hit.z);
+    if (t === B.WATER || t === B.LAVA || !Fluids.isWater(t)) break;
+    travelled += hit.dist + 0.02;
+    if (travelled >= 6) { hit = null; break; }
+    hit = raycastVoxel(origin.map((v, k) => v + dir[k] * travelled), dir, 6 - travelled, mgr, true);
+  }
   if (!hit) return false;
-  const tb = Game.manager.getBlock(hit.x, hit.y, hit.z);
+  const tb = mgr.getBlock(hit.x, hit.y, hit.z);
   const isWater = !!Fluids.isWater(tb);
   const isLava = (tb === B.LAVA);
 
   if (held === I.BUCKET) {
     if (!isWater && !isLava) return false;
-    if (isWater) {
-      /* on ne prend que la source (comme dans Minecraft) */
-      if (tb !== B.WATER) { HUD.toastText('Il faut viser une source d\'eau', 1.6); return true; }
-      Game.manager.setBlock(hit.x, hit.y, hit.z, B.AIR, true);
-      Game.inv.remove(I.BUCKET, 1);
-      Game.inv.add(I.BUCKET_WATER, 1);
-      Sfx.play('splash', 0.9);
-      HUD.toastText('Seau rempli d\'eau', 1.4);
-    } else {
-      Game.manager.setBlock(hit.x, hit.y, hit.z, B.AIR, true);
-      Game.inv.remove(I.BUCKET, 1);
-      Game.inv.add(I.BUCKET_LAVA, 1);
-      Sfx.play('place', 0.8);
-      HUD.toastText('Seau rempli de lave — attention !', 1.6);
-    }
-    Game.placeTimer = 0.3;
+    if (tb !== B.WATER && isWater) { HUD.toastText('Vise la source de l\'eau avec le seau vide.', 1.6); return true; }
+    if (!mgr.setBlock(hit.x, hit.y, hit.z, B.AIR, true)) return true;
+    if (!Game.inv.remove(I.BUCKET, 1)) { mgr.setBlock(hit.x, hit.y, hit.z, tb, true); return true; }
+    Game.inv.add(isWater ? I.BUCKET_WATER : I.BUCKET_LAVA, 1);
+    Sfx.play(isWater ? 'splash' : 'place', 0.9);
+    HUD.toastText(isWater ? 'Seau rempli : eau récupérée !' : 'Seau rempli de lave — attention !', 1.6);
+    Game.placeHeld = false;
     HUD.refreshAll();
     return true;
   }
@@ -6642,10 +6754,10 @@ function useBucket() {
   const cur = Game.manager.getBlock(bx, by, bz);
   if (!(cur === B.AIR || isReplaceable(cur))) return true;
   if (playerBoxOverlaps(bx, by, bz) && held === I.BUCKET_LAVA) { HUD.toastText('Pas dans tes pieds !', 1.5); return true; }
-  Game.manager.setBlock(bx, by, bz, held === I.BUCKET_WATER ? B.WATER : B.LAVA, true);
-  Game.placeTimer = 0.35;
-  Game.inv.remove(held, 1);
+  if (!mgr.setBlock(bx, by, bz, held === I.BUCKET_WATER ? B.WATER : B.LAVA, true)) return true;
+  if (!Game.inv.remove(held, 1)) { mgr.setBlock(bx, by, bz, cur, true); return true; }
   Game.inv.add(I.BUCKET, 1);
+  Game.placeHeld = false;
   Sfx.play(held === I.BUCKET_WATER ? 'splash' : 'place', 0.9);
   HUD.refreshAll();
   return true;
@@ -6653,14 +6765,15 @@ function useBucket() {
 
 function placeBlock() {
   const t = Game.target;
+  if(typeof Firearms!=='undefined'&&Firearms.isGun(heldItemId())){Firearms.shoot();return;}
   if(heldItemId()===I.BOW){Archery.shoot();return;}
   if(heldItemId()===I.BOAT){Boats.use(t);return;}
   /* la perle de l'End ne se pose pas : c'est un objet de lancer */
   if (heldItemId() === I.ENDER_PEARL) return;
   if (!t) return;
-  /* seau en main : remplir ou vider avant tout le reste */
+  /* seau en main : jamais de pose automatique d'un autre bloc du sac */
   if (heldItemId() === I.BUCKET || heldItemId() === I.BUCKET_WATER || heldItemId() === I.BUCKET_LAVA) {
-    if (useBucket()) return;
+    useBucket(); Game.placeHeld = false; return;
   }
   /* main vide sur un établi ou un four : on ouvre l'interface correspondante */
   {
@@ -7386,6 +7499,7 @@ function findSpawn(seed) {
 }
 
 async function loadWorld(seed, savedData, onProgress, opts) {
+  Fireworks.cancelAll(); EnderPearl.live = [];
   Game.seed = seed >>> 0;
   Adventure.load(savedData);Railways.riding=null;
   if(!savedData)Railways.carts=[];
@@ -8001,9 +8115,8 @@ function drawSelection(VP, t) {
 
 
 /* =========================================================================
-   VISION X — commande /vision : on voit à travers le sol les portails de l'End
-   (ouverts ou non), leurs cadres, et les minerais. Un repère flottant
-   indique chaque forteresse et sa distance.
+   VISION X — commande /vision : révèle minerais, cadres construits par le
+   joueur et ruines du Nether dans les forteresses souterraines.
    ========================================================================= */
 /* quels blocs restent visibles en mode « à travers le sol » ? */
 function xrayVisible(t) {
@@ -8022,7 +8135,7 @@ const Vision = {
     const set = new Set();
     try { for (const t of QA.ores()) set.add(t); } catch (e) { }
     set.add(B.END_FRAME); set.add(B.END_FRAME_EYE); set.add(B.END_PORTAL);
-    set.add(B.PORTAL); set.add(B.GLOWSTONE); set.add(B.SEA_LANTERN);
+    set.add(B.PORTAL); set.add(B.OBSIDIAN); set.add(B.GLOWSTONE); set.add(B.SEA_LANTERN);
     this.set = set;
     return set;
   },
@@ -8045,11 +8158,11 @@ const Vision = {
     if (b) b.classList.toggle('hidden', !this.on);
     this.updateBanner();
     HUD.toastText(this.on
-      ? '👁️ Vision X : portails de l\'End, cadres et minerais visibles à travers le sol'
+      ? '👁️ Vision X : ruines du Nether, cadres construits et minerais visibles à travers le sol'
       : 'Vision X coupée', 2.6);
   },
 
-  /* les forteresses = les portails de l'End, finis ou non */
+  /* forteresses : elles abritent désormais une ruine du Nether */
   scan() {
     if (!Game.manager || Game.manager.dim !== 'overworld') { this.sites = []; return; }
     const px = Player.pos[0], pz = Player.pos[2];
@@ -8063,7 +8176,7 @@ const Vision = {
       for (const d of list) {
         const py = (typeof d.y === 'number' && d.y > 4) ? d.y : 26;
         const open = Game.manager.hasChunk((d.x) >> 4, (d.z + 32) >> 4)
-          && Game.manager.getBlock(d.x, py, d.z + 32) === B.END_PORTAL;
+          && Game.manager.getBlock(d.x, py + 1, d.z + 32) === B.PORTAL;
         out.push({
           x: d.x + 0.5, y: py + 2.2, z: d.z + 32.5,
           dist: Math.hypot(d.x - px, (d.z + 32) - pz),
@@ -8079,10 +8192,10 @@ const Vision = {
     const t = $('visText');
     if (!t) return;
     if (!this.on) return;
-    if (!this.sites.length) { t.textContent = 'aucun portail de l\'End dans ce monde (ou dans le Nether)'; return; }
+    if (!this.sites.length) { t.textContent = 'aucune ruine souterraine repérée dans cette dimension'; return; }
     const n = this.sites[0];
     const opened = this.sites.filter(s => s.open).length;
-    t.textContent = 'Portail · '+Coordinates.xyz(n.x,n.y,n.z)+' · '+Math.round(n.dist)+' blocs · ' +
+    t.textContent = 'Ruine du Nether · '+Coordinates.xyz(n.x,n.y,n.z)+' · '+Math.round(n.dist)+' blocs · ' +
       this.sites.length + ' forteresse' + (this.sites.length > 1 ? 's' : '') + ' repérée' + (this.sites.length > 1 ? 's' : '') +
       (opened ? ' · ' + opened + ' ouvert' + (opened > 1 ? 's' : '') : '');
   },
@@ -8097,7 +8210,7 @@ const Vision = {
     let zoom = $('visionPortalZoom');
     if (!zoom) { zoom = document.createElement('div'); zoom.id = 'visionPortalZoom'; zoom.style.cssText = 'position:fixed;right:18px;top:90px;width:210px;padding:14px;background:#081725ee;border:2px solid #76edc8;border-radius:12px;text-align:center;color:white;pointer-events:none'; box.appendChild(zoom); }
     const nearest = this.sites[0];
-    zoom.innerHTML = nearest ? '<b>Portail de l’End · gros plan</b><div style="display:grid;grid-template-columns:repeat(5,25px);gap:3px;justify-content:center;margin:12px">' + Array.from({length:25}, (_,i) => { const x=i%5,z=Math.floor(i/5),edge=(x===0||x===4||z===0||z===4),corner=(x===0||x===4)&&(z===0||z===4); return '<i style="height:25px;background:'+(corner?'transparent':edge?'#658d69':nearest.open?'#493375':'#15232c')+';border:'+(edge&&!corner?'3px solid #bbd29a':'none')+'"></i>'; }).join('') + '</div><strong>'+Math.round(nearest.dist)+' blocs</strong><br>X '+Math.floor(nearest.x)+' · Z '+Math.floor(nearest.z)+'<br><small>Schéma de repérage · pas une vue en direct</small>' : 'Aucun portail repéré';
+    zoom.innerHTML = nearest ? '<b>Portail du Nether en ruine · gros plan</b><div style="display:grid;grid-template-columns:repeat(5,25px);gap:3px;justify-content:center;margin:12px">' + Array.from({length:25}, (_,i) => { const x=i%5,z=Math.floor(i/5),edge=(x===0||x===4||z===0||z===4),corner=(x===0||x===4)&&(z===0||z===4); return '<i style="height:25px;background:'+(corner?'transparent':edge?'#658d69':nearest.open?'#493375':'#15232c')+';border:'+(edge&&!corner?'3px solid #bbd29a':'none')+'"></i>'; }).join('') + '</div><strong>'+Math.round(nearest.dist)+' blocs</strong><br>X '+Math.floor(nearest.x)+' · Z '+Math.floor(nearest.z)+'<br><small>Schéma de repérage · pas une vue en direct</small>' : 'Aucun portail repéré';
     zoom.remove();
     const items = [];
     for (const s of this.sites) {
@@ -8105,7 +8218,7 @@ const Vision = {
       items.push({
         pos: [s.x, s.y, s.z],
         cls: s.open ? 'portalOpen' : 'portal',
-        txt: (s.open ? '🌌 Portail ouvert · ' : '🌀 Portail de l’End en ruine · ') + d + ' m',
+        txt: (s.open ? '🔥 Portail du Nether réparé · ' : '🌀 Portail du Nether en ruine · ') + d + ' m',
       });
     }
     while (box.childElementCount < items.length) {
@@ -8604,6 +8717,7 @@ function tick(dt) {
     }
 
     Survival.update(dt);
+    Fireworks.update(dt);
     Players.deactivate(pi);
   }
   /* le joueur 1 reste le « joueur actif » pour le reste de la frame */
@@ -8717,16 +8831,18 @@ const Keys = {
     sprint: ['ShiftLeft', 'ShiftRight', 'ControlLeft'],
     crouch: ['KeyC'],
     fly: ['KeyF'],
+    vehicle: ['KeyM'], music: ['KeyN'],
     inventory: ['KeyE'],
     chat: ['KeyT', 'Slash'],
     debug: ['F3'],
     hud: ['F1'],
     pause: ['Escape'],
   },
-  ORDER: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'crouch', 'fly', 'inventory', 'chat', 'debug', 'hud', 'pause'],
+  ORDER: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'crouch', 'fly', 'vehicle', 'music', 'inventory', 'chat', 'debug', 'hud', 'pause'],
   LABEL: {
     forward: 'Avancer', back: 'Reculer', left: 'Gauche', right: 'Droite',
     jump: 'Sauter', sprint: 'Courir', crouch: 'S’accroupir / descendre', fly: 'Voler (créatif)',
+    vehicle: 'Monter / descendre du wagonnet', music: 'Couper / remettre la musique',
     inventory: 'Inventaire', chat: 'Discussion / commandes', debug: 'Infos (F3)', hud: 'Masquer le HUD', pause: 'Pause',
   },
   map: null,
@@ -8812,6 +8928,11 @@ function canLook() { return Game.state === 'playing' && !Admin.barOpen(); }
 /* Utilisation / pose : clic droit souris ou bouton « Poser » au doigt */
 function useAction() {
   const tgt = Game.target;
+  if(typeof Firearms!=='undefined'&&Firearms.isGun(heldItemId())){Firearms.shoot();Game.placeHeld=false;return;}
+  if ([I.BUCKET, I.BUCKET_WATER, I.BUCKET_LAVA].includes(heldItemId())) {
+    useBucket(); Game.placeHeld = false; return;
+  }
+  if (heldItemId() === I.FIREWORK) { Fireworks.use(); Game.placeHeld = false; return; }
   if(heldItemId()===I.BOW){Archery.shoot();return;}
   if(heldItemId()===I.DRAGON_HEART){EndVictory.returnHome();return;}
   if(Circuits.use(tgt))return;
@@ -8916,7 +9037,13 @@ function setupInput() {
       if (Keys.has('inventory', e.code)) { e.preventDefault(); openInventory(); }
       if(e.code==='KeyX'&&(Railways.riding||Boats.riding)){e.preventDefault();$('vehicleExit').click();return;}
     if (e.code === 'KeyR' && !Survival.dead && !Game.hardcore) respawn();
-      if (e.code === 'KeyM') {
+      if (Keys.has('vehicle', e.code) && !e.repeat) {
+        e.preventDefault();
+        if (!Railways.riding && !Railways.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[1]-Player.pos[1],c.pos[2]-Player.pos[2])<3))
+          HUD.toastText('Approche-toi d’un wagonnet pour monter (M).', 2);
+        else Railways.use(null);
+      }
+      if (Keys.has('music', e.code) && !e.repeat) {
         SETTINGS.musicOn = SETTINGS.musicOn === false;
         if (SETTINGS.musicOn === false) Music.setVolume(0.0001);
         else { if (!Music.on) Music.start(); else Music.setVolume(SETTINGS.music || 0.5); }
@@ -9345,7 +9472,7 @@ const PixelUI = {
   },
   category(id) {
     const item=ITEMS[id],d=BLOCKS[id];
-    if(item)return item.food?'food':item.armor||item.tool==='sword'?'combat':item.tool||/bucket|flint|fishing|shear|compass|minecart/i.test(item.icon||'')?'tools':'materials';
+    if(item)return item.food?'food':item.armor||item.tool==='sword'?'combat':item.tool||/bucket|flint|fishing|shear|compass|minecart|firework/i.test(item.icon||'')?'tools':'materials';
     if(d && (d.rail||d.furnace||/redstone|levier|piston|tnt|porte|lampe|rail/i.test(d.name)))return'tech';
     if(d && /herbe|terre|sable|gravier|minerai|eau|lave|neige|glace|feuille|bûche|fleur|arbre|cactus|champignon/i.test(d.name))return'nature';
     if(d && /laine|verre|béton|lit|biblioth|table|coffre|lanterne|torche/i.test(d.name))return'decor';
@@ -9447,6 +9574,7 @@ function toggleHud() {
 }
 
 function respawn() {
+  Fireworks.cancel(); EnderPearl.live = [];
   if (typeof Dimensions !== 'undefined' && Dimensions.current === 'nether') {
     Player.vel = [0, 0, 0];
     Player.flying = false;
@@ -9788,13 +9916,14 @@ function mobTips() {
   for (const [t, m] of msgs) setTimeout(() => { try { HUD.toastText(m, 2.8); } catch (e) { } }, t);
 }
 
-/* les boutons de vol n'apparaissent qu'en vol (créatif) */
+/* les boutons monter/descendre restent visibles pendant le vol d'une fusée */
 function refreshFlyButtons() {
   const up = $('tUp'), down = $('tDown');
   if (!up || !down) return;
-  const canFly = Game.mode === 'creative';
+  const creative = Game.mode === 'creative';
+  const canFly = creative || (typeof Fireworks !== 'undefined' && Fireworks.active());
   const flying = !!Player.flying;
-  $('tFly') && $('tFly').classList.toggle('hidden', !canFly);
+  $('tFly') && $('tFly').classList.toggle('hidden', !creative);
   up.classList.toggle('hidden', !(canFly && flying));
   down.classList.toggle('hidden', !(canFly && flying));
 }
@@ -9820,7 +9949,7 @@ Object.assign(I, {
   IRON_PICK: 152, IRON_SWORD: 153, BOOK: 154,
   BUCKET: 155, BUCKET_WATER: 156, BUCKET_LAVA: 157,
   IRON_AXE: 158, DIAMOND_AXE: 159, IRON_SHOVEL: 160, DIAMOND_SHOVEL: 161,
-  MEAT_COOKED:162,BEDROCK_SWORD:307,BEDROCK_PICK:308,BEDROCK_HELM:309,BEDROCK_CHEST:310,BEDROCK_LEGS:311,BEDROCK_BOOTS:312,MINECART:300,BOW:301,ARROW:302,BOAT:303,DRAGON_HEART:304,FLINT_SHARD:305,FEATHER:306,
+  MEAT_COOKED:162,BEDROCK_SWORD:307,BEDROCK_PICK:308,BEDROCK_HELM:309,BEDROCK_CHEST:310,BEDROCK_LEGS:311,BEDROCK_BOOTS:312,MINECART:300,BOW:301,ARROW:302,BOAT:303,DRAGON_HEART:304,FLINT_SHARD:305,FEATHER:306,FIREWORK:313,BULLET:314,ROCKET_AMMO:315,MACHINE_GUN:316,ROCKET_LAUNCHER:317,
 });
 
 const ITEMS = {
@@ -9832,6 +9961,11 @@ const ITEMS = {
   312:{name:'Bottes en bedrock',icon:'boots_bedrock',stack:1,dur:900,armor:{slot:'feet',def:4}},
   301:{name:'Arc',icon:'bow',stack:1,dur:384},302:{name:'Flèche',icon:'arrow',stack:64},303:{name:'Bateau en bois',icon:'boat',stack:1},304:{name:'Cœur unique du dragon · retour au monde',icon:'dragon_heart',stack:1},305:{name:'Silex',icon:'shard',stack:64},306:{name:'Plume',icon:'feather',stack:64},
   300: { name: 'Wagonnet en fer', icon: 'minecart_iron', stack: 1 },
+  313: { name: 'Fusée d’artifice', icon: 'firework', stack: 64 },
+  314: { name: 'Balles', icon: 'bullet', stack: 64 },
+  315: { name: 'Roquette', icon: 'rocket_ammo', stack: 32 },
+  316: { name: 'Mitraillette', icon: 'machine_gun', stack: 1 },
+  317: { name: 'Lance-roquettes', icon: 'rocket_launcher', stack: 1 },
   100: { name: 'Bâton', icon: 'stick', stack: 64 },
   101: { name: 'Pioche en bois', icon: 'pick_wood', stack: 1, tool: 'pick', speed: 2.6, damage: 2, tier: 1 },
   102: { name: 'Pioche en pierre', icon: 'pick_stone', stack: 1, tool: 'pick', speed: 4.6, damage: 3, tier: 2 },
@@ -10182,6 +10316,11 @@ const Crafting = {
     add('divers', true, I.QUARTZ, 1, [[B.QUARTZ_ORE, 1]]);
     add('divers', true, I.NETHERITE_INGOT, 1, [[I.NETHERITE_SCRAP, 4], [I.GOLD_INGOT, 4]]);
     add('divers', false, I.ENDER_EYE, 1, [[I.ENDER_PEARL, 1], [I.EMERALDGEM, 1]]);
+    add('divers', false, I.FIREWORK, 3, [[I.GUNPOWDER, 1], [I.STICK, 1], [I.STRING, 1]]);
+    add('combat', true, I.BULLET, 12, [[I.IRON_INGOT,1],[I.GUNPOWDER,1]]);
+    add('combat', true, I.ROCKET_AMMO, 2, [[I.IRON_INGOT,1],[I.GUNPOWDER,2],[I.REDSTONE,1]]);
+    add('combat', true, I.MACHINE_GUN, 1, [[I.IRON_INGOT,4],[I.COPPER_INGOT,2],[I.STICK,1]]);
+    add('combat', true, I.ROCKET_LAUNCHER, 1, [[I.IRON_INGOT,5],[I.COPPER_INGOT,2],[I.REDSTONE,1]]);
     add('divers', true, B.CHEST, 4, [[B.PLANKS, 8], [I.IRON_INGOT, 1]]);
 
     /* ---------- laines, bétons et ardoises minéralisées ---------- */
@@ -10329,6 +10468,11 @@ const Crafting = {
 
   /* ---- mobilier, outillage et blocs emblématiques ---- */
   put(I.STICK, [[B.PLANKS, 2]], ['P', 'P'], { P: B.PLANKS });
+  put(I.FIREWORK, [[I.GUNPOWDER,1],[I.STICK,1],[I.STRING,1]], ['GT',' S'], { G:I.GUNPOWDER, T:I.STRING, S:I.STICK });
+  put(I.BULLET, [[I.IRON_INGOT,1],[I.GUNPOWDER,1]], ['I','G'], {I:I.IRON_INGOT,G:I.GUNPOWDER});
+  put(I.ROCKET_AMMO, [[I.IRON_INGOT,1],[I.GUNPOWDER,2],[I.REDSTONE,1]], [' I ','GG ',' R '], {I:I.IRON_INGOT,G:I.GUNPOWDER,R:I.REDSTONE});
+  put(I.MACHINE_GUN, [[I.IRON_INGOT,4],[I.COPPER_INGOT,2],[I.STICK,1]], ['III','CCI',' S '], {I:I.IRON_INGOT,C:I.COPPER_INGOT,S:I.STICK});
+  put(I.ROCKET_LAUNCHER, [[I.IRON_INGOT,5],[I.COPPER_INGOT,2],[I.REDSTONE,1]], ['III','CIC','R I'], {I:I.IRON_INGOT,C:I.COPPER_INGOT,R:I.REDSTONE});
   put(B.CRAFTING, [[B.PLANKS, 4]], ['PP', 'PP'], { P: B.PLANKS });
   put(B.CHEST, [[B.PLANKS, 8]], ['PPP', 'P P', 'PPP'], { P: B.PLANKS });
   put(B.FURNACE, [[B.COBBLE, 8]], ['CCC', 'C C', 'CCC'], { C: B.COBBLE });
@@ -10925,14 +11069,32 @@ function drawItemIcon(id, size, skipOutline) {
     if(shape==='chest'){R(4.2,8.8,.7,3.4,dark);R(11.1,8.8,.7,3.4,dark);R(4.2,9.1,.6,.6,'#fff3cf');R(11.1,9.1,.6,.6,'#fff3cf');R(7.6,9.1,.7,2.4,mid);}
     if(shape==='helm'){R(4.3,5.6,7.4,.6,'#ffffff99');R(7.7,6.2,.6,2.8,mid);}
     if(shape==='legs'||shape==='boots'){R(4.1,9.3,2.4,.6,'#ffffff66');R(9.3,9.3,2.4,.6,'#ffffff66');}
+  } else if (ic==='bullet') {
+    R(6,4,4,7,'#bb6f32');R(6.5,4,3,1,'#ffd891');R(6,10,4,2,'#5e6269');
+  } else if (ic==='rocket_ammo') {
+    poly([[6,6],[8,2],[10,6],[10,12],[6,12]],'#d44532');
+    R(7,6,2,5,'#e6ded0');R(6,11,4,2,'#733028');R(7,13,2,2,'#ffb142');
+  } else if (ic==='machine_gun'||ic==='rocket_launcher') {
+    const rocket=ic==='rocket_launcher';
+    R(2,6,12,3,rocket?'#657277':'#777f88');
+    R(3,6,7,1,'#c4d0d3');R(11,6,3,2,rocket?'#ad512f':'#323c41');
+    R(5,9,2,5,'#654533');R(7,9,5,2,'#2f3337');
+    if(!rocket){R(8,11,3,3,'#ab742f');R(2,5,2,1,'#c4d0d3');}
+    else {R(11,5,3,1,'#e5803d');R(2,5,2,5,'#d4492a');}
+  } else if(ic==='firework'){
+    R(6.5,4,3,8,'#bd3c54');R(7.1,4.5,1.3,7,'#f07873');
+    poly([[6.4,4.2],[8,1.3],[9.6,4.2]],'#f4cf66');
+    R(5.8,8,1,3,'#e4d8b9');R(9.2,8,1,3,'#e4d8b9');
+    R(7.4,12,1.2,2,'#f6b84e');R(7.7,14,0.6,1,'#fff3ab');
   } else if(ic==='bow'){poly([[5,2],[9,4],[11,8],[9,12],[5,14],[7,11],[8,8],[7,5]],'#bb8043');poly([[5,2],[6,2],[6,14],[5,14]],'#ecdfbf');}else if(ic==='arrow'){poly([[3,13],[12,4],[13,5],[4,14]],'#b89253');poly([[10,2],[14,2],[14,6]],'#e3e7ec');poly([[2,10],[6,14],[2,14]],'#ededdf');}else if(ic==='boat'){poly([[1,7],[15,7],[12,13],[4,13]],'#a77943');R(4,6,8,3,'#57412a');}else if(ic==='dragon_heart'){poly([[8,14],[2,8],[2,4],[5,2],[8,5],[11,2],[14,4],[14,8]],'#b260ed');R(6,5,3,4,'#f8dfff');}else if(ic==='feather'){poly([[3,14],[5,5],[12,2],[14,4],[9,11]],'#ece9de');}else if(ic==='shard'){poly([[3,12],[5,4],[11,2],[13,9],[9,14]],'#626773');}else if (ic === 'flint') {
     R(3.4, 4.6, 5.4, 5.4, '#6e6e78'); R(4, 5.2, 4.2, 3.4, '#9a9aa6');
     R(9, 7.6, 3.6, 3.6, '#c9c9d4'); R(9.6, 8.2, 2.2, 2.2, '#efeff6');
   } else if (ic.startsWith('ingot_')) {
     const mat = ic.split('_')[1];
-    const pal = { iron: ['#e0e0e0', '#b0b0b0', '#7c7c7c'], gold: ['#f5d858', '#d0a820', '#96700f'], netherite: ['#6a5a60', '#453a3e', '#241f22'] }[mat] || ['#ccc', '#999', '#666'];
-    R(3.4, 6.4, 9.2, 3.6, pal[0]); R(4.2, 5.4, 7.6, 1.4, pal[1]); R(3.4, 9.4, 9.2, 1.2, pal[2]);
-    R(4.6, 6.8, 3, 1, '#ffffffaa');
+    const pal = { iron: ['#bfc6cd', '#77828d', '#3d4953', '#f0f4f6'], gold: ['#ffd450', '#c28c12', '#80540c', '#fff2ad'], netherite: ['#72636e', '#473b48', '#29222c', '#b09baa'] }[mat] || ['#ccc', '#999', '#666', '#fff'];
+    poly([[3,7],[5,5],[11,5],[13,7],[12,11],[4,11]],pal[2]);
+    poly([[4,7],[5.5,5.5],[10.5,5.5],[12,7],[11.5,9.6],[4.5,9.6]],pal[0]);
+    R(5,6,6,1,pal[3]);R(4,10,8,1,pal[1]);R(5.3,7.5,1.8,.7,pal[3]);
   } else if (ic === 'scrap') {
     for (const [x, y] of [[5, 5], [8.4, 6.4], [6.6, 9.2], [10, 9.6], [4.4, 8.4]]) R(x, y, 2.6, 2.2, '#8a6a4a');
     R(5.4, 5.6, 1.2, 1, '#c9a070');
@@ -10942,8 +11104,10 @@ function drawItemIcon(id, size, skipOutline) {
   } else if (ic === 'quartz') {
     R(5, 4.4, 3.4, 7.2, '#f2eee8'); R(8.4, 6, 3, 6, '#ded8d0'); R(5.6, 5, 1.4, 2, '#ffffff');
   } else if (ic === 'ingot_copper') {
-    R(3.4, 6.4, 9.2, 3.6, '#e08a4a'); R(4.2, 5.4, 7.6, 1.4, '#c8743a'); R(3.4, 9.4, 9.2, 1.2, '#a85a2a');
-    R(4.6, 6.8, 3, 1, '#ffc49a');
+    poly([[3,7],[5,5],[11,5],[13,7],[12,11],[4,11]],'#8d3f20');
+    poly([[4,7],[5,5.5],[11,5.5],[12,7],[11,10],[5,10]],'#e77a32');
+    R(5,6,6,1,'#ffbb72');R(4,10,8,1,'#af4e23');
+    R(5,7.5,2,.7,'#ffd1a0');
   } else if (ic === 'lapis') {
     for (const [x, y] of [[5, 5], [8, 6.6], [6.4, 9.4], [10, 9.8], [4.6, 8.4]]) R(x, y, 2.4, 2.4, '#2a4fc0');
     R(5.6, 5.6, 1, 1, '#6a8ef0');
@@ -11171,6 +11335,19 @@ const Armor = {
   },
 };
 
+function touchesCactus(mgr, pos, width, height) {
+  if (!mgr) return false;
+  const reach = width + 0.06; // petite marge : la collision solide repousse avant le contact exact
+  for (let y = Math.floor(pos[1] - 0.06); y <= Math.floor(pos[1] + height + 0.06); y++)
+    for (let z = Math.floor(pos[2] - reach); z <= Math.floor(pos[2] + reach); z++)
+      for (let x = Math.floor(pos[0] - reach); x <= Math.floor(pos[0] + reach); x++)
+        if (mgr.getBlock(x, y, z) === B.CACTUS &&
+            pos[0] + reach > x && pos[0] - reach < x + 1 &&
+            pos[2] + reach > z && pos[2] - reach < z + 1 &&
+            pos[1] + height + .06 > y && pos[1] - .06 < y + 1) return true;
+  return false;
+}
+
 const Survival = {
   health: 20, maxHealth: 20,
   hunger: 20, maxHunger: 20,
@@ -11218,6 +11395,7 @@ const Survival = {
   },
   die(cause) {
     if (this.dead) return;
+    if (typeof Fireworks !== 'undefined') Fireworks.cancel();
     Survival._deadPlayer = Players.active;
     TouchActions.reset();
     GameChat.death(cause);
@@ -11273,6 +11451,8 @@ const Survival = {
     this.invuln = 0;
     this.hurt(3.5, 'Brûlé par la lave');
   }
+  if (touchesCactus(Game.manager, Player.pos, Player.width, Player.height))
+    this.hurt(1, 'Piqué par un cactus');
   /* apnée */
     if (Player.headInWater) {
       this.drownT += dt;
@@ -12133,15 +12313,16 @@ const Railways = {
   },
   point(x,y,z,entry,exit,t){const a=this.D[entry],b=this.D[exit],s=1-t;return [x+.5+(s*s*a[0]+t*t*b[0])*.5,y+.15,z+.5+(s*s*a[1]+t*t*b[1])*.5];},
   mesh(b,x,y,z,wx,wz,mgr,light){
-    const [a,c]=this.path(wx,y,wz,mgr),p=[];for(let i=0;i<=10;i++)p.push(this.point(x,y,z,a,c,i/10));
+    const [a,c]=this.path(wx,y,wz,mgr),p=[],hot=this.rail(wx,y,wz,mgr)===B.POWERED_RAIL;
+    for(let i=0;i<=10;i++)p.push(this.point(x,y,z,a,c,i/10));
     const quad=(A,B,width,tile,lift)=>{const dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,nx=-dz/len*width,nz=dx/len*width,yy=y+lift;
       const q=[[A[0]-nx,yy,A[2]-nz],[B[0]-nx,yy,B[2]-nz],[B[0]+nx,yy,B[2]+nz],[A[0]+nx,yy,A[2]+nz]].map((v,i)=>[...v,i===1||i===2?1:0,i>1?1:0,tile,light,1]);b.quad(q[0],q[3],q[2],q[1]);};
     for(let i=0;i<10;i++){const A=p[i],B=p[i+1],dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,n=[-dz/len,dx/len];
-      if(i%2===0)quad([A[0]+n[0]*.38,y,A[2]+n[1]*.38],[A[0]-n[0]*.38,y,A[2]-n[1]*.38],.045,TEX.planks,.035);
-      for(const side of [-1,1])quad([A[0]+n[0]*.25*side,y,A[2]+n[1]*.25*side],[B[0]+n[0]*.25*side,y,B[2]+n[1]*.25*side],.045,TEX.iron_block||TEX.iron,.055);
+      if(i%2===0)quad([A[0]+n[0]*.38,y,A[2]+n[1]*.38],[A[0]-n[0]*.38,y,A[2]-n[1]*.38],.045,hot?TEX.powered_rail:TEX.planks,.035);
+      for(const side of [-1,1])quad([A[0]+n[0]*.25*side,y,A[2]+n[1]*.25*side],[B[0]+n[0]*.25*side,y,B[2]+n[1]*.25*side],.045,hot?TEX.powered_rail:(TEX.iron_block||TEX.iron),.055);
     }
   },
-  create(t){const pair=this.path(t.x,t.y,t.z),d=typeof lookDir==='function'?lookDir():[1,0,0];const exit=pair.slice().sort((a,b)=>this.D[b][0]*d[0]+this.D[b][1]*d[2]-this.D[a][0]*d[0]-this.D[a][1]*d[2])[0],entry=pair.find(i=>i!==exit);const c={id:'cart'+(++this.serial),cell:[t.x,t.y,t.z],entry,exit,t:.5,pos:this.point(t.x,t.y,t.z,entry,exit,.5),dim:Game.manager.dim,speed:2,dir:1,driver:null};this.carts.push(c);return c;},
+  create(t){const pair=this.path(t.x,t.y,t.z),d=typeof lookDir==='function'?lookDir():[1,0,0];const exit=pair.slice().sort((a,b)=>this.D[b][0]*d[0]+this.D[b][1]*d[2]-this.D[a][0]*d[0]-this.D[a][1]*d[2])[0],entry=pair.find(i=>i!==exit);const c={id:'cart'+(++this.serial),cell:[t.x,t.y,t.z],entry,exit,t:.5,pos:this.point(t.x,t.y,t.z,entry,exit,.5),dim:Game.manager.dim,speed:this.rail(t.x,t.y,t.z)===B.POWERED_RAIL?6:2,dir:1,driver:null};this.carts.push(c);return c;},
   use(t){
     if(typeof Transport!=='undefined'&&Net.live&&Net.role==='guest'){const relevant=this.riding||heldItemId()===I.MINECART||this.carts.some(c=>c.dim===Game.manager.dim&&Math.hypot(c.pos[0]-Player.pos[0],c.pos[2]-Player.pos[2])<3&&Math.abs(c.pos[1]-Player.pos[1])<2);return relevant?Transport.request('cart',t):false;}
     if(this.riding){this.exit();return true;}
@@ -12166,7 +12347,7 @@ const Railways = {
     for(const c of this.carts){if(c.dim!==Game.manager.dim)continue;
       if(!c.cell){const x=Math.floor(c.pos[0]),y=Math.floor(c.pos[1]),z=Math.floor(c.pos[2]),pair=this.path(x,y,z);c.cell=[x,y,z];c.entry=pair[0];c.exit=pair[1];c.t=.5;c.id=c.id||'cart'+(++this.serial);}
       let [x,y,z]=c.cell,rail=this.rail(x,y,z);if(!rail){c.speed=0;this.release(c);if(this.riding===c)this.exit();if(c.driver&&c.driver!=='player')c.driver=null;continue;}
-      if(rail===B.POWERED_RAIL)c.speed=this.power(x,y,z)?Math.min(12,c.speed+8*dt):Math.max(0,c.speed-8*dt);else c.speed=Math.max(2,c.speed-.2*dt);
+      if(rail===B.POWERED_RAIL)c.speed=Math.min(12,Math.max(2,c.speed)+14*dt);else c.speed=Math.max(2,c.speed-.4*dt);
       let remaining=c.speed*dt;let guard=0;while(remaining>0&&guard++<30){const step=Math.min(1-c.t,remaining);c.t+=step;remaining-=step;if(c.t<1-1e-8)break;const d=this.D[c.exit],nx=x+d[0],nz=z+d[1];if(!this.rail(nx,y,nz)){const old=c.entry;c.entry=c.exit;c.exit=old;c.t=0;remaining=0;break;}
         c.entry=(c.exit+2)%4;c.cell=[x=nx,y,z=nz];const pair=this.path(x,y,z),a=this.links(x,y,z);c.exit=pair.includes(c.entry)?pair.find(i=>i!==c.entry):pair[0];if(c.exit===undefined)c.exit=a.find(i=>i!==c.entry)??c.entry;c.t=0;}
       const old=c.pos;c.pos=this.point(x,y,z,c.entry,c.exit,c.t);c.yaw=Math.atan2(c.pos[0]-old[0],c.pos[2]-old[2]);
@@ -13444,7 +13625,7 @@ const STRUCT_DEFS = {
     name: 'Portail du Nether', icon: '🌀', dim: 'overworld', group: 'surface',
     region: 192, chance: 1, radius: 14, chests: [1, 1], houses: [0, 0],
     biomes: 'partout', y: 'surface',
-    desc: 'Un des cinq portails naturels du Nether : cadre actif, netherrack et coffre de voyageur.',
+    desc: 'Un des cinq cadres du Nether en ruine : deux obsidiennes manquent. Répare-le et allume-le au briquet.',
   },
   ruins: {
     name: 'Ruines', icon: '🧱', dim: 'overworld', group: 'surface',
@@ -13476,7 +13657,7 @@ const STRUCT_DEFS = {
     name: 'Forteresse', icon: '🌌', dim: 'overworld', group: 'underground',
     region: 512, chance: 0.45, radius: 40, chests: [2, 4], houses: [0, 0],
     biomes: 'sous-sol profond', y: '18 à 34',
-    desc: 'Couloirs de pierre taillée, bibliothèque et **salle du portail de l\'End** (12 cadres).',
+    desc: 'Couloirs de pierre taillée, bibliothèque et portail du Nether en ruine (deux obsidiennes manquantes).',
   },
   ancient_city: {
     name: 'Cité ancienne', icon: '🏛️', dim: 'overworld', group: 'underground',
@@ -13664,8 +13845,8 @@ const Structures = {
     return WorldGen.desertAt(x, z) > 0.16 && h < SEA + 16 && h > SEA - 4;
   },
 
-  /* Cinq portails du Nether à la surface et une seule forteresse de l'End
-     par graine. Les portails construits par les joueurs restent libres. */
+  /* Cinq ruines du Nether en surface et une forteresse souterraine avec
+     une autre ruine. Aucun portail naturel de l'End ; fabrication toujours possible. */
   PORTAL_CELLS: [[0,0],[1,0],[-1,0],[0,1],[0,-1]],
   portalSite(type, rx, rz) {
     if (type === 'stronghold') return rx === 0 && rz === 0;
@@ -14723,10 +14904,12 @@ const Structures = {
     bl.put(x + 1, y0, z + 1, B.GOLD);
     this.ch(bl, x + 2, y0, z + 2, 'ruined_portal', 3);
     bl.put(x - 2, y0 + 1, z, B.TORCH);
-    // Cadre 4 × 5, intérieur actif 2 × 3 : franchissable sans briquet.
+    // Ruine à réparer : deux blocs d'obsidienne manquent sur le côté et en haut.
+    // L'intérieur est vide ; le briquet n'allume que le cadre reconstitué.
     for (let dy = 0; dy <= 4; dy++) for (let dx = 0; dx <= 3; dx++) {
       const edge = dx === 0 || dx === 3 || dy === 0 || dy === 4;
-      bl.put(x + dx, y0 + dy, z, edge ? B.OBSIDIAN : B.PORTAL);
+      const broken = (dx === 0 && dy === 2) || (dx === 2 && dy === 4);
+      bl.put(x + dx, y0 + dy, z, edge && !broken ? B.OBSIDIAN : B.AIR);
     }
   },
 
@@ -14926,7 +15109,7 @@ const Structures = {
     }
     for (let dz = -3; dz <= -1; dz++) { bl.put(x - 7, y, z + dz, B.BOOKSHELF); bl.put(x - 7, y + 1, z + dz, B.BOOKSHELF); }
     this.ch(bl, x - 6, y, z - 3, 'library', 3);
-    /* salle du portail de l'End */
+    /* ancienne salle du portail : une ruine du Nether à compléter */
     const pz = z + 32;
     for (let dx = -6; dx <= 6; dx++) for (let dz = -6; dz <= 6; dz++) {
       const edge = Math.abs(dx) === 6 || Math.abs(dz) === 6;
@@ -14934,12 +15117,13 @@ const Structures = {
       for (let k = 0; k <= 5; k++) bl.put(x + dx, y + k, pz + dz, edge ? wallT() : B.AIR);
       bl.put(x + dx, y + 6, pz + dz, edge ? M : M3);
     }
-    /* 12 cadres (anneau 5x5) */
-    for (let ax = -2; ax <= 2; ax++) for (let az = -2; az <= 2; az++) {
-      const corner = Math.abs(ax) === 2 && Math.abs(az) === 2;
-      if (corner) continue;
-      bl.put(x + ax, y, pz + az, (Math.abs(ax) === 2 || Math.abs(az) === 2) ? B.END_FRAME : B.AIR);
+    /* portail du Nether en ruine, vertical et non activé : deux lacunes dans le cadre */
+    for (let dy = 0; dy <= 4; dy++) for (let dx = 0; dx <= 3; dx++) {
+      const edge = dx === 0 || dx === 3 || dy === 0 || dy === 4;
+      const missing = (dx === 0 && dy === 2) || (dx === 2 && dy === 4);
+      bl.put(x - 1 + dx, y + dy, pz, edge && !missing ? B.OBSIDIAN : B.AIR);
     }
+    bl.put(x - 3, y, pz - 2, B.NETHERRACK);
     for (const [dx, dz] of [[-4, -4], [4, -4], [-4, 4], [4, 4]]) bl.put(x + dx, y + 3, pz + dz, B.SEA_LANTERN);
     bl.put(x, y + 5, pz, B.GLOWSTONE);
     this.ch(bl, x - 4, y, pz - 4, 'stronghold', 4);
@@ -16166,6 +16350,17 @@ const Dimensions = {
   lobbyBuilt: false,
   fading: false,
   busy: false,
+  announce(dim) {
+    const el=$('dimensionArrival');if(!el)return;
+    clearTimeout(this.arrivalTimer);
+    el.classList.remove('show','end');
+    if(dim!=='nether'&&dim!=='end')return;
+    el.classList.toggle('end',dim==='end');
+    el.querySelector('strong').textContent=dim==='nether'?'🔥 LE NETHER':'🌌 L’END';
+    el.querySelector('span').textContent=dim==='nether'?'Les flammes, la lave et les forteresses t’attendent.':'Les îles du vide et le dragon t’attendent.';
+    void el.offsetWidth;el.classList.add('show');
+    this.arrivalTimer=setTimeout(()=>el.classList.remove('show'),4200);
+  },
 
   label(dim) {
     return dim === 'nether' ? 'Nether'
@@ -16266,6 +16461,7 @@ const Dimensions = {
       this.prepare(dim, px, pz, 5).then(() => {
         if (fade) fade.classList.remove('on');
         this.busy = false;
+        this.announce(dim);
         HUD.refreshAll();
         const badge = $('dimBadge');
         if (badge) {
@@ -16590,7 +16786,13 @@ const Portals = {
         this.timer = 0;
         this.cooldown = 2.2;
         const cur = Dimensions.current;
-        if (cur === 'overworld' || cur === 'flat' || cur === 'oneblock') {
+        const feet=Game.manager.getBlock(Math.floor(Player.pos[0]),Math.floor(Player.pos[1]+.2),Math.floor(Player.pos[2]));
+        const head=Game.manager.getBlock(Math.floor(Player.pos[0]),Math.floor(Player.pos[1]+1.3),Math.floor(Player.pos[2]));
+        const endGate=feet===B.END_PORTAL||head===B.END_PORTAL;
+        if ((cur === 'overworld' || cur === 'flat' || cur === 'oneblock') && endGate) {
+          this.from=cur==='oneblock'?'overworld':cur;
+          Dimensions.go('end',{x:6.5,y:END_SEA+3,z:15.5});
+        } else if (cur === 'overworld' || cur === 'flat' || cur === 'oneblock') {
           this.from = cur === 'oneblock' ? 'overworld' : cur;
           Dimensions.go('nether', { x: 0.5, y: 66.1, z: 6.5, yaw: -Math.PI / 2 });
         } else {
@@ -17230,6 +17432,10 @@ var Net = {
         case 'thunder':if(this.role==='guest'){Flash.trigger(.85);Sfx.explosion(.28,.65);}break;
         case 'arrow-flight':if(this.role==='guest'&&Array.isArray(m[1])&&m[1].length===3&&m[1].every(Number.isFinite))Archery.launch(m[1],m[2],false,true);break;
         case 'bow-shot':if(this.role==='host'&&this.remote&&performance.now()>(this.remoteBowAt||0)){this.remoteBowAt=performance.now()+600;Archery.launch([this.remote.x,this.remote.y+1.62,this.remote.z],m[1],true);}break;
+        case 'gun-shot':if(this.role==='host'&&this.remote&&Firearms.isGun(m[1])&&this.remote.dim===Game.manager.dim&&performance.now()>(this.remoteGunAt||0)){
+          this.remoteGunAt=performance.now()+(m[1]===I.ROCKET_LAUNCHER?1000:135);
+          Firearms.launch([this.remote.x,this.remote.y+1.62,this.remote.z],m[2],m[1],true);
+        }break;
         case 'qa-kill':if(this.role==='host'&&this.remote&&Admin.admins.includes(this.remote.name)){const mob=Mobs.byId.get(m[1]);if(mob)Mobs.hurt(mob,9999,[0,0,0],true);}break;
         case 'chat': case 'player-death': GameChat.receive(m[0], m[1]); break;
         case 'c': HUD.toastText('💬 ' + m[1], 5); Admin.say('💬 ' + m[1], 'sys'); break;
@@ -18678,6 +18884,63 @@ const Archery={
   },
 };
 
+/* Armes de jeu : projectiles simulés côté hôte, munitions consommables, pas de dégâts aux blocs. */
+const Firearms = {
+  list: [], cooldown: 0,
+  isGun(id) { return id===I.MACHINE_GUN || id===I.ROCKET_LAUNCHER; },
+  shoot() {
+    const id=heldItemId(); if(!this.isGun(id)) return false;
+    const now=performance.now(),rocket=id===I.ROCKET_LAUNCHER;
+    if(now<this.cooldown) return true;
+    const ammo=rocket?I.ROCKET_AMMO:I.BULLET;
+    if(Game.mode!=='creative'&&!Game.inv.remove(ammo,1)) {
+      this.cooldown=now+350;HUD.toastText(rocket?'Il te faut des roquettes.':'Il te faut des balles.',1.6);return true;
+    }
+    this.cooldown=now+(rocket?1000:135);
+    const pos=eyePos(),dir=lookDir();
+    if(typeof Net!=='undefined'&&Net.live&&Net.role==='guest') Net.send(['gun-shot',id,dir]);
+    else this.launch(pos,dir,id);
+    Fx.puff(...pos,rocket?6:2,TEX.glow);
+    Sfx.play(rocket?'throw':'hit',rocket?.9:.55);
+    HUD.refreshAll();
+    return true;
+  },
+  launch(pos,dir,id,remote=false) {
+    if(!this.isGun(id)||!Array.isArray(dir)||dir.length!==3||!dir.every(Number.isFinite)) return false;
+    const len=Math.hypot(...dir);if(len<.9||len>1.1||!Array.isArray(pos)||!pos.every(Number.isFinite))return false;
+    const rocket=id===I.ROCKET_LAUNCHER,vel=rocket?23:45;
+    this.list.push({pos:pos.map((v,i)=>v+dir[i]*.65),vel:dir.map(v=>v*vel),dim:Game.manager.dim,age:0,rocket,remote});
+    if(this.list.length>90)this.list.shift();
+    return true;
+  },
+  blast(pos,remote) {
+    Fx.puff(...pos,28,TEX.glow);Sfx.explosion(.55,.8);
+    for(const m of Mobs.list.slice()) {
+      if(m.hp<=0)continue;
+      const dist=Math.hypot(pos[0]-m.pos[0],pos[1]-(m.pos[1]+m.def.h/2),pos[2]-m.pos[2]);
+      if(dist<3.5){if(remote)m.lastHitter='guest';Mobs.hurt(m,Math.max(2,Math.round(16*(1-dist/3.5))),[0,0,0],true);}
+    }
+  },
+  update(dt) {
+    if(!Game.manager)return;
+    for(let i=this.list.length-1;i>=0;i--){
+      const p=this.list[i];if(p.dim!==Game.manager.dim||p.age>2.5){this.list.splice(i,1);continue;}
+      p.age+=dt;
+      const steps=Math.max(1,Math.ceil(Math.hypot(...p.vel)*dt/.18));
+      let hit=false;
+      for(let k=0;k<steps&&!hit;k++){
+        for(let j=0;j<3;j++)p.pos[j]+=p.vel[j]*dt/steps;
+        const block=Game.manager.getBlock(...p.pos.map(Math.floor));
+        const solid=(BLOCKS[block]||{}).solid;
+        const mob=solid?null:Mobs.list.find(m=>m.hp>0&&Math.hypot(p.pos[0]-m.pos[0],p.pos[2]-m.pos[2])<m.def.w/2+.18&&p.pos[1]>=m.pos[1]&&p.pos[1]<=m.pos[1]+m.def.h);
+        if(solid||mob){hit=true;if(p.rocket)this.blast(p.pos,p.remote);else if(mob){if(p.remote)mob.lastHitter='guest';Mobs.hurt(mob,3,p.vel.map(v=>v/45),true);Fx.puff(...p.pos,5,TEX.glow);} }
+      }
+      if(hit)this.list.splice(i,1);
+      else Fx.puff(...p.pos,p.rocket?2:1,p.rocket?TEX.glow:TEX.iron_block);
+    }
+  },
+};
+
 const Coordinates={
   xyz(x,y,z){return 'X : '+Number(x).toFixed(1)+' · Y : '+Number(y).toFixed(1)+' · Z : '+Number(z).toFixed(1);},
   bearing(){const degrees=((-Player.yaw*180/Math.PI)%360+360)%360;return {degrees,cardinal:['N','NE','E','SE','S','SO','O','NO'][Math.round(degrees/45)%8]};},
@@ -18891,8 +19154,8 @@ const Adventure={
     CommandHub.entries.push('meteo','victoire');CommandHub.descriptions.meteo='Clair, pluie, neige ou orage : /meteo orage';CommandHub.descriptions.victoire='Retrouver le coffre et le retour de victoire';
     const oldGuide=CommandHub.guide.bind(CommandHub);CommandHub.guide=(raw,submit=true)=>{if(/^\/?(?:meteo|weather)\s*$/.test(raw)){CommandHub.list('Quelle météo ?',['clair','pluie','neige','orage'].map(k=>({label:k,action:()=>{CommandHub.fill('/meteo '+k);CommandHub.hide();GameChat.submit();}})));return true;}return oldGuide(raw,submit);};
   },
-  load(data){Circuits.load(data&&data.circuits);Weather.load(data&&data.weather);EndVictory.load(data&&data.victory);Boats.load(data&&data.boats);Archery.list=[];},
-  tick(dt){Coordinates.update();Weather.update(dt);Circuits.update(dt);Boats.update(dt);Archery.update(dt);},
+  load(data){Circuits.load(data&&data.circuits);Weather.load(data&&data.weather);EndVictory.load(data&&data.victory);Boats.load(data&&data.boats);Archery.list=[];Firearms.list=[];Firearms.cooldown=0;},
+  tick(dt){Coordinates.update();Weather.update(dt);Circuits.update(dt);Boats.update(dt);Archery.update(dt);Firearms.update(dt);},
 };
 
 /* éclair d'écran (foudre, explosion admin) */
@@ -18923,7 +19186,7 @@ const Danger = { bump(v) { if (typeof Music !== 'undefined') Music.tension = Mat
 const LOAD_TIPS = [
   'Un village se trouve presque toujours à moins de deux cents blocs du départ.',
   'Les coffres de forgeron donnent du fer, des diamants et de l’obsidienne.',
-  'La forteresse souterraine cache la salle du portail de l’End : 12 cadres à remplir d’yeux.',
+  'La forteresse souterraine cache un portail du Nether en ruine : répare le cadre puis utilise un briquet.',
   'La pyramide du désert a une salle au trésor enterrée, sous le sable.',
   'Une épave, c’est un coffre dans la cale… et parfois un océan à explorer.',
   'Les galeries de mine descendent jusqu’à la couche 18 : emporte des torches.',

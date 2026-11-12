@@ -33,16 +33,18 @@ assert.equal(sites.find(s=>s.type==='stronghold').x,again.x);
 for(const site of sites) {
   const built=world.Structures.getBuilt(site), blocks=[...built.buckets.values()].flat();
   if(site.type==='ruined_portal') {
-    assert.equal(blocks.filter(b=>b[3]===B.PORTAL).length,6,'natural Nether gate must be lit and traversable');
-    assert.equal(blocks.filter(b=>b[3]===B.OBSIDIAN && b[1]>=71 && b[1]<=75).length,14);
+    assert.equal(blocks.filter(b=>b[3]===B.PORTAL).length,0,'natural Nether gates start unlit');
+    assert.equal(blocks.filter(b=>b[3]===B.OBSIDIAN && b[1]>=71 && b[1]<=75).length,12,'two missing obsidian blocks');
   } else {
-    assert.equal(blocks.filter(b=>b[3]===B.END_FRAME).length,12,'one End frame ring');
+    assert.equal(blocks.filter(b=>b[3]===B.END_FRAME).length,0,'no natural End portal frames');
+    assert(blocks.filter(b=>b[3]===B.OBSIDIAN).length>=12,'stronghold has a ruined Nether frame');
   }
 }
 world.WorldGen.heightAt=()=>55;
 world.Structures.cache.clear();
-const oceanBlocks=[...world.Structures.getBuilt(sites.find(s=>s.type==='ruined_portal')).buckets.values()].flat();
-assert(oceanBlocks.filter(b=>b[3]===B.PORTAL).every(b=>b[1]>62),'gates over water must stay above sea level');
+const oceanSite=sites.find(s=>s.type==='ruined_portal');
+const oceanBlocks=[...world.Structures.getBuilt(oceanSite).buckets.values()].flat();
+assert.equal(oceanBlocks.filter(b=>b[3]===B.OBSIDIAN&&b[2]===oceanSite.z&&b[0]>=oceanSite.x&&b[0]<=oceanSite.x+3&&b[1]>62).length,12,'frame over water remains above sea level');
 
 const goods = new Map([[B.LOG,3],[B.PLANKS,10]]);
 const inv = {count:id=>goods.get(id)||0, remove(id,n){assert(this.count(id)>=n);goods.set(id,this.count(id)-n);return true;}, add(id,n){goods.set(id,this.count(id)+n);return 0;}};
@@ -71,4 +73,4 @@ assert.equal(grid.craft(1),1);
 assert.equal(grid.craft('all'),10);
 assert.equal(inv.count(I.STICK),44);
 assert.equal(inv.count(B.PLANKS),0);
-console.log('OK : vision X par commande seulement, 5 portails Nether actifs + 1 anneau End par graine, planches et bâtons en série.');
+console.log('OK : vision X par commande, 5 ruines du Nether et aucun portail naturel de l’End, planches et bâtons en série.');
