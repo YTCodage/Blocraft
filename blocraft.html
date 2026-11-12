@@ -1411,6 +1411,18 @@
   #dimensionArrival.show{opacity:1;transform:translate(-50%,0) scale(1)}
   #dimensionArrival strong{display:block;font-size:clamp(25px,5vw,43px);letter-spacing:.08em;text-shadow:0 3px 15px #000}
   #dimensionArrival span{display:block;margin-top:8px;font-size:14px}
+  #arrivalReset{position:fixed;top:88px;left:16px;z-index:24;width:min(330px,calc(100vw - 32px));
+    padding:12px;border:1px solid #83c4a8;border-radius:12px;background:#0c231fee;color:#e6fff1;
+    box-shadow:0 10px 30px #0009;font:600 12px system-ui,sans-serif;pointer-events:auto}
+  #arrivalReset.hidden{display:none}
+  #arrivalReset strong{display:block;margin-bottom:4px;font-size:14px}
+  #arrivalReset p{margin:3px 0 8px;color:#b4cdc0;line-height:1.4}
+  #arrivalReset .actions{display:flex;gap:6px;flex-wrap:wrap}
+  #arrivalReset button{padding:7px 9px;border-radius:7px;border:1px solid #7baf92;background:#1d4436;color:#f3fff6;cursor:pointer;font:inherit}
+  #arrivalReset button.danger{border-color:#d4796d;background:#522823}
+  #arrivalReset button:disabled{opacity:.5;cursor:not-allowed}
+  #arrivalReset #arrivalClose{float:right;background:transparent;border:0;font-size:18px;padding:0 4px}
+  @media(max-width:600px){#arrivalReset{top:calc(env(safe-area-inset-top) + 55px);left:8px;width:min(290px,calc(100vw - 16px))}}
 </style>
 </head>
 <body>
@@ -1451,6 +1463,14 @@
     <div id="bossTrack"><i id="bossFill"></i></div>
   </div>
   <div id="dimBadge">Nether</div>
+  <section id="arrivalReset" class="hidden" aria-label="Actions de départ">
+    <button id="arrivalClose" type="button" aria-label="Fermer les actions de départ">×</button>
+    <strong>🏠 Repartir du début</strong>
+    <p>Même graine et point d’arrivée. Le reset du mode conserve les constructions.</p>
+    <div class="actions"><button id="arrivalWorld" class="danger" type="button">Reset monde</button>
+      <button id="arrivalMode" type="button">Reset mode</button></div>
+    <small id="arrivalStatus" role="status" aria-live="polite"></small>
+  </section>
   <div id="dimensionArrival" role="status" aria-live="polite"><strong></strong><span></span></div>
   <div id="toasts"></div><button id="trollButton" class="btn hidden">Se transformer</button>
 <div id="troll" class="overlay hidden"><section class="panel trollPanel"><h2>Mode Trolle · choisis ton apparence</h2><p>Déguisements animés visibles par ton ami. Les déplacements et collisions restent ceux du joueur.</p><input id="trollSearch" type="search" placeholder="Animal, monstre, bloc…" aria-label="Rechercher un déguisement"><button id="trollView" class="btn small">Vue : ton personnage</button><div id="trollChoices"></div><button id="trollClose" class="btn">Retour au jeu</button></section></div>
@@ -1581,6 +1601,7 @@
           </button>
           <button id="btnShareParty" class="ppBtn">Inviter un ami · publier la partie</button><label for="partyName">Nom de la partie</label><input id="partyName" maxlength="28" placeholder="Nom de la partie"><button id="renameParty" class="ppBtn">Renommer la partie</button><small id="partyNameStatus" role="status"></small>
           <button id="btnCreatorAdmin" class="ppBtn hidden">Monde Admin</button><button id="btnShopPause" class="ppBtn">Boutique · skins</button><button id="btnFriendsPause" class="ppBtn">Amis · favoris</button>
+          <button id="btnQuitGame" class="ppBtn" type="button">Sauvegarder et quitter · retour au menu</button>
           <button id="btnSave" class="ppBtn"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 3h11l3 3v11H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 3h6v4H6z" fill="currentColor"/><path d="M6 12h8v5H6z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>Sauvegarder la partie</span></span><span class="ppArw">›</span></button>
           <div class="ppSep"></div>
           <div class="ppSub">Réglages</div>
@@ -1605,6 +1626,8 @@
           </div>
           <div class="ppSep"></div>
           <div class="ppSub">Monde</div>
+          <button id="btnResetWorld" class="ppBtn danger" type="button">Reset monde · même graine, repartir de zéro</button>
+          <button id="btnResetMode" class="ppBtn" type="button">Reset mode · retrouver le mode de départ</button>
           <button id="btnNew2" class="ppBtn danger"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M10 2l7 4v8l-7 4-7-4V6z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 6l7 4 7-4M10 10v8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg><span>Nouveau monde</span></span><span class="ppArw">›</span></button>
           <button id="btnHelp" class="ppBtn"><span class="ppLbl"><svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.6 7.6a2.5 2.5 0 114 2c-.8.6-1.6 1-1.6 2.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="14.4" r=".95" fill="currentColor"/></svg><span>Aide &amp; astuces</span></span><span class="ppArw">›</span></button>
         </div>
@@ -3989,7 +4012,8 @@ function generateTextureAtlas() {
 
 /* ------------------------- Générateur de monde -------------------------- */
 const CHUNK = 16;
-const WH = 128;                 // hauteur du monde
+const GEN_HEIGHT = 128;         // le terrain naturel reste sous Y=128
+const WH = 365;                // blocs autorisés de Y=0 à Y=364
 const SEA = 62;                 // niveau de la mer
 const SNOW_LINE = 96;
 
@@ -4125,7 +4149,7 @@ const WorldGen = {
     const rock = (t) => t === B.STONE || t === B.DEEPSLATE || t === B.GRANITE ||
       t === B.DIORITE || t === B.ANDESITE || t === B.TUFF || t === B.CALCITE;
     const put = (x, y, z, type) => {
-      if (x < 1 || x > 14 || z < 1 || z > 14 || y < 3 || y > WH - 6) return;
+      if (x < 1 || x > 14 || z < 1 || z > 14 || y < 3 || y > GEN_HEIGHT - 6) return;
       const h = HEIGHTS[x + z * CHUNK];
       if (y > h - 4) return;
       const i = idx(x, y, z);
@@ -4136,7 +4160,7 @@ const WorldGen = {
     for (const ore of ORE_VEINS) {
       for (let n = 0; n < ore.tries; n++) {
         if (ore.rare && rnd() > ore.rare) continue;
-        const y0 = ore.y[0], y1 = Math.min(ore.y[1], WH - 8);
+        const y0 = ore.y[0], y1 = Math.min(ore.y[1], GEN_HEIGHT - 8);
         let x = 1 + ((rnd() * 14) | 0), z = 1 + ((rnd() * 14) | 0);
         let y = y0 + ((rnd() * Math.max(1, y1 - y0)) | 0);
         const size = ore.size[0] + ((rnd() * (ore.size[1] - ore.size[0] + 1)) | 0);
@@ -4155,7 +4179,7 @@ const WorldGen = {
           }
           x = clamp(x + dx, 1, 14);
           z = clamp(z + dz, 1, 14);
-          y = clamp(y + dy, 3, WH - 8);
+          y = clamp(y + dy, 3, GEN_HEIGHT - 8);
           const hh = HEIGHTS[x + z * CHUNK];
           if (y > hh - 4) y = Math.max(3, hh - 6);
         }
@@ -4196,11 +4220,11 @@ const WorldGen = {
 
   /* génère un chunk de blocs (Uint8Array) + une liste d'arbres à planter */
   generateChunk(cx, cz) {
-    const data = new Uint16Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * GEN_HEIGHT * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
-    const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
-    const get = (x, y, z) => (y >= 0 && y < WH) ? data[idx(x, y, z)] : 0;
+    const set = (x, y, z, t) => { if (y >= 0 && y < GEN_HEIGHT) data[idx(x, y, z)] = t; };
+    const get = (x, y, z) => (y >= 0 && y < GEN_HEIGHT) ? data[idx(x, y, z)] : 0;
 
     const trees = [];
     const ox = cx * CHUNK, oz = cz * CHUNK;
@@ -4208,7 +4232,7 @@ const WorldGen = {
     for (let lz = 0; lz < CHUNK; lz++) {
       for (let lx = 0; lx < CHUNK; lx++) {
         const wx = ox + lx, wz = oz + lz;
-        const h = clamp(this.heightAt(wx, wz), 4, WH - 20);
+        const h = clamp(this.heightAt(wx, wz), 4, GEN_HEIGHT - 20);
         HEIGHTS[lx + lz * CHUNK] = h;
         const desert = this.desertAt(wx, wz) > 0.16 && h < SEA + 16 && h > SEA - 4;
         const snow = h > SNOW_LINE;
@@ -4340,10 +4364,10 @@ const WorldGenNether = {
   },
 
   generateChunk(cx, cz) {
-    const data = new Uint16Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * GEN_HEIGHT * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
-    const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
+    const set = (x, y, z, t) => { if (y >= 0 && y < GEN_HEIGHT) data[idx(x, y, z)] = t; };
     const trees = [];
     const ox = cx * CHUNK, oz = cz * CHUNK;
 
@@ -4354,7 +4378,7 @@ const WorldGenNether = {
         /* plafond irrégulier : entre ~96 et ~124 de haut, donc de vraies
            cathédrales de roche au-dessus de la tête */
         const roof = 110 + Math.round(this.nA(wx * 0.011 + 7.3, wz * 0.011 - 3.1) * 15);
-        for (let y = 0; y < WH; y++) {
+        for (let y = 0; y < GEN_HEIGHT; y++) {
           let t = B.NETHERRACK;
           if (y === 0) t = B.BEDROCK;
           else if (y > roof) t = (y <= roof + 3) ? B.BEDROCK : B.NETHERRACK;
@@ -4400,7 +4424,7 @@ const WorldGenNether = {
         {
           const lampN = this.nD(wx * 0.11 + 5.1, wz * 0.11 - 8.7);
           if (lampN > 0.18) {
-            for (let y = Math.min(WH - 2, roof); y > 40; y--) {
+            for (let y = Math.min(GEN_HEIGHT - 2, roof); y > 40; y--) {
               if (data[idx(lx, y, lz)] !== B.AIR) continue;
               const up = data[idx(lx, y + 1, lz)];
               if (up !== B.AIR && up !== B.LAVA) {
@@ -4449,10 +4473,10 @@ const WorldGenEnd = {
   },
 
   generateChunk(cx, cz) {
-    const data = new Uint16Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * GEN_HEIGHT * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
-    const set = (x, y, z, t) => { if (y >= 0 && y < WH) data[idx(x, y, z)] = t; };
+    const set = (x, y, z, t) => { if (y >= 0 && y < GEN_HEIGHT) data[idx(x, y, z)] = t; };
     const ox = cx * CHUNK, oz = cz * CHUNK;
 
     for (let lz = 0; lz < CHUNK; lz++) {
@@ -5261,7 +5285,7 @@ const WorldGenOneBlock = {
   init(seed) { this.seed = seed >>> 0; },
   /* pas de terrain : uniquement le bloc unique, au centre du monde */
   generateChunk(cx, cz) {
-    const data = new Uint16Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * GEN_HEIGHT * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     if (cx === 0 && cz === 0) data[CHUNK * (CHUNK * 64)] = B.GRASS;
     return { data, trees: [], HEIGHTS };
@@ -5275,7 +5299,7 @@ const WorldGenFlat = {
   seed: 0,
   init(seed) { this.seed = seed >>> 0; },
   generateChunk(cx, cz) {
-    const data = new Uint16Array(CHUNK * WH * CHUNK);
+    const data = new Uint16Array(CHUNK * GEN_HEIGHT * CHUNK);
     const HEIGHTS = new Int16Array(CHUNK * CHUNK);
     const idx = (x, y, z) => x + CHUNK * (z + CHUNK * y);
     for (let lz = 0; lz < CHUNK; lz++) {
@@ -5298,6 +5322,10 @@ class Chunk {
   constructor(cx, cz, data, heights) {
     this.cx = cx; this.cz = cz;
     this.data = data;
+    // Au-dessus du terrain naturel, stocker uniquement les blocs placés.
+    // Évite de tripler la mémoire et le maillage de chaque chunk vide.
+    this.upper = new Map();
+    this.topY = GEN_HEIGHT - 1;
     this.heights = heights;
     /* hauteur du ciel : figée à la génération, sert uniquement à l'éclairage
        (sinon les tours et les bâtiments du joueur s'auto-ombrent) */
@@ -5322,6 +5350,20 @@ class ChunkManager {
   key(cx, cz) { return cx + ',' + cz; }
   getChunk(cx, cz) { return this.chunks.get(cx + ',' + cz); }
   hasChunk(cx, cz) { return this.chunks.has(cx + ',' + cz); }
+  blockAt(c, lx, y, lz) {
+    const i = lx + CHUNK * (lz + CHUNK * y);
+    return y < GEN_HEIGHT ? c.data[i] : (c.upper.get(i) || B.AIR);
+  }
+  putAt(c, lx, y, lz, t) {
+    const i = lx + CHUNK * (lz + CHUNK * y);
+    if (y < GEN_HEIGHT) c.data[i] = t;
+    else { if (t === B.AIR) c.upper.delete(i); else c.upper.set(i, t); }
+    if (t !== B.AIR && y > c.topY) c.topY = y;
+    if (t === B.AIR && y === c.topY && y >= GEN_HEIGHT) {
+      c.topY = GEN_HEIGHT - 1;
+      for (const index of c.upper.keys()) c.topY = Math.max(c.topY, Math.floor(index / (CHUNK * CHUNK)));
+    }
+  }
 
   /* génère le terrain d'un chunk + applique les arbres qui le chevauchent */
   ensureChunk(cx, cz) {
@@ -5352,7 +5394,7 @@ class ChunkManager {
           if (wy < 1 || wy >= WH) continue;
           const sx = wx - ox, sz = wz - oz;
           if (sx < 0 || sx > 15 || sz < 0 || sz > 15) continue;
-          chunk.data[sx + CHUNK * (sz + CHUNK * wy)] = st;
+          this.putAt(chunk, sx, wy, sz, st);
           chunk.structCols.add(sx + sz * CHUNK);
         }
         for (let lz2 = 0; lz2 < 16; lz2++) for (let lx2 = 0; lx2 < 16; lx2++) this.recomputeColumn(chunk, lx2, lz2);
@@ -5379,7 +5421,8 @@ class ChunkManager {
     if (edits) {
       for (const [ex, ey, ez, et] of edits) {
         if (ey < 0 || ey >= WH) continue;
-        chunk.data[(ex - ox) + CHUNK * ((ez - oz) + CHUNK * ey)] = et;
+        if (ex < ox || ex >= ox + CHUNK || ez < oz || ez >= oz + CHUNK) continue;
+        this.putAt(chunk, ex - ox, ey, ez - oz, et);
         this.recomputeColumn(chunk, ex - ox, ez - oz);
       }
     }
@@ -5400,8 +5443,8 @@ class ChunkManager {
   recomputeColumn(chunk, lx, lz) {
     if (lx < 0 || lx > 15 || lz < 0 || lz > 15) return;
     let top = 0;
-    for (let y = WH - 1; y >= 0; y--) {
-      const t = chunk.data[lx + CHUNK * (lz + CHUNK * y)];
+    for (let y = chunk.topY; y >= 0; y--) {
+      const t = this.blockAt(chunk, lx, y, lz);
       if (t === B.AIR) continue;
       const d = BLOCKS[t];
       if (!d) { console.warn('bloc inconnu', t, 'en', chunk.cx * 16 + lx, y, chunk.cz * 16 + lz); continue; }
@@ -5452,9 +5495,8 @@ class ChunkManager {
       if (!c) continue;
       const lx = wx - (wx >> 4) * 16, lz = wz - (wz >> 4) * 16;
       if (c.structCols && c.structCols.has(lx + lz * CHUNK)) continue;
-      const i = lx + CHUNK * (lz + CHUNK * wy);
-      if (c.data[i] === B.AIR) {
-        c.data[i] = t;
+      if (this.blockAt(c, lx, wy, lz) === B.AIR) {
+        this.putAt(c, lx, wy, lz, t);
         touched.add(key);
         this.recomputeColumn(c, lx, lz);
       }
@@ -5468,7 +5510,7 @@ class ChunkManager {
     const cx = x >> 4, cz = z >> 4;
     const c = this.chunks.get(cx + ',' + cz);
     if (!c) return 0;
-    return c.data[(x - cx * 16) + CHUNK * ((z - cz * 16) + CHUNK * y)];
+    return this.blockAt(c, x - cx * 16, y, z - cz * 16);
   }
 
   /* lumière du ciel approximative d'une colonne */
@@ -5499,8 +5541,8 @@ class ChunkManager {
     const c = this.chunks.get(cx + ',' + cz);
     if (!c) return false;
     const lx = x - cx * 16, lz = z - cz * 16;
-    const oldT = c.data[lx + CHUNK * (lz + CHUNK * y)];
-    c.data[lx + CHUNK * (lz + CHUNK * y)] = t;
+    const oldT = this.blockAt(c, lx, y, lz);
+    this.putAt(c, lx, y, lz, t);
     this.recomputeColumn(c, lx, lz);
 
     /* Un coffre détruit par explosion ou modification réseau ne garde pas son ancien butin. */
@@ -5555,12 +5597,12 @@ class ChunkManager {
     const getLocal = (lx, y, lz) => {
       if (y < 0) return B.BEDROCK;
       if (y >= WH) return 0;
-      if (lx >= 0 && lx < 16 && lz >= 0 && lz < 16) return data[lx + CHUNK * (lz + CHUNK * y)];
+      if (lx >= 0 && lx < 16 && lz >= 0 && lz < 16) return this.blockAt(cur, lx, y, lz);
       const sx = lx < 0 ? -1 : (lx > 15 ? 1 : 0);
       const sz = lz < 0 ? -1 : (lz > 15 ? 1 : 0);
       const c = nb3[(sz + 1) * 3 + (sx + 1)];
       if (!c) return B.BEDROCK;
-      return c.data[(lx - sx * 16) + CHUNK * ((lz - sz * 16) + CHUNK * y)];
+      return this.blockAt(c, lx - sx * 16, y, lz - sz * 16);
     };
     const get = (x, y, z) => getLocal(x, y, z);
 
@@ -5600,11 +5642,11 @@ class ChunkManager {
       return 0.42 + ((3 - occ) / 3) * 0.58;
     };
 
-    for (let y = 0; y < WH; y++) {
+    for (let y = 0; y <= chunk.topY; y++) {
       const yBase = CHUNK * CHUNK * y;
       for (let z = 0; z < CHUNK; z++) {
         for (let x = 0; x < CHUNK; x++) {
-          const t = data[x + CHUNK * z + yBase];
+          const t = y < GEN_HEIGHT ? data[x + CHUNK * z + yBase] : (chunk.upper.get(x + CHUNK * z + yBase) || B.AIR);
           if (t === B.AIR) continue;
           if (XRAY && !xrayVisible(t)) continue;
           const def = BLOCKS[t];
@@ -6958,7 +7000,9 @@ const Beds = {
 /* Plusieurs parties : chaque monde sauvegardé a un nom, un monde, un mode et
    une date. On choisit le nom au démarrage, et « Reprendre » liste tout. */
 const SAVE_KEY = 'blocraft.save.v1';        // ancienne sauvegarde unique
-const SAVES_KEY = 'blocraft.saves.v2';      // liste des parties
+const SAVES_KEY = 'blocraft.saves.v2';      // migration des anciennes parties
+const SAVES_META_KEY = 'blocraft.saves.v3'; // index léger, données dans IndexedDB
+const MAX_SAVES = 500;
 
 const WORLD_LABEL = {
   overworld: 'Monde normal', oneblock: 'Mono-bloc', flat: 'Monde plat',
@@ -6972,15 +7016,19 @@ const MODE_LABEL = { survival: 'Survie', hardcore:'Hardcore', creative: 'Créati
 const Saves = {
   list: [],
   currentId: null,
-  currentName: '',
+  currentName: '', sessionEntry:null, visible:50, db:null, ready:null, pending:new Set(), pendingLegacy:new Map(), storageError:'',lastWriteError:false,
 
   load() {
-    let raw = null;
-    try { raw = localStorage.getItem(SAVES_KEY); } catch (e) { raw = null; }
+    let raw = null, upgraded=false;
+    try { raw=localStorage.getItem(SAVES_META_KEY);upgraded=raw!==null;
+      if(!upgraded)raw=localStorage.getItem(SAVES_KEY);
+    } catch (e) { raw = null; }
     try { this.list = raw ? JSON.parse(raw) : []; } catch (e) { this.list = []; }
     if (!Array.isArray(this.list)) this.list = [];
+    this.list=this.list.slice(0,MAX_SAVES);
+    this.ready=this.openDatabase(upgraded);
     /* on récupère l'ancienne sauvegarde unique, si elle existe encore */
-    if (!this.list.length) {
+    if (!this.list.length && !upgraded) {
       try {
         const old = localStorage.getItem(SAVE_KEY);
         if (old) {
@@ -6998,13 +7046,77 @@ const Saves = {
     return this.list;
   },
 
-  persist() {
-    try { localStorage.setItem(SAVES_KEY, JSON.stringify(this.list)); return true; }
-    catch (e) { return false; }
+  async openDatabase(upgraded) {
+    if(typeof indexedDB==='undefined'){
+      this.storageError='IndexedDB indisponible : le stockage des 500 parties est limité par le navigateur.';
+      return;
+    }
+    try {
+      const db=await new Promise((resolve,reject)=>{
+        const request=indexedDB.open('blocraft.worlds.v1',1);
+        request.onupgradeneeded=()=>request.result.createObjectStore('worlds');
+        request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+      });
+      if(!upgraded){
+        // Migration sans suppression : la liste v2 reste intacte jusqu'au commit IDB.
+        await new Promise((resolve,reject)=>{
+          const tx=db.transaction('worlds','readwrite'),store=tx.objectStore('worlds');
+          for(const entry of this.list)if(entry.data)store.put(entry.data,entry.id);
+          tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+        });
+      }
+      this.db=db;
+      for(const [id,data] of this.pendingLegacy){const entry=this.get(id);if(entry)this.queueWrite(entry,data);}
+      this.pendingLegacy.clear();
+      const migrated=await Promise.allSettled([...this.pending]);
+      if(!upgraded && migrated.every(r=>r.status==='fulfilled') && this.persist())localStorage.removeItem(SAVES_KEY);
+      updateContinueButton();
+    } catch(e) {this.storageError='Impossible d’ouvrir le stockage des mondes : '+(e.message||e);console.warn(this.storageError);}
   },
+  persist() {
+    try {
+      if(this.db){
+        localStorage.setItem(SAVES_META_KEY,JSON.stringify(this.list.map(({data,...meta})=>({...meta,hasData:!!(data||meta.hasData)}))));
+      }else localStorage.setItem(SAVES_KEY,JSON.stringify(this.list));
+      return true;
+    } catch(e) {this.storageError='Stockage plein : aucune partie n’a été supprimée.';return false;}
+  },
+  async read(entry){
+    if(!entry)return null;
+    await this.ready;
+    if(entry.data)return entry.data;
+    if(!entry.hasData||!this.db)return null;
+    const data=await new Promise((resolve,reject)=>{
+      const tx=this.db.transaction('worlds','readonly'),r=tx.objectStore('worlds').get(entry.id);
+      r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);
+    });
+    entry.data=data;
+    return data;
+  },
+  queueWrite(entry,data){
+    if(!this.db)return;
+    const p=new Promise((resolve,reject)=>{
+      const tx=this.db.transaction('worlds','readwrite');tx.objectStore('worlds').put(data,entry.id);
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+    });
+    this.pending.add(p);
+    p.catch(e=>{this.lastWriteError=true;this.storageError='Sauvegarde impossible (stockage plein ou bloqué).';
+      console.warn('Sauvegarde IndexedDB',e);HUD.toastText('⚠️ '+this.storageError,5);}).finally(()=>this.pending.delete(p));
+  },
+  async flush(){await this.ready;if(!this.db)return !this.list.length||this.persist();
+    const results=await Promise.allSettled([...this.pending]);const ok=results.every(r=>r.status==='fulfilled')&&!this.lastWriteError;
+    if(ok)this.storageError='';return ok;},
+  deleteData(id){if(this.db){const tx=this.db.transaction('worlds','readwrite');tx.objectStore('worlds').delete(id);}},
 
   get(id) { return this.list.find(s => s.id === id) || null; },
-  current() { return this.get(this.currentId); },
+  current() { return this.get(this.currentId) || (this.sessionEntry?.id===this.currentId?this.sessionEntry:null); },
+  sharedSession(type,name,admin=false,data=null){
+    this.sessionEntry={id:(admin?'admin':'guest')+'-session-'+type,name,world:type,initialWorld:type,
+      initialMode:admin?'creative':'survival',mode:admin?'creative':'survival',adminRealm:admin,data};
+    this.currentId=this.sessionEntry.id;this.currentName=name;
+    return this.sessionEntry;
+  },
+  adminSession(type,name,data=null){return this.sharedSession(type,name,true,data);},
 
   suggestName() {
     const used = new Set(this.list.map(s => (s.name || '').trim()));
@@ -7015,16 +7127,18 @@ const Saves = {
 
   /* fiche d'une nouvelle partie : les données arrivent à la première sauvegarde */
   begin(name, world, mode) {
+    if(this.list.length>=MAX_SAVES)return null;
     const id = 's' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
     const entry = {
       id, name: (name || '').trim() || this.suggestName(),
       world: world || 'overworld', mode: mode || 'survival',
+      initialWorld: world || 'overworld', initialMode: mode || 'survival',
       seed: Game.seed || 0, ts: Date.now(), data: null,
     };
     this.list.unshift(entry);
+    this.sessionEntry=null;
     this.currentId = id;
     this.currentName = entry.name;
-    while (this.list.length > 12) this.list.length = 12;   // les 12 plus récentes
     this.persist();
     return entry;
   },
@@ -7032,25 +7146,36 @@ const Saves = {
   write(data, opts) {
     let entry = this.current();
     if (!entry) entry = this.begin((opts && opts.name) || this.suggestName(), (data && data.dim) || 'overworld', data && data.mode);
-    entry.data = data;
+    if (!entry)return false;
+    if (!entry.initialMode) entry.initialMode = entry.mode || data.mode || 'survival';
+    if (!entry.initialWorld) entry.initialWorld = ['flat','oneblock'].includes(entry.world) ? entry.world : 'overworld';
+    entry.data = data;entry.hasData=true;
     entry.ts = Date.now();
     entry.seed = data.seed;
     entry.mode = data.hardcore?'hardcore':data.troll?'troll':data.mode || entry.mode;
     entry.world = data.dim || entry.world;
+    entry.adminRealm=!!data.adminRealm;entry.hardcoreDead=!!data.hardcoreDead;
     if (opts && opts.name) { entry.name = opts.name; this.currentName = entry.name; }
+    if(entry===this.sessionEntry)return true; // Admin : Firebase est la seule sauvegarde.
     const wasFirst = this.list.indexOf(entry) === 0;
     if (!wasFirst) {
       this.list.sort((a, b) => (b.ts || 0) - (a.ts || 0));
     }
-    return this.persist();
+    if(!this.persist())return false;
+    this.lastWriteError=false;
+    if(this.db)this.queueWrite(entry,data);
+    else this.pendingLegacy.set(entry.id,data);
+    return true;
   },
 
   remove(id) {
     const i = this.list.findIndex(s => s.id === id);
     if (i < 0) return false;
-    this.list.splice(i, 1);
+    const removed=this.list.splice(i, 1)[0];
     if (this.currentId === id) { this.currentId = null; this.currentName = ''; }
-    return this.persist();
+    if(!this.persist()){this.list.splice(i,0,removed);return false;}
+    this.pendingLegacy.delete(id);this.deleteData(id);
+    return true;
   },
 };
 Saves.load();
@@ -7072,9 +7197,11 @@ function updateContinueButton() {
 }
 
 function saveGame(opts) {
+  if(Net.live&&Net.role==='guest')return false; // seul l'hôte sauvegarde le monde partagé
   try {
     const data = {
       seed: Game.seed,
+      spawn: Game.spawn?.slice()||null, owSpawn:Game.owSpawn?.slice()||null,
       pos: Player.pos.slice(),
       yaw: Player.yaw, pitch: Player.pitch,
       flying: Player.flying,
@@ -7096,16 +7223,18 @@ function saveGame(opts) {
       })) : null,
       dim: Dimensions.current,
       overworldPos: Dimensions.pos.overworld || null,
-      edits: [],
-      netherEdits: [],
+      edits: [], netherEdits: [], endEdits: [],
+      savedDimensionPos: Object.fromEntries(Object.entries(Dimensions.pos).map(([dim,pos])=>[dim,pos.slice()])),
+      savedDimensionViews: Object.fromEntries(Object.entries(Dimensions.saved).map(([dim,v])=>[dim,{pos:v.pos.slice(),yaw:v.yaw,pitch:v.pitch}])),
     };
-    for (const arr of Game.manager.editLog.values()) {
-      for (const [x, y, z, t] of arr) data.edits.push([x, y, z, t]);
-    }
-    const nm = Dimensions.managers.nether;
-    if (nm) for (const arr of nm.editLog.values()) {
-      for (const [x, y, z, t] of arr) data.netherEdits.push([x, y, z, t]);
-    }
+    // Ne jamais confondre les modifications de la dimension courante avec celles
+    // de l'Overworld (un enregistrement depuis le Nether effaçait les bâtiments).
+    const copyEdits=(mgr,out)=>{if(mgr)for(const arr of mgr.editLog.values())for(const edit of arr)out.push(edit.slice());};
+    const home=Dimensions.managers[Game.startWorld]||Dimensions.managers.overworld||
+      (['overworld','oneblock','flat'].includes(Game.manager.dim)?Game.manager:null);
+    copyEdits(home,data.edits);
+    copyEdits(Dimensions.managers.nether|| (Game.manager.dim==='nether'?Game.manager:null),data.netherEdits);
+    copyEdits(Dimensions.managers.end|| (Game.manager.dim==='end'?Game.manager:null),data.endEdits);
     const ok = Saves.write(data);
     if (!ok) {
       try { HUD.toastText('⚠️ Stockage plein : la partie n\'a pas pu être enregistrée.', 4); } catch (e) { }
@@ -7134,7 +7263,7 @@ function renderSaves() {
     box.appendChild(d);
     return;
   }
-  for (const e of Saves.list) {
+  for (const e of Saves.list.slice(0,Saves.visible)) {
     const row = document.createElement('div');
     row.className = 'svRow';
     const ico = document.createElement('div');
@@ -7148,11 +7277,11 @@ function renderSaves() {
     const meta = document.createElement('div');
     meta.className = 'svMeta';
     meta.textContent = `${WORLD_LABEL[e.world] || 'Monde'} · ${MODE_LABEL[e.mode] || 'Survie'} · ${fmtSaveDate(e.ts)}` +
-      (e.data&&e.data.hardcoreDead?' · mort définitive':e.data&&e.data.adminRealm?' · réservé Admin':e.data?'':' · à sauvegarder');
+      (e.data?.hardcoreDead||e.hardcoreDead?' · mort définitive':e.data?.adminRealm||e.adminRealm?' · réservé Admin':e.data||e.hasData?'':' · à sauvegarder');
     info.appendChild(nm); info.appendChild(meta);
     const play = document.createElement('button');
     play.className = 'svBtn';
-    play.textContent = e.data ? 'Jouer' : 'Continuer';
+    play.textContent = e.data||e.hasData ? 'Jouer' : 'Continuer';
     play.addEventListener('click', (ev) => { ev.stopPropagation(); continueGame(e); });
     const del = document.createElement('button');
     del.className = 'svDel';
@@ -7171,10 +7300,16 @@ function renderSaves() {
     row.addEventListener('click', () => continueGame(e));
     box.appendChild(row);
   }
+  if(Saves.visible<Saves.list.length){
+    const more=document.createElement('button');more.className='svBtn';
+    more.textContent=`Afficher 50 parties de plus (${Saves.list.length-Saves.visible} restantes)`;
+    more.onclick=()=>{Saves.visible+=50;renderSaves();};box.appendChild(more);
+  }
+  if(Saves.storageError){const warn=document.createElement('p');warn.role='alert';warn.textContent=Saves.storageError;box.appendChild(warn);}
 }
 
 function openSaves() {
-  Saves.load();
+  Saves.visible=50;
   renderSaves();
   Game.state = 'menu';
   showOverlay('saves');
@@ -7237,6 +7372,7 @@ function openNewGameDialog() { NewGameWizard.open(); }
 
 async function startNewGameFromDialog() {
   if (Cinematics.active) return;
+  if(Saves.list.length>=MAX_SAVES){$('ngError').textContent='Limite de 500 parties atteinte. Supprime une partie pour continuer.';return;}
   const chosen=$('ngName').value.trim();if(!RoomNames.valid(chosen)){HUD.toastText('Choisis un nom de 3 à 28 caractères.',3);$('ngName').focus();return;}
   await Cinematics.play('intro');
   const name = (($('ngName') && $('ngName').value) || '').trim() || Saves.suggestName();
@@ -7500,12 +7636,20 @@ function findSpawn(seed) {
 
 async function loadWorld(seed, savedData, onProgress, opts) {
   Fireworks.cancelAll(); EnderPearl.live = [];
+  // Changer de partie ne doit pas conserver les chunks ni les journaux de l'ancienne.
+  for (const mgr of new Set([...Object.values(Dimensions.managers),Game.manager])) {
+    if (mgr) for (const chunk of mgr.chunks.values()) releaseChunkBuffers(chunk);
+  }
+  Dimensions.managers={};Dimensions.saved={};Dimensions.pos={};Dimensions.lobbyBuilt=false;
+  End.built=false;Nether.built=false;Game.owSpawn=null;
   Game.seed = seed >>> 0;
   Adventure.load(savedData);Railways.riding=null;
   if(!savedData)Railways.carts=[];
   const dim = (opts && opts.dim) || (savedData && savedData.dim) || 'overworld';
   const startDim = (dim === 'oneblock' || dim === 'flat') ? dim : 'overworld';
   Game.manager = new ChunkManager(startDim);
+  Dimensions.managers[startDim] = Game.manager;
+  Dimensions.current = startDim;
   Game.manager.editLog = new Map();
   Chests.load(savedData && savedData.chests);
   WorldGen.init(seed);
@@ -7524,8 +7668,11 @@ async function loadWorld(seed, savedData, onProgress, opts) {
   }
   Game.homeDim = startDim === 'flat' ? 'flat' : 'overworld';
 
+  // Avant le format multi-dimension, `edits` contenait parfois la dimension
+  // courante : ne pas rejouer des blocs du Nether dans l'Overworld.
+  const legacyOther=!!(savedData&&['nether','end'].includes(savedData.dim)&&!('endEdits' in savedData));
   // applique les modifications sauvegardées dans le journal d'édition
-  if (savedData && savedData.edits) {
+  if (savedData && savedData.edits && !legacyOther) {
     for (const [x, y, z, t] of savedData.edits) {
       const k = (x >> 4) + ',' + (z >> 4);
       if (!Game.manager.editLog.has(k)) Game.manager.editLog.set(k, []);
@@ -7612,16 +7759,31 @@ async function loadWorld(seed, savedData, onProgress, opts) {
   // trouve un point d'apparition dégagé (pas dans un arbre / sous terre / dans l'eau)
   /* restaure la dimension + les modifications du Nether */
   if (savedData) {
+    if (savedData.savedDimensionPos) for (const [dim,pos] of Object.entries(savedData.savedDimensionPos))
+      if (Array.isArray(pos)&&pos.length===3&&pos.every(Number.isFinite)) Dimensions.pos[dim]=pos.slice();
+    if (savedData.savedDimensionViews) for (const [dim,v] of Object.entries(savedData.savedDimensionViews))
+      if (v&&Array.isArray(v.pos)&&v.pos.length===3&&v.pos.every(Number.isFinite)) Dimensions.saved[dim]={pos:v.pos.slice(),yaw:v.yaw,pitch:v.pitch};
     if (savedData.overworldPos) Dimensions.pos.overworld = savedData.overworldPos.slice();
-    if (savedData.netherEdits && savedData.netherEdits.length) {
+    const netherEdits=savedData.netherEdits|| (legacyOther&&savedData.dim==='nether'?savedData.edits:null);
+    if (netherEdits && netherEdits.length) {
       const nm = Dimensions.get('nether');
-      for (const [x, y, z, t] of savedData.netherEdits) {
+      for (const [x, y, z, t] of netherEdits) {
         const k = (x >> 4) + ',' + (z >> 4);
         let arr = nm.editLog.get(k);
         if (!arr) { arr = []; nm.editLog.set(k, arr); }
         arr.push([x, y, z, t]);
       }
       Dimensions.lobbyBuilt = true;
+    }
+    const endEdits=savedData.endEdits||(legacyOther&&savedData.dim==='end'?savedData.edits:null);
+    if (endEdits && endEdits.length) {
+      const em=Dimensions.get('end');
+      for (const [x,y,z,t] of endEdits) {
+        const k=(x>>4)+','+(z>>4);
+        if(!em.editLog.has(k))em.editLog.set(k,[]);
+        em.editLog.get(k).push([x,y,z,t]);
+      }
+      End.built=true;
     }
   }
 
@@ -7632,11 +7794,15 @@ async function loadWorld(seed, savedData, onProgress, opts) {
     Game.owSpawn = Game.spawn.slice();
   } else {
     const safe = safeSpawnNear(Game.manager, Math.floor(Player.pos[0]), Math.floor(Player.pos[2]));
-    const spawnY = prepareSpawnPad(Game.manager, safe[0], safe[2]);
+    // Un rechargement ne doit pas « dégager » une clairière au milieu des
+    // constructions. La clairière n'est créée qu'à la première arrivée.
+    const spawnY = savedData?safe[1]:prepareSpawnPad(Game.manager, safe[0], safe[2]);
     Game.spawn = [safe[0] + 0.5, spawnY + 0.02, safe[2] + 0.5];
     Game.owSpawn = Game.spawn.slice();
   }
 
+  if(savedData?.spawn && savedData.spawn.length===3&&savedData.spawn.every(Number.isFinite))Game.spawn=savedData.spawn.slice();
+  if(savedData?.owSpawn && savedData.owSpawn.length===3&&savedData.owSpawn.every(Number.isFinite))Game.owSpawn=savedData.owSpawn.slice();
   // re-maille immédiatement les chunks touchés par la clairière
   for (const k of [...Game.manager.meshQueue.keys()]) {
     const c = Game.manager.chunks.get(k);
@@ -7782,10 +7948,10 @@ const View = {
   radius:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?4:10,
   min:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?3:8,
   max:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?8:18,
-  growAt:0,slowSamples:0,fastSamples:0,
+  growAt:0,slowSamples:0,fastSamples:0,fixedReduced:false,
   dprCap:(('ontouchstart' in window)||(navigator.maxTouchPoints>0))?1:2,
   get infinite(){return !(SETTINGS.dist>0);},
-  get draw(){const requested=this.infinite?this.radius:SETTINGS.dist;return isTouch?Math.min(requested,this.radius):requested;},
+  get draw(){const requested=this.infinite?this.radius:SETTINGS.dist;return isTouch||this.fixedReduced||this.infinite?Math.min(requested,this.radius):requested;},
   adapt(fps){
     if(!(fps>0))return;const now=performance.now();
     this.slowSamples=fps<38?this.slowSamples+1:0;this.fastSamples=fps>55?this.fastSamples+1:0;
@@ -7794,7 +7960,13 @@ const View = {
       else if(this.fastSamples>=12&&now>=this.growAt){const cap=SkinShop.quality&&RoleGate.role==='creator'?1.5:1.25;if(this.dprCap<cap)this.dprCap=Math.min(cap,+(this.dprCap+.05).toFixed(2));else if(this.infinite||this.radius<SETTINGS.dist)this.radius=Math.min(this.max,this.radius+1);this.growAt=now+6000;this.fastSamples=0;}
       return;
     }
-    if(!this.infinite)return;
+    // Même en portée fixe, les appareils lents réduisent temporairement le rendu.
+    // Le réglage choisi reste intact et revient progressivement si le FPS remonte.
+    if(!this.infinite){
+      if(this.slowSamples>=2){this.radius=Math.max(3,Math.min(SETTINGS.dist,this.fixedReduced?this.radius:SETTINGS.dist)-1);this.fixedReduced=true;this.slowSamples=0;this.growAt=now+6500;}
+      else if(this.fixedReduced&&this.fastSamples>=12&&now>=this.growAt){this.radius=Math.min(SETTINGS.dist,this.radius+1);this.fixedReduced=this.radius<SETTINGS.dist;this.fastSamples=0;this.growAt=now+5000;}
+      return;
+    }
     if(fps<26){this.radius=Math.max(this.min,this.radius-2);this.growAt=now+2500;return;}
     if(fps<40){this.growAt=now+1800;return;}
     if(this.radius<this.max&&now>=this.growAt){this.radius++;this.growAt=now+1400;}
@@ -8015,7 +8187,7 @@ function renderScene(dt, view) {
       if (c.meshCount > 0) {
         const dx = c.cx - pcx, dz = c.cz - pcz;
         if (Math.max(Math.abs(dx), Math.abs(dz)) > R) continue;
-        if (!chunkInFrustum(planes, c.cx * 16 + 8, WH / 2, c.cz * 16 + 8, WH / 2 + 2)) continue;
+        if (!chunkInFrustum(planes, c.cx * 16 + 8, (c.topY+1)/2, c.cz * 16 + 8, (c.topY+1)/2 + 2)) continue;
         gl.uniform3f(um.uChunkOffset, c.cx * 16, 0, c.cz * 16);
         gl.bindVertexArray(c.meshVAO);
         gl.drawElements(gl.TRIANGLES, c.meshCount, gl.UNSIGNED_INT, 0);
@@ -8046,7 +8218,7 @@ function renderScene(dt, view) {
       if (c.waterCount > 0) {
         const dx = c.cx - pcx, dz = c.cz - pcz;
         if (Math.max(Math.abs(dx), Math.abs(dz)) > R) continue;
-        if (!chunkInFrustum(planes, c.cx * 16 + 8, WH / 2, c.cz * 16 + 8, WH / 2 + 2)) continue;
+        if (!chunkInFrustum(planes, c.cx * 16 + 8, (c.topY+1)/2, c.cz * 16 + 8, (c.topY+1)/2 + 2)) continue;
         gl.uniform3f(uw.uChunkOffset, c.cx * 16, 0, c.cz * 16);
         gl.bindVertexArray(c.waterVAO);
         gl.drawElements(gl.TRIANGLES, c.waterCount, gl.UNSIGNED_INT, 0);
@@ -8679,9 +8851,8 @@ function openQA() { QA.open(); }
 
 /* ------------------------------ Gameplay --------------------------------- */
 function tick(dt) {
-  Game.time = (Game.time + dt / Game.dayLength) % 1;
-
   if (Game.state !== 'playing') return;
+  Game.time = (Game.time + dt / Game.dayLength) % 1;
 
   Fx.tick(dt);
   Flash.tick(dt);
@@ -9321,6 +9492,7 @@ function startPlaying() {
   }
   Mobs.spawnT = 3;
   showSitesBanner();
+  if (typeof ArrivalReset !== 'undefined') ArrivalReset.show();
 }
 
 function showSitesBanner() {
@@ -9403,6 +9575,7 @@ function setGameMode(mode) {
 
 function openPause() {
   if (Game.state !== 'playing') return;
+  if (typeof ArrivalReset !== 'undefined') ArrivalReset.hide();
   resetTouchInput();
   clearKeys();
   Game.state = 'paused';
@@ -9410,6 +9583,7 @@ function openPause() {
   Game.ignoreUnlock = true;
   try { document.exitPointerLock(); } catch (e) { }
   $('saveMsg').textContent = '';
+  if(Saves.currentId&&!busyLoading)saveGame({silent:true});
   try {
     $('ppDim').textContent = (typeof Dimensions !== 'undefined') ? Dimensions.label(Dimensions.current) : 'Overworld';
     $('ppMode').textContent = Game.mode === 'creative' ? 'Créatif' : 'Survie';
@@ -12314,10 +12488,10 @@ const Railways = {
   point(x,y,z,entry,exit,t){const a=this.D[entry],b=this.D[exit],s=1-t;return [x+.5+(s*s*a[0]+t*t*b[0])*.5,y+.15,z+.5+(s*s*a[1]+t*t*b[1])*.5];},
   mesh(b,x,y,z,wx,wz,mgr,light){
     const [a,c]=this.path(wx,y,wz,mgr),p=[],hot=this.rail(wx,y,wz,mgr)===B.POWERED_RAIL;
-    for(let i=0;i<=10;i++)p.push(this.point(x,y,z,a,c,i/10));
+    for(let i=0;i<=6;i++)p.push(this.point(x,y,z,a,c,i/6));
     const quad=(A,B,width,tile,lift)=>{const dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,nx=-dz/len*width,nz=dx/len*width,yy=y+lift;
       const q=[[A[0]-nx,yy,A[2]-nz],[B[0]-nx,yy,B[2]-nz],[B[0]+nx,yy,B[2]+nz],[A[0]+nx,yy,A[2]+nz]].map((v,i)=>[...v,i===1||i===2?1:0,i>1?1:0,tile,light,1]);b.quad(q[0],q[3],q[2],q[1]);};
-    for(let i=0;i<10;i++){const A=p[i],B=p[i+1],dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,n=[-dz/len,dx/len];
+    for(let i=0;i<6;i++){const A=p[i],B=p[i+1],dx=B[0]-A[0],dz=B[2]-A[2],len=Math.hypot(dx,dz)||1,n=[-dz/len,dx/len];
       if(i%2===0)quad([A[0]+n[0]*.38,y,A[2]+n[1]*.38],[A[0]-n[0]*.38,y,A[2]-n[1]*.38],.045,hot?TEX.powered_rail:TEX.planks,.035);
       for(const side of [-1,1])quad([A[0]+n[0]*.25*side,y,A[2]+n[1]*.25*side],[B[0]+n[0]*.25*side,y,B[2]+n[1]*.25*side],.045,hot?TEX.powered_rail:(TEX.iron_block||TEX.iron),.055);
     }
@@ -16994,10 +17168,107 @@ async function newWorld(seedStr, thenPlay, extra) {
   if (Saves.currentId) saveGame({ silent: true });
 }
 
+/* Deux remises à zéro distinctes, proposées dès l'arrivée et dans Pause.
+   Le monde garde sa fiche de sauvegarde, sa graine et son nom. */
+const ArrivalReset = {
+  busy: false, armedUntil: 0, hideTimer: 0, armTimer: 0,
+  available() {
+    return !!Game.manager && !busyLoading && ['playing','paused'].includes(Game.state)
+      && !(Net.live || Game.adminRealm || Game.hardcoreDead);
+  },
+  initialMode() {
+    const entry=Saves.current();
+    return (entry && entry.initialMode) || (entry && entry.mode) || (Game.hardcore?'hardcore':Game.troll?'troll':Game.mode);
+  },
+  initialWorld() {
+    const entry=Saves.current();
+    return (entry && entry.initialWorld) || (Game.homeDim==='flat'?'flat':Game.manager?.dim==='oneblock'?'oneblock':'overworld');
+  },
+  status(text) {
+    const el=$('arrivalStatus');if(el)el.textContent=text;
+    const msg=$('saveMsg');if(msg && Game.state==='paused')msg.textContent=text;
+  },
+  disarm() {
+    this.armedUntil=0;clearTimeout(this.armTimer);
+    for(const id of ['arrivalWorld','btnResetWorld']){
+      const btn=$(id);if(btn)btn.textContent=id==='arrivalWorld'?'Reset monde':'Reset monde · même graine, repartir de zéro';
+    }
+  },
+  hide() {
+    clearTimeout(this.hideTimer);this.disarm();
+    const panel=$('arrivalReset');if(panel)panel.classList.add('hidden');
+  },
+  show() {
+    this.hide();
+    if(!this.available() || !Saves.current())return;
+    const panel=$('arrivalReset');if(!panel)return;
+    this.status('');panel.classList.remove('hidden');
+    // Le verrouillage de souris envoie les clics au canvas, même sur le panneau.
+    if(document.pointerLockElement){Game.ignoreUnlock=true;document.exitPointerLock();}
+    this.hideTimer=setTimeout(()=>this.hide(),30000);
+  },
+  resetMode() {
+    if(!this.available()||this.busy){this.status('Reset indisponible en réseau ou pendant le chargement.');return false;}
+    const wanted=this.initialMode(),mode=wanted==='hardcore'?'survival':wanted==='troll'?'creative':wanted;
+    if(!['survival','creative'].includes(mode))return false;
+    this.disarm();
+    if(Game.mode===mode){this.status('Tu es déjà dans le mode de départ. Le monde et l’inventaire n’ont pas changé.');return true;}
+    setGameMode(mode);
+    this.status('Mode de départ restauré : '+(mode==='creative'?'Créatif':'Survie')+'. Monde conservé.');
+    return true;
+  },
+  askWorld() {
+    if(!this.available()||this.busy){this.status('Reset indisponible en réseau ou pendant le chargement.');return false;}
+    if(Date.now()<this.armedUntil)return this.resetWorld();
+    this.armedUntil=Date.now()+9000;clearTimeout(this.hideTimer);
+    for(const id of ['arrivalWorld','btnResetWorld']){const btn=$(id);if(btn)btn.textContent='Confirmer : effacer ce monde';}
+    this.status('Attention : constructions, inventaire et progression seront effacés. Reclique sous 9 secondes.');
+    this.armTimer=setTimeout(()=>{this.disarm();this.status('Confirmation expirée.');},9000);
+    return true;
+  },
+  async resetWorld() {
+    if(!this.available()||this.busy || Date.now()>=this.armedUntil)return false;
+    const entry=Saves.current(),seed=Game.seed,world=this.initialWorld(),mode=this.initialMode();
+    this.busy=true;this.hide();
+    clearKeys();Game.ignoreUnlock=true;
+    try{document.exitPointerLock();}catch(e){}
+    Game.state='loading';showOverlay('loading');
+    try {
+      // Libère les anciens mondes avant de régénérer la même graine. Les modifications
+      // d'une autre dimension ne doivent pas réapparaître après ce reset.
+      await new Promise(r=>setTimeout(r,0));
+      for(const mgr of new Set([...Object.values(Dimensions.managers),Game.manager])){
+        if(!mgr)continue;
+        for(const chunk of mgr.chunks.values())releaseChunkBuffers(chunk);
+        mgr.chunks.clear();mgr.meshQueue.clear();mgr.decorations.clear();
+      }
+      Dimensions.managers={};Dimensions.saved={};Dimensions.pos={};
+      Dimensions.current=world;Dimensions.busy=false;Dimensions.lobbyBuilt=false;
+      End.built=false;Nether.built=false;OneBlock.count=0;
+      Portals.timer=0;Portals.cooldown=2;Game._bannerShown=false;
+      Game.startWorld=world;Game.time=.28;Game.twoPlayers=false;
+      Game.hardcore=mode==='hardcore';Game.hardcoreDead=false;
+      Game.troll=mode==='troll';Troll.morph=null;
+      Game.mode=mode==='hardcore'?'survival':mode==='troll'?'creative':mode;
+      Game.manager=null;
+      if(entry){Saves.currentId=entry.id;Saves.currentName=entry.name;}
+      await newWorld(String(seed),true);
+      HUD.toastText('🌱 Monde remis à zéro : même graine, mode et point de départ.',4);
+      return true;
+    } catch(err) {
+      console.error('Reset du monde',err);
+      busyLoading=false;Game.state='menu';showOverlay('menu');
+      this.status('Échec du reset. Ta précédente sauvegarde reste dans « Reprendre ».');
+      return false;
+    } finally {this.busy=false;}
+  },
+};
+
 async function continueGame(entry, keepNetwork=false) {
-  if (!entry) entry = Saves.get(Saves.currentId) || Saves.list.find(e => e && e.data) || Saves.list[0];
+  if (!entry) entry = Saves.get(Saves.currentId) || Saves.list.find(e => e && (e.data||e.hasData)) || Saves.list[0];
+  try{if(entry)await Saves.read(entry);}catch(e){console.warn('Chargement de partie',e);}
   if (!entry || !entry.data) {
-    HUD.toastText('Aucune partie à reprendre : lance une nouvelle partie et donne-lui un nom.', 3.6);
+    HUD.toastText(entry?.hasData?'Sauvegarde indisponible : vérifie le stockage de ce navigateur.':'Aucune partie à reprendre : lance une nouvelle partie et donne-lui un nom.', 4);
     return;
   }
   Saves.currentId = entry.id;
@@ -17018,9 +17289,13 @@ async function continueGame(entry, keepNetwork=false) {
   Mobs.reset();
   if (typeof Drops !== 'undefined') Drops.clear();
   Railways.carts = []; Railways.riding = null;
-  const savedDim = (data.dim === 'oneblock') ? 'oneblock'
-    : (data.dim === 'flat' ? 'flat' : 'overworld');
-  await loadWorld(data.seed, data, (p) => setProgress(p, p < 0.66 ? 'Terrain sauvegardé · reconstruction' : 'Maillage · lumière et textures'), { dim: savedDim });
+  const savedDim = ['flat','oneblock'].includes(entry.initialWorld)?entry.initialWorld
+    : (['flat','oneblock'].includes(data.dim)?data.dim:'overworld');
+  Game.startWorld=savedDim;
+  // Charger la dimension de base autour de sa dernière position, pas autour des
+  // coordonnées du Nether/End ; le joueur retrouvera sa position ensuite.
+  const baseData=['nether','end'].includes(data.dim)?{...data,pos:data.overworldPos||undefined}:data;
+  await loadWorld(data.seed, baseData, (p) => setProgress(p, p < 0.66 ? 'Terrain sauvegardé · reconstruction' : 'Maillage · lumière et textures'), { dim: savedDim });
   buildHotbar();
   buildInventory();
   if (gl) renderScene(0);
@@ -17054,8 +17329,10 @@ async function continueGame(entry, keepNetwork=false) {
     startPlaying();
     setTimeout(() => {
       if (!Game.manager.editLog) Game.manager.editLog = new Map();
-      if (data.dim === 'nether') Dimensions.go('nether', { x: 6.5, y: 66.1, z: 15.5, yaw: Player.yaw });
-      else Dimensions.go('end', { x: End.spawn[0], y: END_SEA + 3, z: End.spawn[2], yaw: Math.PI });
+      const place=Array.isArray(data.pos)&&data.pos.length===3&&data.pos.every(Number.isFinite)?data.pos:null;
+      const fallback=data.dim==='nether'?[6.5,66.1,15.5]:[End.spawn[0],END_SEA+3,End.spawn[2]];
+      const [x,y,z]=place||fallback;
+      Dimensions.go(data.dim,{x,y,z,yaw:Number.isFinite(data.yaw)?data.yaw:Player.yaw,remember:false});
     }, 350);
     return;
   }
@@ -17354,7 +17631,8 @@ var Net = {
     Game.hardcore=!!m[11];Game.hardcoreDead=false;Game.adminRealm=!!m[12];
     Game.troll=!!m[9];if(typeof m[10]==='string')Saves.currentName=m[10].slice(0,28);
     Game.twoPlayers = false;
-    Saves.begin(Saves.currentName||'Partie partagée',dim||'overworld',Game.troll?'troll':Game.mode);
+    if(Game.adminRealm)Saves.adminSession(m[13]?.adminRealmType||dim||'overworld',Saves.currentName||'Admin · monde partagé');
+    else Saves.sharedSession(dim||'overworld',Saves.currentName||'Partie partagée');
     await newWorld(String(seed), false, { edits, time, dim:dim||'overworld',pos: [px, py, pz],troll:!!m[9],morph:null,hardcore:!!m[11],adminRealm:!!m[12],...(m[13]||{}) });
     if (!active()) return;
     startPlaying();
@@ -18697,7 +18975,15 @@ const AdminRealm={
   init(){
     $('realmPlay').onclick=()=>{$('realmTypes').classList.remove('hidden');$('realmPlay').classList.add('hidden');};
     for(const btn of document.querySelectorAll('[data-realm-type]'))btn.onclick=()=>this.connect(btn.dataset.realmType);
-    $('realmClose').onclick=()=>{if(this.connecting||AdminCloud.active){if(Game.manager&&Game.inv)saveGame({silent:true});Net.reset();this.setBusy(false);}openMenuScreen();};
+    $('realmClose').onclick=async()=>{
+      if(this.connecting||AdminCloud.active){
+        const wasActive=AdminCloud.active;
+        if(Game.manager&&Game.inv&&Net.role==='host')saveGame({silent:true});
+        await AdminCloud.shutdown();Net.reset();this.setBusy(false);
+        if(wasActive&&AdminCloud.lastSaveError){this.status('Dernière sauvegarde cloud non confirmée : reconnecte-toi et réessaie.');return;}
+      }
+      Saves.sessionEntry=null;Saves.currentId=null;Saves.currentName='';openMenuScreen();
+    };
   },
   setBusy(value){this.connecting=value;for(const btn of document.querySelectorAll('[data-realm-type]'))btn.disabled=value;},
   status(t){$('realmStatus').textContent=t;},
@@ -18708,10 +18994,12 @@ const AdminRealm={
     if(RoleGate.role!=='creator'||!this.labels[type])throw new Error('Profil Admin et type de monde valides requis.');
     if(Game.adminRealm&&Game.adminRealmType===type&&Game.manager&&!Game.hardcoreDead&&!AdminCloud.active){startPlaying();return;}
     if(!keepNetwork)Net.reset();Game.hardcore=false;Game.hardcoreDead=false;Game.adminRealm=true;Game.adminRealmType=type;Game.twoPlayers=false;Game.troll=false;Game.mode='creative';Game.startWorld=type;Troll.morph=null;
-    if(AdminCloud.active&&AdminCloud.snapshot){Saves.begin('Admin · '+this.labels[type],type,'creative');const entry=Saves.current();entry.data=AdminCloud.snapshot;await continueGame(entry,true);Game.adminRealmType=type;MorphPowers.apply();startPlaying();saveGame({silent:true});return;}
-    const entry=Saves.list.find(e=>e.data&&e.data.adminRealm&&(e.data.adminRealmType||e.data.dim||'flat')===type);
-    if(entry){Saves.currentId=entry.id;Saves.currentName=entry.name;await continueGame(entry,keepNetwork);}else{Saves.begin('Admin · '+this.labels[type],type,'creative');await newWorld('Blocraft Admin '+type,false);}
-    Game.adminRealmType=type;MorphPowers.apply();startPlaying();saveGame();
+    // La partie partagée vient uniquement du checkpoint cloud : jamais d'une
+    // copie locale potentiellement périmée et jamais de nouvelle ligne par entrée.
+    const entry=Saves.adminSession(type,'Admin · '+this.labels[type],AdminCloud.snapshot||null);
+    if(entry.data)await continueGame(entry,true);
+    else await newWorld('Blocraft Admin '+type,false);
+    Game.adminRealmType=type;MorphPowers.apply();startPlaying();saveGame({silent:true});
   },
   async connect(type){if(!RoleGate.validName(RoleGate.nickname)){this.open();return;}return AdminCloud.join(type);},
   challenge(){Net.send(['realm-denied']);Net.disconnected();},
@@ -18736,7 +19024,11 @@ const AdminCloud={
   async join(type){
     if(AdminRealm.connecting||!AdminRealm.labels[type]||RoleGate.role!=='creator')return;
     if(this.active&&this.type===type&&this.ready){startPlaying();return;}
-    if(Game.manager&&Game.inv)saveGame({silent:true});await this.shutdown();Net.reset();
+    if(Game.manager&&Game.inv&&Saves.currentId&&!(Net.live&&Net.role==='guest')){
+      if(!saveGame({silent:true})||!await Saves.flush()){AdminRealm.status('Sauvegarde locale impossible : vérifie l’espace avant de rejoindre le monde Admin.');return;}
+    }
+    await this.shutdown();Net.reset();
+    Saves.currentId=null;Saves.currentName='';Saves.sessionEntry=null;
     AdminRealm.autoType=type;AdminRealm.setBusy(true);AdminRealm.status('Connexion au monde commun…');ShortRooms.busy=true;const epoch=ShortRooms.epoch;
     const session=crypto.randomUUID(),peerId='blocraft-cloud-'+session;this.type=type;this.selfId=peerId;
     try{
@@ -18802,7 +19094,7 @@ const AdminCloud={
   position(id,m){if(!Array.isArray(m)||m[0]!=='p'||!m.slice(1,7).every(Number.isFinite)||Math.abs(m[1])>30000000||Math.abs(m[3])>30000000)return false;const r=this.records.get(id)||{id,name:m[7]||'Admin'};r.px=r.x;r.py=r.y;r.pz=r.z;[r.x,r.y,r.z,r.yaw,r.pitch,r.hp]=m.slice(1,7);r.dim=m[8]||'overworld';r.skin=SkinShop.valid(m[11])?m[11]:'classic';r.morph=Troll.valid(m[9])?m[9]:null;r.t=performance.now();this.records.set(id,r);Net.remote=this.records.values().next().value||null;return true;},
   send(m,target=null,force=false,except=null){if(!this.active)return;if(Net.role==='host'&&this.sender&&!target&&['H','x','vehicle-consumed','profile-grant'].includes(m[0]))target=this.sender;const raw=JSON.stringify(m);for(const [id,r]of this.peers)if(id!==except&&(!target||id===target)&&(r.admitted||force)&&r.connection.open)try{NetFlow.send(r.connection,m,raw);}catch(e){}},
   async flush(){if(!this.active||Net.role!=='host'||!this.ready)return;const data=Saves.current()?.data;if(!data||data.adminRealmType!==this.type)return;if(this.saving)return this.saving;const promise=this.store.save(this.type,JSON.parse(JSON.stringify(data)));this.saving=promise;try{await promise;}finally{if(this.saving===promise)this.saving=null;}},
-  shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();for(const node of this.tagNodes.values())node.remove();this.tagNodes.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
+  shutdown(){if(this.closing)return this.closing;if(!this.active)return Promise.resolve();this.lastSaveError=null;const host=Net.role==='host',store=this.store,type=this.type,data=host&&this.ready?Saves.current()?.data:null,pending=this.saving;this.active=false;this.ready=false;for(const t of this.timers){clearInterval(t);clearTimeout(t);}this.timers=[];if(this.unwatch)this.unwatch();this.unwatch=null;for(const r of this.peers.values())try{r.connection.close();}catch(e){}this.peers.clear();this.records.clear();for(const node of this.tagNodes.values())node.remove();this.tagNodes.clear();this.controls.clear();this.snapshot=null;this.closing=(async()=>{try{if(host){if(pending)await pending;if(data)await store.save(type,data);await store.release(type);}}catch(e){this.lastSaveError=e;console.warn('Dernière sauvegarde cloud non confirmée',e.code||e.message);}finally{this.closing=null;}})();return this.closing;},
   fail(e){const text=this.errorText(e);this.shutdown();Net.reset();AdminRealm.setBusy(false);AdminRealm.status(text);Game.state='menu';showOverlay('realm');},
   avatars(){const old=Net.remote,oldAvatar=Net._avatar,out=[];for(const r of this.records.values()){if((r.x-Player.pos[0])**2+(r.z-Player.pos[2])**2>(View.draw*16+16)**2)continue;Net.remote=r;Net._avatar=r._avatar||null;const avatar=Net.avatarMob();if(avatar){r._avatar=avatar;out.push(avatar);}}Net.remote=old;Net._avatar=oldAvatar;return out;},
   animate(dt){for(const r of this.records.values())NetFlow.smooth(r,dt);for(const r of this.records.values())if(r._avatar)r._avatar.walkPhase+=dt*(Math.hypot(r.x-(r.px??r.x),r.z-(r.pz??r.z))>.02?9:2);},
@@ -18910,7 +19202,7 @@ const Firearms = {
     const len=Math.hypot(...dir);if(len<.9||len>1.1||!Array.isArray(pos)||!pos.every(Number.isFinite))return false;
     const rocket=id===I.ROCKET_LAUNCHER,vel=rocket?23:45;
     this.list.push({pos:pos.map((v,i)=>v+dir[i]*.65),vel:dir.map(v=>v*vel),dim:Game.manager.dim,age:0,rocket,remote});
-    if(this.list.length>90)this.list.shift();
+    if(this.list.length>48)this.list.shift();
     return true;
   },
   blast(pos,remote) {
@@ -18927,12 +19219,16 @@ const Firearms = {
       const p=this.list[i];if(p.dim!==Game.manager.dim||p.age>2.5){this.list.splice(i,1);continue;}
       p.age+=dt;
       const steps=Math.max(1,Math.ceil(Math.hypot(...p.vel)*dt/.18));
+      // Filtrer une fois par image au lieu de parcourir tous les monstres à chaque sous-pas.
+      const near=Mobs.list.filter(m=>m.hp>0&&Math.abs(p.pos[0]-m.pos[0])<Math.abs(p.vel[0])*dt+2&&
+        Math.abs(p.pos[2]-m.pos[2])<Math.abs(p.vel[2])*dt+2&&
+        p.pos[1]+Math.max(0,p.vel[1]*dt)+1>m.pos[1]&&p.pos[1]+Math.min(0,p.vel[1]*dt)<m.pos[1]+m.def.h+1);
       let hit=false;
       for(let k=0;k<steps&&!hit;k++){
         for(let j=0;j<3;j++)p.pos[j]+=p.vel[j]*dt/steps;
         const block=Game.manager.getBlock(...p.pos.map(Math.floor));
         const solid=(BLOCKS[block]||{}).solid;
-        const mob=solid?null:Mobs.list.find(m=>m.hp>0&&Math.hypot(p.pos[0]-m.pos[0],p.pos[2]-m.pos[2])<m.def.w/2+.18&&p.pos[1]>=m.pos[1]&&p.pos[1]<=m.pos[1]+m.def.h);
+        const mob=solid?null:near.find(m=>m.hp>0&&Math.hypot(p.pos[0]-m.pos[0],p.pos[2]-m.pos[2])<m.def.w/2+.18&&p.pos[1]>=m.pos[1]&&p.pos[1]<=m.pos[1]+m.def.h);
         if(solid||mob){hit=true;if(p.rocket)this.blast(p.pos,p.remote);else if(mob){if(p.remote)mob.lastHitter='guest';Mobs.hurt(mob,3,p.vel.map(v=>v/45),true);Fx.puff(...p.pos,5,TEX.glow);} }
       }
       if(hit)this.list.splice(i,1);
@@ -19292,7 +19588,13 @@ function boot() {
   $('renameParty').onclick=()=>RoomNames.rename();
   $('chatToggle').addEventListener('click', () => Admin.barOpen() ? Admin.closeBar() : Admin.openBar());
   $('voiceToggle').addEventListener('click', () => Voice.toggle());
-  window.addEventListener('pagehide', () => Voice.stop());
+  window.addEventListener('pagehide', () => {
+    if(['playing','paused','inventory'].includes(Game.state)&&Saves.currentId&&!busyLoading)saveGame({silent:true});
+    Voice.stop();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&['playing','paused','inventory'].includes(Game.state)&&Saves.currentId&&!busyLoading)saveGame({silent:true});
+  });
   $('chatSend').addEventListener('click', () => GameChat.submit());
   $('chatClose').addEventListener('click', () => Admin.closeBar());
 
@@ -19311,6 +19613,11 @@ function boot() {
   $('svNew').addEventListener('click', () => openNewGameDialog());
   $('btnNew').addEventListener('click', () => { initAudioOnce(); const el = $('seedInput'); if (el) el.value = String((Math.random() * 0xffffffff) >>> 0); });
   $('btnNew2').addEventListener('click', () => { openNewGameDialog(); });
+  $('arrivalClose').addEventListener('click',()=>{ArrivalReset.hide();if(Game.state==='playing')tryPointerLock(true);});
+  $('arrivalWorld').addEventListener('click',()=>ArrivalReset.askWorld());
+  $('btnResetWorld').addEventListener('click',()=>ArrivalReset.askWorld());
+  $('arrivalMode').addEventListener('click',()=>ArrivalReset.resetMode());
+  $('btnResetMode').addEventListener('click',()=>ArrivalReset.resetMode());
   $('btnContinue').addEventListener('click', () => { initAudioOnce(); openSaves(); });
   window.__startFromMenu = null;
   /* démarrage direct dans la dimension choisie au menu */
@@ -19388,15 +19695,35 @@ function boot() {
   $('btnMpCopy').addEventListener('click', () => copyFrom('mpCodeOut'));
 
   $('btnResume').addEventListener('click', resumeGame);
+  $('btnQuitGame').addEventListener('click',async()=>{
+    if(Game.state!=='paused')return;
+    const btn=$('btnQuitGame'),guest=Net.live&&Net.role==='guest';
+    btn.disabled=true;$('saveMsg').textContent='Sauvegarde en cours…';
+    try {
+      if(!guest&&(!saveGame({silent:true})||!await Saves.flush())){
+        $('saveMsg').textContent='Sauvegarde impossible : vérifie l’espace disponible avant de quitter.';return;
+      }
+      if(AdminCloud.active){await AdminCloud.shutdown();if(AdminCloud.lastSaveError)throw AdminCloud.lastSaveError;}
+      Net.reset();Saves.sessionEntry=null;Saves.currentId=null;Saves.currentName='';
+      openMenuScreen();updateContinueButton();
+    }catch(e){console.error('Quitter la partie',e);$('saveMsg').textContent='Échec de la sauvegarde : reste dans la partie et réessaie.';}
+    finally{btn.disabled=false;}
+  });
   /* commerce : fermeture + clic à côté */
   if ($('trClose')) $('trClose').addEventListener('click', () => VillagerTrade.close());
   if ($('trade')) $('trade').addEventListener('mousedown', (e) => { if (e.target === $('trade')) VillagerTrade.close(); });
   if ($('trade')) $('trade').addEventListener('touchstart', (e) => { if (e.target === $('trade')) VillagerTrade.close(); }, { passive: true });
-  $('btnSave').addEventListener('click', () => {
-    const ok = saveGame();
-    $('saveMsg').textContent = ok
-      ? '« ' + (Saves.currentName || 'Partie') + ' » sauvegardée ✓'
-      : 'Impossible de sauvegarder (stockage plein ou bloqué)';
+  $('btnSave').addEventListener('click', async () => {
+    const guest=Net.live&&Net.role==='guest';
+    const ok=!guest&&saveGame({silent:true});
+    $('saveMsg').textContent=ok?'Écriture en cours…':guest?'Seul l’hôte sauvegarde cette partie.':'Impossible de sauvegarder (stockage plein ou bloqué)';
+    if(ok){
+      let done=await Saves.flush();
+      if(done&&AdminCloud.active&&Net.role==='host')try{await AdminCloud.flush();}catch(e){done=false;console.warn(e);}
+      $('saveMsg').textContent=done
+        ? '« '+(Saves.currentName||'Partie')+' » sauvegardée ✓'
+        : 'Impossible de sauvegarder (stockage plein ou bloqué)';
+    }
   });
   $('btnHelp').addEventListener('click', () => { showOverlay('help'); });
   QA.wire();

@@ -5,7 +5,7 @@
   },
   "scripts": {
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
-    "test": "node tests/death_rails_test.js && node tests/cinematics_test.js && node tests/mobile_gameplay_test.js && node tests/bed_loot_test.js && node tests/chest_placement_regression_test.js && node tests/voice_regression_test.js && node tests/portals_crafting_vision_test.js && node tests/pearls_cactus_fireworks_water_test.js && node tests/rail_guns_ruins_test.js",
+    "test": "node tests/death_rails_test.js && node tests/cinematics_test.js && node tests/mobile_gameplay_test.js && node tests/bed_loot_test.js && node tests/chest_placement_regression_test.js && node tests/voice_regression_test.js && node tests/portals_crafting_vision_test.js && node tests/pearls_cactus_fireworks_water_test.js && node tests/rail_guns_ruins_test.js && node tests/arrival_reset_test.js && node tests/persistence_height_test.js && node tests/resume_state_test.js",
     "test:site": "node tests/site_test.js",
     "test:game": "node tests/game_browser_test.js",
     "test:rooms": "node tests/rooms_browser_test.js",

@@ -1203,6 +1203,38 @@ heartbeat, les files réseau bornées par type/joueur, la conservation des blocs
 circuits, et l'interpolation. `test:adminrealm` vérifie aussi le lissage sans modifier
 la simulation et la réutilisation des étiquettes avec de vrais échanges WebRTC.
 Ces contrôles ne constituent pas un benchmark FPS sur un téléphone physique.
+
+Au début d’une partie locale, le panneau **Repartir du début** propose **Reset monde**
+(même graine, même type et mode de départ, retour au spawn ; efface blocs posés,
+inventaire et progression de cette partie après un second clic de confirmation)
+et **Reset mode** (retrouve le mode Survie/Créatif choisi au départ sans toucher au
+monde ni à l’inventaire). Les commandes restent accessibles dans Pause après la
+fermeture du panneau d’arrivée. La remise à zéro n’est pas proposée en multijoueur
+ni dans les mondes Admin. Les autres sauvegardes ne sont pas effacées.
+
+La limite de construction est **Y = 364** (Y = 365 refusé). Le terrain généré
+reste sous Y = 128 ; les blocs plus hauts sont stockés de façon éparse pour ne pas
+tripler la mémoire des chunks. Depuis Pause, **Sauvegarder et quitter** attend la
+confirmation du stockage avant de revenir au menu ; en reprenant, position,
+dimension, orientation, heure, inventaire et modifications des dimensions sont
+restaurés. Une sauvegarde est aussi déclenchée à la mise en arrière-plan. Les
+navigateurs peuvent néanmoins interrompre une fermeture brutale avant la fin de
+l’écriture ; privilégie le bouton de sortie.
+
+Jusqu’à **500 parties locales** peuvent être conservées : l’index est dans le
+stockage local et les mondes dans IndexedDB (migration automatique des anciennes
+sauvegardes, sans suppression avant confirmation). La capacité réelle dépend de
+l’espace que le navigateur accorde au site ; une erreur de quota est signalée.
+Le monde Admin est une **seule partie commune par type** : l’hôte charge le
+checkpoint Firebase, et les connexions suivantes ne créent plus de copies locales
+Admin. Un navigateur hôte doit rester ouvert pendant la partie.
+
+Sur les machines lentes, la portée affichée se réduit désormais progressivement
+même si la distance fixe est choisie, puis remonte quand les FPS se rétablissent ;
+le réglage utilisateur reste inchangé. Les projectiles limitent aussi le travail de
+recherche des créatures proches. `npm run test:performance` et `npm test` vérifient
+ces régressions, mais ne remplacent pas un profilage sur l’appareil qui lag.
+
 Recharger le jeu sur **tous les appareils** après la mise à jour pour utiliser le
 même format de snapshots partiels.
 
