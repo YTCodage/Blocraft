@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "firebase": "^12.19.0",
-    "playwright": "^1.65.0"
+    "playwright": "^1.65.0",
+    "three": "^0.187.0"
   },
   "scripts": {
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
@@ -16,6 +17,8 @@
     "test:adminrealm": "node tests/adminrealm_browser_test.js",
     "test:mechanics": "node tests/mechanics_browser_test.js",
     "build:cloud": "esbuild src/firebase-cloud.js --bundle --format=iife --global-name=BlocraftCloud --minify --outfile=assets/vendor/blocraft-cloud.min.js",
+    "build:motogp": "esbuild src/motogp/main.js --bundle --minify --outfile=assets/motogp.bundle.js",
+    "test:motogp": "node tests/motogp_test.js",
     "test:cloud": "node tests/cloud_store_test.js",
     "test:performance": "node tests/performance_test.js",
     "test:world-features": "node tests/world_features_browser_test.js"

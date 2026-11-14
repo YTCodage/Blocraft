@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#e10600">
+  <meta name="description" content="Jeu de simulation de moto MotoGP en 3D dans ton navigateur. Pilote les prototypes 1000cc officiels sur les circuits du Mans, Mugello et Valence.">
+  <title>MOTOGP™ 3D — Grand Prix Championship</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/motogp.css">
+</head>
+<body>
+  <!-- Canvas 3D Three.js -->
+  <div id="canvas-container"></div>
+
+  <!-- Interface Utilisateur Overlay -->
+  <div id="ui-container">
+    <!-- MENU PRINCIPAL -->
+    <div id="main-menu">
+      <div class="menu-header">
+        <div class="brand-group">
+          <div class="brand-badge">MOTOGP™ 3D</div>
+          <div class="brand-title">GRAND PRIX <span>CHAMPIONSHIP</span></div>
+        </div>
+        <div class="menu-nav">
+          <button class="nav-tab active" data-mode="grandprix">Grand Prix</button>
+          <button class="nav-tab" data-mode="timeattack">Contre-la-montre</button>
+          <button class="nav-tab" data-mode="practice">Entraînement</button>
+        </div>
+      </div>
+
+      <div class="menu-grid">
+        <!-- COLONNE GAUCHE : CIRCUITS -->
+        <div class="menu-col">
+          <div class="section-title">01 / CHOIX DU CIRCUIT</div>
+          <div class="tracks-scroll" id="menu-tracks-list"></div>
+        </div>
+
+        <!-- COLONNE DROITE : ECURIES & PILOTES -->
+        <div class="menu-col">
+          <div class="section-title">02 / CHOIX DU PILOTE & ECURIE</div>
+          <div class="riders-scroll" id="menu-riders-list"></div>
+        </div>
+      </div>
+
+      <!-- BARRE DE RÉGLAGES ET LANCEMENT -->
+      <div class="menu-bottom-bar">
+        <div class="settings-group">
+          <div class="setting-item">
+            <span>Météo :</span>
+            <div class="chip-group">
+              <button class="chip active" data-weather="sunny">Soleil</button>
+              <button class="chip" data-weather="sunset">Coucher soleil</button>
+              <button class="chip" data-weather="wet">Pluie</button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <span>Difficulté IA :</span>
+            <div class="chip-group">
+              <button class="chip" data-diff="debutant">Amateur</button>
+              <button class="chip active" data-diff="pro">Pilote Pro</button>
+              <button class="chip" data-diff="legende">Légende</button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <span>Tours :</span>
+            <div class="chip-group">
+              <button class="chip" data-laps="1">1 tour</button>
+              <button class="chip active" data-laps="3">3 tours</button>
+              <button class="chip" data-laps="5">5 tours</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-launch" id="btn-launch-race">LANCER LA COURSE ⚡</button>
+      </div>
+
+      <!-- GUIDE RAPIDE DES TOUCHES -->
+      <div style="margin-top: 14px; font-size: 11px; color: #777; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+        <div><strong>Commandes clavier :</strong> Z / W / ↑ : Gaz &bull; S / ↓ : Frein avant &bull; Q / A / ← / D / → : Pencher &bull; Espace : Frein arrière &bull; Shift : Boost KERS &bull; C : Caméra &bull; R : Replacer moto &bull; P / Échap : Pause &bull; M : Son</div>
+        <div>Compatible <strong>Manette Xbox / PlayStation</strong> et <strong>Écran tactile mobile</strong></div>
+      </div>
+    </div>
+
+    <!-- HUD BROADCAST DE COURSE -->
+    <div id="hud-layer"></div>
+
+    <!-- MODAL DE PAUSE -->
+    <div id="pause-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 class="modal-title">COURSE EN PAUSE</h2>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 20px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+          Ajuste ton pilotage ou reprends la piste.
+        </p>
+        <div class="modal-buttons">
+          <button class="btn-modal primary" id="btn-resume">Reprendre la course</button>
+          <button class="btn-modal" id="btn-restart">Recommencer</button>
+          <button class="btn-modal" id="btn-quit-menu">Menu principal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE RÉSULTATS / PODIUM -->
+    <div id="results-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 600px;">
+        <h2 class="modal-title">🏁 DRAPEAU À DAMIER</h2>
+        <div class="results-table" id="results-list"></div>
+        <div class="modal-buttons" style="flex-direction: row; justify-content: center;">
+          <button class="btn-modal primary" id="btn-replay-race">Rejouer</button>
+          <button class="btn-modal" id="btn-results-menu">Menu des circuits</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle MotoGP 3D compilé (Three.js + Logique + Audio + HUD) -->
+  <script src="assets/motogp.bundle.js"></script>
+</body>
+</html>
