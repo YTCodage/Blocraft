@@ -1,0 +1,28 @@
+{
+  "name": "motogp-3d",
+  "version": "1.0.0",
+  "description": "Jeu de course de simulation MotoGP 3D dans le navigateur avec Three.js et Web Audio API",
+  "main": "index.html",
+  "scripts": {
+    "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
+    "build": "esbuild src/motogp/main.js --bundle --minify --outfile=assets/motogp.bundle.js",
+    "test": "node tests/motogp_test.js"
+  },
+  "keywords": [
+    "motogp",
+    "threejs",
+    "3d",
+    "racing",
+    "webgl",
+    "game",
+    "motorcycle"
+  ],
+  "author": "YTCodage",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  }
+}
