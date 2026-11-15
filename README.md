@@ -63,9 +63,10 @@ Le menu garde jusqu'à **12 parties** nommées dans le navigateur :
 | `1`–`9`, molette | choisir l'objet de la barre |
 | `E` | inventaire, établi, four, blocs |
 | `F` | voler (créatif) |
-| `M` | couper / remettre la musique |
+| `M` | monter / descendre d’un wagonnet proche |
+| `N` | couper / remettre la musique |
 | `R` | retour au point de départ |
-| `X` | **Vision X** : voir à travers le sol les portails de l'End et les minerais |
+| `/vision` (dans le chat) | **Vision X** : afficher/masquer les portails et minerais ; `X` ne l'active plus |
 | `F3` | infos techniques (FPS, position, graine) |
 | `T` (ou `/`) | barre de commandes |
 | `Échap` | pause (menu premium : réglages + **touches modifiables**) |
@@ -165,7 +166,9 @@ Choisis **Survie** ou **Créatif** au lancement d’une nouvelle partie. Le choi
 est enregistré avec la sauvegarde. Le menu pause contient les réglages et la
 sauvegarde, mais plus de bouton de changement de mode ni de Vision X.
 Les commandes administrateur `/creatif` et `/survie` restent disponibles selon
-les droits existants. La touche `X` reste le raccourci de la Vision X sur PC.
+les droits existants. La Vision X s'active uniquement avec `/vision` ou `/xray`
+(droits Admin en multijoueur, désactivée en Hardcore). La touche `X` sert toujours
+à descendre d'un véhicule.
 
 ### Les villages sont habités
 
@@ -257,29 +260,31 @@ affiche **∞**) : il ne s'épuise jamais. Choisis un **autre** bloc : il **remp
 automatiquement** celui de la case tenue — pas besoin de vider quoi que ce soit ni de
 changer d'emplacement.
 
-### L'œil de l'End montre le portail
+### L'œil de l'End indique la forteresse
 
 L'**Œil de l'End** (1 perle d'Enderman + 1 émeraude) se **lance au clic droit** : au
-lieu de partir droit devant, il **file vers le portail de l'End le plus proche** (celui
-d'une forteresse), en laissant une traînée violette. Il retombe en te disant la
-**distance et la direction** (« portail de l'End à 217 blocs au sud-est »), puis
+lieu de partir droit devant, il **file vers la forteresse souterraine** (qui abrite maintenant une ruine du Nether), en laissant une traînée violette. Il retombe en te disant la
+**distance et la direction**, puis
 **revient dans ton sac** : c'est un repère, il ne se consomme pas. Sur un cadre, il s'y
 pose comme avant (12 yeux = portail ouvert).
 
-### La Vision X (touche `X`)
+### La Vision X (commande `/vision`)
 
-Appuie sur **`X`** (n'importe quand, même sans être admin) :
+Tape **`/vision`** dans le chat pour l'activer ou la désactiver (`/vision on`,
+`/vision off` ou `/xray` fonctionnent aussi). En multijoueur, cette commande est
+réservée aux Admins ; elle est désactivée en Hardcore. La touche `X` ne l'active pas.
+Une fois la commande saisie :
 
 - la terre devient invisible : on voit **à travers le sol** ;
-- restent visibles les **minerais**, les **cadres de portail de l'End** (vides ou avec
-  un œil), les **portails de l'End ouverts**, les lampes de mer et la glowstone ;
-- un **repère flottant** signale chaque forteresse et chaque portail — **fini ou non** —
+- restent visibles les **minerais**, l’**obsidienne des ruines du Nether**, les
+  **cadres de l’End construits** (vides ou avec un œil), les portails ouverts,
+  les lampes de mer et la glowstone ;
+- un **repère flottant** signale chaque forteresse et sa ruine du Nether — **réparée ou non** —
   avec sa **distance**, et une **flèche** indique ceux qui sont derrière toi ;
-- un bandeau en haut donne le portail le plus proche et le nombre de forteresses repérées
+- un bandeau en haut donne la ruine la plus proche et le nombre de forteresses repérées
   dans la carte (jusqu'à 28).
 
-Touche `X` à nouveau pour revenir au monde normal. (La touche est **modifiable** :
-Échap → commandes → « Vision X ».)
+Tape `/vision off` ou `/vision` à nouveau pour revenir au monde normal.
 
 ### Changer ses touches
 
@@ -315,7 +320,29 @@ Trouvée sur les **endermen** et dans les coffres des forteresses, la perle se
 **lance au clic droit** : elle vole, rebondit, et dès qu'elle touche un bloc tu es
 **téléporté** à l'endroit où elle s'arrête. Comme dans Minecraft, la téléportation
 coûte **5 points de vie** en survie (aucun coût en créatif). Pratique pour franchir
-une crevasse, sortir d'une grotte ou sauter un mur.
+une crevasse, sortir d'une grotte ou sauter un mur. On peut avoir **deux perles en
+vol en même temps** : chaque impact téléporte, même si la deuxième lancée touche
+le sol avant la première.
+
+### Armes de jeu, fusées d'artifice et cactus
+
+À l’établi : **mitraillette** (4 fers, 2 cuivres, 1 bâton), **lance-roquettes**
+(5 fers, 2 cuivres, 1 redstone), **12 balles** (1 fer, 1 poudre à canon) et
+**2 roquettes** (1 fer, 2 poudres à canon, 1 redstone). Sélectionne l’arme et
+clique gauche (maintenir pour la mitraillette) ou droit pour tirer. Les balles
+frappent une cible ; la roquette explose et touche les créatures proches, sans
+modifier les blocs. Les munitions sont consommées en survie.
+
+À l'établi, une poudre à canon + un bâton + une ficelle fabriquent **3 fusées**.
+Tiens une fusée puis utilise-la (clic droit ou **POSER** sur mobile) pour décoller :
+**3,5 secondes de vol**, avec des étincelles ; espace / bouton Monter pour prendre
+de l'altitude. Une nouvelle fusée prolonge le vol, jusqu'à 8 secondes. La fusée
+est consommée, et à l'extinction la gravité revient. Les cactus piquent au
+contact en survie (1 PV par coup, avec un délai entre deux coups).
+Les textures du four (façade, grille, joints), de l'herbe (touffes et terre),
+des blocs de diamant et d’or sont plus détaillées. Les lingots sont désormais
+faciles à distinguer : cuivre orangé, fer gris métallique, or jaune et
+netherite sombre.
 
 ### La portée de rendu
 
@@ -338,12 +365,12 @@ sont des dimensions **à découvrir en jeu**, par un portail (voir §5) :
 | 🧊 **Mono-bloc** | **un seul bloc** qui repousse à chaque coup, le **vide** tout autour et **4 châteaux** à 100 blocs. Départ : 20 terres + 1 pousse d'arbre. **Tomber = mourir.** |
 
 > Le **Nether** s'ouvre avec un **portail en obsidienne allumé au briquet** ; **l'End**
-> avec la **salle du portail d'une forteresse souterraine** (12 cadres + 12 yeux).
+> en **construisant toi-même un anneau de 12 cadres et 12 yeux** : il n’y a plus de portail naturel de l’End.
 
 > Les deux cartes verrouillées restent visibles dans le menu pour indiquer le but :
 > elles s'ouvrent en jeu, jamais au départ. Une **forteresse est toujours générée
-> près du point de départ** (à quelques dizaines de blocs), donc l'End reste
-> accessible : il suffit de la trouver, puis de poser 12 yeux de l'End sur les cadres.
+> près du point de départ** (à quelques dizaines de blocs), mais sa salle contient
+> une ruine du Nether. L’End reste accessible grâce aux cadres que tu fabriques.
 
 > Le mono-bloc est un monde à part : pour y revenir, choisis-le à nouveau dans le
 > menu. En créatif, tomber dans le vide te ramène sur le bloc (pas de mort).
@@ -414,8 +441,13 @@ une grotte) ou **dans l'eau**. La nuit, ils sortent normalement.
 
 ### Le portail du Nether
 
+À l’entrée dans le Nether ou dans l’End, un panneau affiche le nom de la dimension.
+
 Obsidienne en **4 × 5** (coins inutiles) + **briquet** dans le portail → voyage.
 L'obsidienne se mine à la pioche en diamant… ou se fabrique (eau + lave).
+Le monde normal génère **5 portails du Nether en ruine**, plus un dans la forteresse :
+**deux obsidiennes manquent à chaque cadre**. Répare-les puis utilise le briquet
+pour les allumer. Les portails construits par les joueurs ne sont pas limités.
 
 ### Le portail de l'End
 
@@ -497,8 +529,11 @@ case du résultat à droite. **C'est toi qui fabriques**, case par case :
 * les recettes ont maintenant leur **vraie forme Minecraft** : pioches en diagonale,
   haches décalées, épées à la verticale, casques et plastrons en creux… La case du
   résultat s'allume dès que la forme est bonne.
-* **clic sur le résultat** = 1 objet fabriqué ; **clic droit** ou **Tout fabriquer**
-  = tant que la grille le permet.
+* Choisir une recette dans le livre **empile automatiquement plusieurs fournées**
+  dans chaque case (jusqu'à 64 par pile), si les ingrédients sont disponibles.
+  Deux bûches donnent ainsi 8 planches ; quatre planches donnent 8 bâtons.
+* **clic sur le résultat** = 1 fournée fabriquée ; **clic droit** ou **Tout fabriquer**
+  = jusqu'à épuisement des piles de la grille.
 * fermer l'inventaire (Échap) **rend tout** ce qui traîne dans la grille ; le bouton
   **Vider la grille** le fait sans fermer l'inventaire.
 
@@ -524,7 +559,9 @@ manquants apparaissent en **rouge**.
 * L'**eau ne se casse pas** : inutile d'insister, la pioche ne la raye pas.
   Pour la déplacer, il faut un **seau** (3 lingots de fer, recette d'outils).
 * **Seau vide + clic droit sur une source d'eau** → seau d'eau. Sur de la **lave**
-  → seau de lave. Un seau plein se **vide** d'un clic droit sur le sol.
+  → seau de lave. Un seau plein se **vide** d'un clic droit sur le sol. L'eau que
+  tu as versée forme une source récupérable avec le seau vide ; tu peux la viser
+  depuis la rive, même à travers ses écoulements. Un écoulement seul ne se ramasse pas.
 * L'eau **coule** (7 niveaux) : elle tombe, s'étale, et durcit la lave en
   **obsidienne** au contact. La lave des lacs du Nether est incassable : on la
   contourne, ou on la ramasse au seau.
@@ -540,7 +577,7 @@ avec des plafonds même dans les structures difficiles.
 | Niveau | Structures | Ce qu'on trouve en plus |
 |---|---|---|
 | 1 | village, igloo | pain, blé, charbon, quelques émeraudes |
-| 2 | avant-poste, épave, bibliothèque, portail en ruine, grotte | lingots de fer, livres, obsidienne |
+| 2 | avant-poste, épave, bibliothèque, portail du Nether, grotte | lingots de fer, livres, obsidienne |
 | 3 | mine, donjon, cabane de sorcière, temple, forge, trésor enterré | or, diamants, pioche et plastron en fer |
 | 4 | monument, manoir, forteresse du Nether, stronghold | rares diamants, épée en diamant occasionnelle, perles |
 | 5 | bastion, cité de l'End | **netherite très occasionnelle**, plastron en diamant rare, un peu d’or |
@@ -599,9 +636,11 @@ haut à droite.
   **30 donjons** flottants (tours au trésor, cryptes, ruines).
 * **22 structures** façon Minecraft, dans les trois dimensions : villages, poste de
   pillards, tour de guet, pyramide du désert, temple de la jungle, hutte de sorcière,
-  igloo, manoir, monument océanique, épave, trésor enterré, puits du désert, portail en
-  ruine, ruines, grotte, galerie de mine, donjon, forteresse (avec la salle du portail
-  de l'End), cité ancienne, forteresse du Nether, bastion, cité de l'End. Voir §8.
+  igloo, manoir, monument océanique, épave, trésor enterré, puits du désert, **5 portails
+  naturels du Nether en ruine**, grotte, galerie de mine, donjon, **une forteresse
+  avec une autre ruine du Nether**, cité ancienne, forteresse du Nether,
+  bastion, cité de l'End. Les joueurs peuvent toujours construire leurs propres
+  portails. Voir §8.
 * **Créatures** : zombie, squelette (avec arc), araignée, creeper qui explose, vache,
   cochon, poule, villageois (commerce), golem de fer (qui défend le village et
   riposte si on frappe un villageois), enderman (téléportation),
@@ -639,12 +678,12 @@ pour la fiche complète).
 | ⛵ Épave | océan, plage | 55 % | 1 à 3 | coque brisée, mât, voile déchirée, cale au trésor |
 | 🪙 Trésor enterré | plage | 40 % | 1 | un seul coffre, très riche, sous le sable |
 | 🪣 Puits du désert | désert | 30 % | 0 | purement décoratif |
-| 🌀 Portail en ruine | partout | 30 % | 1 | cadre d'obsidienne brisé, netherrack, obsidienne pleureuse |
+| 🌀 Portail du Nether | surface | 5 sites fixes par graine | 1 | cadre d'obsidienne allumé, netherrack, coffre |
 | 🧱 Ruines | surface | 35 % | 0 à 1 | murs écroulés, colonnes, dallage à demi enseveli |
 | 🕳️ Grotte | surface | 40 % | 1 à 2 | entonnoir, puits, salle éclairée, filons apparents |
 | ⛏️ Galerie de mine | sous-sol | 60 % | 2 à 5 | couloirs étayés, embranchements, salle au trésor, puits d'aération |
 | 💀 Donjon | sous-sol | 45 % | 2 | pierre moussue, générateur de monstres, couloir bouché |
-| 🌌 Forteresse | sous-sol profond | 75 % | 2 à 4 | couloirs, bibliothèque, **salle du portail de l'End (12 cadres)** |
+| 🌌 Forteresse | sous-sol profond | 1 site fixe par graine | 2 à 4 | couloirs, bibliothèque, **portail du Nether en ruine (deux blocs manquants)** |
 | 🏛️ Cité ancienne | ardoise profonde | 30 % | 2 à 4 | ardoise, basalte, champilumière, bâtiments en ruine |
 | 🔥 Forteresse du Nether | Nether | 55 % | 1 à 3 | ponts de briques, piliers, pièces latérales, salle de lave |
 | 🦴 Bastion | Nether | 35 % | 2 à 4 | basalte noir et pierre dorée, tours d'angle, blocs d'or |
@@ -744,16 +783,16 @@ Bon jeu.
 - **Rails propulseurs** : 6 lingots d’or + 1 bâton + 1 redstone → 6 rails.
   Ils accélèrent automatiquement les wagonnets, sans alimentation supplémentaire.
 - **Wagonnet en fer** : 5 lingots de fer. Poser sur un rail avec le clic droit ;
-  main sans wagonnet, clic droit à proximité pour monter, puis clic droit pour
-  descendre. Cette première version permet les lignes droites horizontales,
-  avec demi-tour au bout de la voie ; pas encore de pentes ni de virages.
+  **M** monte dans un wagon proche ou permet d’en descendre (clic droit aussi).
+  Le rail propulseur orange et rouge accélère immédiatement un wagon posé dessus,
+  puis continue à le pousser sans redstone. Les virages horizontaux sont possibles.
 - Ces trois recettes utilisent l’établi. Les objets sont aussi disponibles dans
   l’inventaire créatif. Les wagonnets et objets au sol sont sauvegardés.
-- **Vision X** : recherche des forteresses jusqu’à 8 000 blocs par axe, grands
-  repères et schéma agrandi du portail le plus proche avec distance et coordonnées.
-  Le schéma n’est pas une caméra distante et ne révèle pas les yeux déjà insérés.
-- Les portails en ruine et les forteresses sont moins fréquents dans la génération.
-  Les cadres de l’End incomplets sont étiquetés « Portail de l’End en ruine ».
+- **Vision X** : recherche des forteresses jusqu’à 8 000 blocs par axe et affiche
+  des repères vers les ruines souterraines, leur distance et leurs coordonnées.
+- Dans un nouveau monde, cinq ruines du Nether en surface et une forteresse avec
+  une autre ruine sont réparties de façon déterministe. Chaque portail demande
+  deux obsidiennes et un briquet. Aucun portail naturel de l’End n’est généré.
 
 Test de logique ciblé : `node tests/death_rails_test.js`.
 
@@ -1164,6 +1203,38 @@ heartbeat, les files réseau bornées par type/joueur, la conservation des blocs
 circuits, et l'interpolation. `test:adminrealm` vérifie aussi le lissage sans modifier
 la simulation et la réutilisation des étiquettes avec de vrais échanges WebRTC.
 Ces contrôles ne constituent pas un benchmark FPS sur un téléphone physique.
+
+Au début d’une partie locale, le panneau **Repartir du début** propose **Reset monde**
+(même graine, même type et mode de départ, retour au spawn ; efface blocs posés,
+inventaire et progression de cette partie après un second clic de confirmation)
+et **Reset mode** (retrouve le mode Survie/Créatif choisi au départ sans toucher au
+monde ni à l’inventaire). Les commandes restent accessibles dans Pause après la
+fermeture du panneau d’arrivée. La remise à zéro n’est pas proposée en multijoueur
+ni dans les mondes Admin. Les autres sauvegardes ne sont pas effacées.
+
+La limite de construction est **Y = 364** (Y = 365 refusé). Le terrain généré
+reste sous Y = 128 ; les blocs plus hauts sont stockés de façon éparse pour ne pas
+tripler la mémoire des chunks. Depuis Pause, **Sauvegarder et quitter** attend la
+confirmation du stockage avant de revenir au menu ; en reprenant, position,
+dimension, orientation, heure, inventaire et modifications des dimensions sont
+restaurés. Une sauvegarde est aussi déclenchée à la mise en arrière-plan. Les
+navigateurs peuvent néanmoins interrompre une fermeture brutale avant la fin de
+l’écriture ; privilégie le bouton de sortie.
+
+Jusqu’à **500 parties locales** peuvent être conservées : l’index est dans le
+stockage local et les mondes dans IndexedDB (migration automatique des anciennes
+sauvegardes, sans suppression avant confirmation). La capacité réelle dépend de
+l’espace que le navigateur accorde au site ; une erreur de quota est signalée.
+Le monde Admin est une **seule partie commune par type** : l’hôte charge le
+checkpoint Firebase, et les connexions suivantes ne créent plus de copies locales
+Admin. Un navigateur hôte doit rester ouvert pendant la partie.
+
+Sur les machines lentes, la portée affichée se réduit désormais progressivement
+même si la distance fixe est choisie, puis remonte quand les FPS se rétablissent ;
+le réglage utilisateur reste inchangé. Les projectiles limitent aussi le travail de
+recherche des créatures proches. `npm run test:performance` et `npm test` vérifient
+ces régressions, mais ne remplacent pas un profilage sur l’appareil qui lag.
+
 Recharger le jeu sur **tous les appareils** après la mise à jour pour utiliser le
 même format de snapshots partiels.
 
@@ -1177,3 +1248,36 @@ même format de snapshots partiels.
 - **Monstres** : pas de génération naturelle de monstres dans le monde principal pendant la journée, y compris dans les grottes. Les monstres ordinaires exposés au soleil brûlent visiblement et perdent de la vie ; l’ombre et l’eau les protègent. Les créatures de feu, les boss et Herobrine sont immunisés ; le Nether et l’End gardent leurs règles propres.
 
 Vérification dédiée : `npm run test:world-features` (Chromium/Playwright). Les tests multi-Admin exercent aussi les objets jetés, le ramassage unique et l’activité des fourneaux sur de vraies connexions WebRTC avec stockage cloud simulé. **Recharge le jeu sur tous les appareils après une mise à jour.**
+
+## Contrôles, coffres et options sociales
+
+- **Mobile / mono-bloc** : le bouton **Poser** permet d'utiliser ou de poser un bloc
+  en visant au centre. Quand on vise le dessus du mono-bloc depuis ses pieds,
+  le bloc de construction est posé sur une case latérale libre, et non dans le joueur.
+- **Accroupissement** : `C` au clavier (touche reconfigurable) ou **Accroupi** sur
+  mobile. Le déplacement ralentit, la caméra descend et le personnage évite de
+  quitter le bord d'un bloc tant qu'il reste accroupi. En vol, `C` descend.
+- **Coffres** : leur contenu est maintenant conservé par partie et par dimension,
+  y compris après fermeture et sauvegarde. Casser puis reposer un coffre recrée
+  un nouveau conteneur. En multijoueur, l'hôte attribue le butin pour empêcher
+  deux retraits simultanés de la même récompense. Le dépôt dans un coffre partagé
+  est pour l'instant réservé au navigateur hôte.
+- **Chat vocal** : bouton **Micro** juste au-dessus du chat, en multijoueur ;
+  le micro est **désactivé par défaut** et nécessite une autorisation du navigateur
+  (HTTPS ou `localhost`). Un second appui coupe la capture. Le flux audio passe
+  entre les navigateurs par WebRTC/PeerJS ; aucun enregistrement audio n'est fait.
+  Comme le multijoueur, la voix dépend de la connectivité WebRTC et du navigateur.
+- **Équipement bedrock** : épée, pioche et quatre pièces d'armure dans les
+  recettes d'établi. La bedrock reste incassable en survie : cet équipement est
+  destiné au mode créatif/aux Admins disposant de ce matériau.
+- **Boutique** : quatre apparences de personnage gratuites pour le profil Admin,
+  visibles dans l'aperçu 3D et sur les avatars multijoueurs. Aucun paiement.
+  Le profil Admin peut activer un rendu à plus haute résolution/portée dans la
+  boutique ; cette option peut ralentir un téléphone.
+- **Amis · favoris locaux** : enregistre un pseudo et le nom **exact** de la
+  partie de cet ami pour la rejoindre plus vite. Cette liste reste sur l'appareil :
+  ce n'est ni une demande d'amitié mutuelle, ni un annuaire de joueurs ou une
+  présence en ligne. L'hôte doit garder sa partie ouverte.
+
+Les tests de logique associés sont inclus dans `npm test` ; les tests visuels
+nécessitent un navigateur Chromium installé (`npm run test:site`, `npm run test:game`).

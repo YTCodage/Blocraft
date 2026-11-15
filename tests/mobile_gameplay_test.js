@@ -42,5 +42,5 @@ assert(Math.abs(ctx.waterCornerHeight(water,1,1,1)-.79)<1e-8);
 assert.equal(ctx.waterCornerHeight((x,y,z)=>y===2?11:water(x,y,z),1,1,1),1);
 const ca=html.indexOf('function canBreakBlock('),cb=html.indexOf('\n}\n',ca)+2;vm.runInContext(html.slice(ca,cb)+'\nthis.canBreakBlock=canBreakBlock;',ctx);
 assert(!ctx.canBreakBlock(12));ctx.Game.mode='creative';assert(ctx.canBreakBlock(12));assert(ctx.canBreakBlock(1));
-assert(!html.includes('id="tBreak"'));assert(!html.includes('id="tPlace"'));assert(!html.includes('id="btnMode"'));assert(!html.includes('id="btnVision"'));
-console.log('OK : tap, maintien, glissement, annulation, multitouch, rayon tactile, chat, morts, anti-spam, raccord eau et bedrock.');
+assert(!html.includes('id="tBreak"'));assert(html.includes('id="tPlace"'));assert(html.includes('id="tCrouch"'));assert(html.includes("crouch: ['KeyC']"));assert(!html.includes('id="btnMode"'));assert(!html.includes('id="btnVision"'));
+console.log('OK : tap, maintien, glissement, annulation, multitouch, pose et accroupissement tactiles, rayon tactile, chat, morts, anti-spam, raccord eau et bedrock.');

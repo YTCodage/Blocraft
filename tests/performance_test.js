@@ -1,12 +1,18 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const html=fs.readFileSync('blocraft.html','utf8');let clock=0;
-const context=vm.createContext({console,performance:{now:()=>clock},window:{ontouchstart:null},navigator:{maxTouchPoints:1},isTouch:true,SETTINGS:{dist:4},Math,Map,WeakMap,JSON});
+const context=vm.createContext({console,performance:{now:()=>clock},window:{ontouchstart:null},navigator:{maxTouchPoints:1},isTouch:true,SETTINGS:{dist:4},SkinShop:{quality:false,current:()=>null},RoleGate:{role:'player'},Math,Map,WeakMap,JSON});
 vm.runInContext(html.slice(html.indexOf('const View ='),html.indexOf('function streamChunks')),context);
 vm.runInContext(html.slice(html.indexOf('const NetFlow='),html.indexOf('const ShortRooms =')),context);
 vm.runInContext(`
 window.View=View;window.Flow=NetFlow;
 `,context);const view=context.window.View,flow=context.window.Flow;
 assert.equal(view.dprCap,1);assert.equal(view.draw,4);view.adapt(20);assert.equal(view.dprCap,1,'one isolated slow sample must not resize the canvas');view.adapt(20);assert.equal(view.dprCap,.9);assert.equal(view.draw,3);for(let i=0;i<10;i++)view.adapt(20);assert.equal(view.dprCap,.75);clock=10000;view.adapt(60);assert.equal(view.dprCap,.75);for(let i=0;i<11;i++)view.adapt(60);assert.equal(view.dprCap,.8,'recovery is slow and hysteretic');
+context.isTouch=false;context.SETTINGS.dist=6;view.radius=4;
+assert.equal(view.draw,6,'fixed distance is honored before any slowdown');
+view.adapt(20);view.adapt(20);assert.equal(view.draw,5,'desktop fixed render distance also adapts to low FPS');
+clock+=7000;for(let i=0;i<12;i++)view.adapt(60);
+assert.equal(view.draw,6,'desktop gradually restores the chosen render distance');
+context.isTouch=true;context.SETTINGS.dist=4;
 const sent=[],connection={open:true,dataChannel:{bufferedAmount:1024*1024},send:text=>sent.push(JSON.parse(text))};
 for(let i=0;i<500;i++)flow.send(connection,['p',i]);for(let i=0;i<500;i++)flow.send(connection,['cloud-peer','alice',['p',i]]);flow.send(connection,['cloud-peer','bob',['p',2]]);
 assert.equal(flow.pending.get(connection).size,3,'bounded latest-state queue, separate keys per remote player');flow.send(connection,['b',1,2,3,4]);assert.equal(sent[0][0],'b','reliable edits must never be discarded by pose backpressure');
